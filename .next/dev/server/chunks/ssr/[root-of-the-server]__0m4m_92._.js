@@ -1,0 +1,156 @@
+module.exports = [
+"[externals]/next/dist/shared/lib/no-fallback-error.external.js [external] (next/dist/shared/lib/no-fallback-error.external.js, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("next/dist/shared/lib/no-fallback-error.external.js", () => require("next/dist/shared/lib/no-fallback-error.external.js"));
+
+module.exports = mod;
+}),
+"[externals]/node:fs/promises [external] (node:fs/promises, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("node:fs/promises", () => require("node:fs/promises"));
+
+module.exports = mod;
+}),
+"[externals]/node:path [external] (node:path, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("node:path", () => require("node:path"));
+
+module.exports = mod;
+}),
+"[project]/lib/local-catalog.ts [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "loadLocalCatalog",
+    ()=>loadLocalCatalog
+]);
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$fs$2f$promises__$5b$external$5d$__$28$node$3a$fs$2f$promises$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:fs/promises [external] (node:fs/promises, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:path [external] (node:path, cjs)");
+;
+;
+const DEFAULT_SEED_DIR = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__["default"].resolve(process.cwd(), "..", "gofarm-yt-main (1)", "gofarm-yt-main", "server", "seed", "production-export-2025-11-30t08-28-44-763z");
+function resolveSeedDir() {
+    return process.env.GOFARM_SEED_DIR ? __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__["default"].resolve(process.env.GOFARM_SEED_DIR) : DEFAULT_SEED_DIR;
+}
+function resolveImageSrc(image, assets) {
+    const sanityAsset = image?._sanityAsset ?? "";
+    const fileMatch = sanityAsset.match(/\.\/images\/([^"\]]+)/i);
+    if (fileMatch?.[1]) {
+        return `/images/${fileMatch[1]}`;
+    }
+    const filenameMatch = sanityAsset.match(/\/([^/]+\.(?:png|jpe?g|webp|svg|gif))$/i);
+    if (filenameMatch?.[1]) {
+        return `/images/${filenameMatch[1]}`;
+    }
+    if (assets) {
+        for (const asset of Object.values(assets)){
+            if (!asset.sha1hash) continue;
+            const originalFilename = asset.originalFilename;
+            if (originalFilename && sanityAsset.includes(asset.sha1hash)) {
+                return `/images/${originalFilename}`;
+            }
+        }
+    }
+    return "/images/logo.svg";
+}
+async function loadLocalCatalog() {
+    const seedDir = resolveSeedDir();
+    const ndjsonPath = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__["default"].join(seedDir, "data.ndjson");
+    const assetsPath = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__["default"].join(seedDir, "assets.json");
+    const [ndjsonRaw, assetsRaw] = await Promise.all([
+        __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$fs$2f$promises__$5b$external$5d$__$28$node$3a$fs$2f$promises$2c$__cjs$29$__["default"].readFile(ndjsonPath, "utf8"),
+        __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$fs$2f$promises__$5b$external$5d$__$28$node$3a$fs$2f$promises$2c$__cjs$29$__["default"].readFile(assetsPath, "utf8")
+    ]);
+    const assets = JSON.parse(assetsRaw);
+    const products = ndjsonRaw.split(/\r?\n/).map((line)=>line.trim()).filter(Boolean).map((line)=>JSON.parse(line)).filter((doc)=>doc._type === "product").sort((a, b)=>{
+        const featuredA = Number(Boolean(a.isFeatured));
+        const featuredB = Number(Boolean(b.isFeatured));
+        if (featuredA !== featuredB) return featuredB - featuredA;
+        const createdA = a._createdAt ? Date.parse(a._createdAt) : 0;
+        const createdB = b._createdAt ? Date.parse(b._createdAt) : 0;
+        return createdB - createdA;
+    }).slice(0, 12).map((doc)=>{
+        const brandRef = doc.brand?._ref ?? null;
+        const image = doc.images?.[0];
+        const imageSrc = resolveImageSrc(image, assets);
+        return {
+            id: doc._id ?? doc.slug?.current ?? doc.name ?? crypto.randomUUID(),
+            name: doc.name ?? "Unnamed product",
+            slug: doc.slug?.current ?? "",
+            imageSrc,
+            imageAlt: doc.name ?? "Product image",
+            price: typeof doc.price === "number" ? doc.price : 0,
+            discount: typeof doc.discount === "number" ? doc.discount : null,
+            brand: brandRef,
+            description: doc.description ?? "",
+            rating: typeof doc.averageRating === "number" ? doc.averageRating : 0,
+            reviews: typeof doc.totalReviews === "number" ? doc.totalReviews : 0,
+            stock: typeof doc.stock === "number" ? doc.stock : null,
+            status: doc.status ?? null
+        };
+    });
+    return {
+        products
+    };
+}
+}),
+"[project]/app/page.tsx [app-rsc] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>HomePage
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/rsc/react-jsx-dev-runtime.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$fs$2f$promises__$5b$external$5d$__$28$node$3a$fs$2f$promises$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:fs/promises [external] (node:fs/promises, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/node:path [external] (node:path, cjs)");
+(()=>{
+    const e = new Error("Cannot find module '@/components/local-product-patcher'");
+    e.code = 'MODULE_NOT_FOUND';
+    throw e;
+})();
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$local$2d$catalog$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/local-catalog.ts [app-rsc] (ecmascript)");
+;
+;
+;
+;
+;
+async function readOriginalBody() {
+    const filePath = __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$path__$5b$external$5d$__$28$node$3a$path$2c$__cjs$29$__["default"].join(process.cwd(), "index.html");
+    const html = await __TURBOPACK__imported__module__$5b$externals$5d2f$node$3a$fs$2f$promises__$5b$external$5d$__$28$node$3a$fs$2f$promises$2c$__cjs$29$__["default"].readFile(filePath, "utf8");
+    const match = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    const body = match?.[1] ?? html;
+    return body.replace(/<link rel="preload" as="script" fetchpriority="low" href="\/_next\/static\/chunks\/([^"?]+)(?:\?[^"]*)?">/g, '<link rel="preload" as="script" fetchpriority="low" href="/js/$1">');
+}
+async function HomePage() {
+    const bodyHtml = await readOriginalBody();
+    const catalog = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$local$2d$catalog$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["loadLocalCatalog"])();
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Fragment"], {
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                dangerouslySetInnerHTML: {
+                    __html: bodyHtml
+                }
+            }, void 0, false, {
+                fileName: "[project]/app/page.tsx",
+                lineNumber: 23,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(LocalProductPatcher, {
+                products: catalog.products
+            }, void 0, false, {
+                fileName: "[project]/app/page.tsx",
+                lineNumber: 24,
+                columnNumber: 7
+            }, this)
+        ]
+    }, void 0, true);
+}
+}),
+"[project]/app/page.tsx [app-rsc] (ecmascript, Next.js Server Component)", ((__turbopack_context__) => {
+
+__turbopack_context__.n(__turbopack_context__.i("[project]/app/page.tsx [app-rsc] (ecmascript)"));
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__0m4m_92._.js.map
