@@ -9,7 +9,7 @@ const navItems = [
   { href: "/deal", label: "Hot Deal" },
   { href: "/collection", label: "Collection" },
   { href: "/compare", label: "Compare" },
-  { href: "/stores", label: "Local Stores" },
+  { href: "/store-list", label: "Local Stores" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
