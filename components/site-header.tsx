@@ -8,9 +8,7 @@ const navItems = [
   { href: "/shop", label: "Shop" },
   { href: "/deal", label: "Hot Deal" },
   { href: "/collection", label: "Collection" },
-  { href: "/compare", label: "Compare" },
   { href: "/store-list", label: "Local Stores" },
-  { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -60,20 +58,6 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">
-      <div className="bg-linear-to-r from-gofarm-green to-emerald-600 text-white text-center py-1 px-4">
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <span className="font-medium">Get the Full Production Code!</span>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-semibold hover:text-yellow-200 transition-colors"
-            href="https://buymeacoffee.com/reactbd/e/484104"
-          >
-            {"Buy Now ->"}
-          </a>
-        </div>
-      </div>
-
       <div className="border-b border-gofarm-light-gray">
         <div className="max-w-(--breakpoint-xl) mx-auto px-4">
           <div className="flex items-center justify-between py-3 lg:py-4 gap-4">

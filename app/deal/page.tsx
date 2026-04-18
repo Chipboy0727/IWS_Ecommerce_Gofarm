@@ -21,122 +21,350 @@ function salePriceFor(product: LocalProduct) {
     : product.price;
 }
 
-function DealCard({ product }: { product: LocalProduct }) {
-  const salePrice = salePriceFor(product);
-  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
-
+function Icon({
+  children,
+  className = "h-5 w-5",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <article className="group overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_10px_25px_rgba(15,23,42,0.06)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative aspect-[4/3] bg-white">
-        <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
-          <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-1 text-[11px] font-semibold text-white shadow">
-            {status}
-          </span>
-          {product.discount ? (
-            <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-1 text-[11px] font-semibold text-white shadow">
-              -{product.discount}%
-            </span>
-          ) : null}
-        </div>
-
-        <img
-          src={product.imageSrc}
-          alt={product.imageAlt}
-          className="h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-[1.03]"
-          loading="lazy"
-        />
-      </div>
-
-      <div className="px-4 pb-4">
-        <Link href={`/shop/${product.slug}`} className="block">
-          <h3 className="text-[16px] font-bold text-gofarm-black group-hover:text-gofarm-green transition-colors">
-            {product.name}
-          </h3>
-        </Link>
-
-        <div className="mt-1 flex items-center gap-1 text-[12px] text-gofarm-gray">
-          <span className="text-gofarm-orange">★</span>
-          <span className="font-semibold text-gofarm-black">{product.rating.toFixed(1)}</span>
-          <span>({product.reviews})</span>
-        </div>
-
-        <div className="mt-2 flex items-end gap-2 flex-wrap">
-          <span className="text-[20px] font-bold text-gofarm-green leading-none">{formatPrice(salePrice)}</span>
-          {product.discount ? (
-            <>
-              <span className="text-[16px] font-semibold text-gray-500 line-through leading-none">
-                {formatPrice(product.price)}
-              </span>
-              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium text-red-500">
-                -{product.discount}%
-              </span>
-            </>
-          ) : null}
-        </div>
-
-        <button className="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-[8px] border border-gofarm-light-green/35 bg-white px-4 py-2.5 text-sm font-semibold text-gofarm-black transition-all duration-200 hover:border-gofarm-green hover:bg-gofarm-light-orange/10">
-          <span>Add to Cart</span>
-        </button>
-      </div>
-    </article>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
   );
 }
 
-function FeatureBox({
+function FlameIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4" />
+    </Icon>
+  );
+}
+
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </Icon>
+  );
+}
+
+function ZapIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />
+    </Icon>
+  );
+}
+
+function HeartIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+    </Icon>
+  );
+}
+
+function ClockIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </Icon>
+  );
+}
+
+function TimerIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <line x1="10" x2="14" y1="2" y2="2" />
+      <line x1="12" x2="15" y1="14" y2="11" />
+      <circle cx="12" cy="14" r="8" />
+    </Icon>
+  );
+}
+
+function UsersIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <circle cx="9" cy="7" r="4" />
+    </Icon>
+  );
+}
+
+function BagIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M16 10a4 4 0 0 1-8 0" />
+      <path d="M3.103 6.034h17.794" />
+      <path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z" />
+    </Icon>
+  );
+}
+
+function TrendingDownIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M16 17h6v-6" />
+      <path d="m22 17-8.5-8.5-5 5L2 7" />
+    </Icon>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="m9 18 6-6-6-6" />
+    </Icon>
+  );
+}
+
+function MapPinIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+      <circle cx="12" cy="10" r="3" />
+    </Icon>
+  );
+}
+
+function PhoneIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+    </Icon>
+  );
+}
+
+function MailIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+    </Icon>
+  );
+}
+
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+    </Icon>
+  );
+}
+
+function CompareIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path d="M8 3 4 7l4 4" />
+      <path d="M4 7h16" />
+      <path d="m16 21 4-4-4-4" />
+      <path d="M20 17H4" />
+    </Icon>
+  );
+}
+
+function ProductCard({ product }: { product: LocalProduct }) {
+  const salePrice = salePriceFor(product);
+  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
+
+  return (
+    <div className="transform hover:scale-105 transition-transform duration-300">
+      <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
+        <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+          <Link href={`/shop/${product.slug}`} className="block h-full">
+            <img
+              src={product.imageSrc}
+              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+              alt={product.imageAlt}
+              loading="lazy"
+            />
+          </Link>
+
+          <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+            <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
+              {status}
+            </div>
+            {product.discount ? (
+              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
+                -{product.discount}%
+              </div>
+            ) : null}
+          </div>
+
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+            <button
+              type="button"
+              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+              title="Add to wishlist"
+            >
+              <HeartIcon className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+              title="Compare product"
+            >
+              <CompareIcon className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
+              title="Share product"
+            >
+              <ShareIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-3 space-y-2">
+          <Link href={`/shop/${product.slug}`}>
+            <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
+              {product.name}
+            </h2>
+          </Link>
+
+          <div className="flex items-center gap-1.5">
+            <div className="flex items-center">
+              {Array.from({ length: 5 }, (_, index) => (
+                <StarIcon key={index} className="w-3 h-3 text-gray-300" />
+              ))}
+            </div>
+            <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-5">
+            <div className="flex items-center gap-2">
+              <span className="text-gofarm-green text-base font-bold">{formatPrice(salePrice)}</span>
+              {product.discount ? (
+                <div className="flex items-center gap-1">
+                  <span className="line-through text-zinc-500 text-base font-bold">{formatPrice(product.price)}</span>
+                  <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
+                    -{product.discount}%
+                  </span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </article>
+    </div>
+  );
+}
+
+function StatBox({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
+      <div className="flex items-center gap-2 text-white/80 mb-1">
+        <BagIcon className="w-4 h-4" />
+        <span className="text-xs sm:text-sm">{label}</span>
+      </div>
+      <p className="text-xl sm:text-2xl font-bold">{value}</p>
+    </div>
+  );
+}
+
+function CountdownBox({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center bg-white rounded-lg p-2 sm:p-3 shadow-md border">
+      <span className="text-lg sm:text-2xl md:text-3xl font-bold text-gofarm-green">{value}</span>
+      <span className="text-xs sm:text-sm text-gray-600 font-medium">{label}</span>
+    </div>
+  );
+}
+
+function FeatureCard({
+  title,
+  description,
+  icon,
+  tone,
+}: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  tone: string;
+}) {
+  return (
+    <div className={`rounded-xl text-card-foreground shadow-sm ${tone} border-2 hover:shadow-lg transition-all duration-300`}>
+      <div className="p-4 sm:p-6 text-center">
+        <div className="mx-auto mb-3 flex h-8 w-8 items-center justify-center sm:h-10 sm:w-10">
+          {icon}
+        </div>
+        <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">{title}</h3>
+        <p className="text-xs sm:text-sm text-gray-600">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function FooterContactCard({
+  href,
   icon,
   title,
   description,
+  target = "_self",
 }: {
-  icon: string;
+  href: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
+  target?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-pink-100 bg-white px-5 py-5 shadow-sm">
-      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-pink-50 text-xl">
-        {icon}
+    <a
+      href={href}
+      target={target}
+      rel={target === "_blank" ? "noopener noreferrer" : undefined}
+      className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer"
+    >
+      <div className="text-gray-600 group-hover:text-primary transition-colors">{icon}</div>
+      <div>
+        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{title}</h3>
+        <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">{description}</p>
       </div>
-      <div className="text-center">
-        <h3 className="text-sm font-bold text-gofarm-black">{title}</h3>
-        <p className="mt-1 text-xs leading-5 text-gofarm-gray">{description}</p>
-      </div>
-    </div>
+    </a>
   );
 }
 
-function FooterColumn({
-  title,
-  items,
-}: {
-  title: string;
-  items: string[];
-}) {
+function FooterColumn({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
-      <h4 className="text-sm font-bold text-gofarm-black">{title}</h4>
-      <ul className="mt-3 space-y-2 text-sm text-gofarm-gray">
+      <h3 className="font-semibold text-gofarm-black mb-4">{title}</h3>
+      <ul className="space-y-3">
         {items.map((item) => (
-          <li key={item}>{item}</li>
+          <li key={item}>
+            <a className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize" href="#">
+              {item}
+            </a>
+          </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl bg-white/12 px-4 py-3">
-      <div className="text-2xl font-black">{value}</div>
-      <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80">{label}</div>
-    </div>
-  );
-}
-
-function CountBox({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-lg bg-white px-2 py-2 shadow-sm">
-      <div className="text-lg font-extrabold text-gofarm-green">{value}</div>
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-gofarm-gray">{label}</div>
     </div>
   );
 }
@@ -149,129 +377,253 @@ export default async function DealPage() {
     .map((slug) => products.find((product) => product.slug === slug))
     .filter((product): product is LocalProduct => Boolean(product));
 
+  const quickLinks = ["About Us", "Contact Us", "Terms & Conditions", "Privacy Policy", "Track Order", "Help"];
+  const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Fruits", "Fish", "Vegetables"];
+
   return (
-    <div className="min-h-screen bg-[#f8efe6]">
+    <div className="min-h-screen bg-linear-to-b from-red-50 to-orange-50">
       <SiteHeader />
 
-      <main className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 lg:py-10">
-        <section
-          className="mx-auto max-w-4xl rounded-2xl px-6 py-6 text-white shadow-[0_18px_45px_rgba(255,105,0,0.28)] lg:px-8 lg:py-8"
-          style={{ background: "linear-gradient(90deg, #ff4d21 0%, #ff6a00 100%)" }}
-        >
-          <div className="flex flex-wrap items-center gap-3 text-white/90">
-            <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]">
-              Hot Deal
-            </span>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em]">Up to 10% off</span>
+      <main>
+        <div className="max-w-(--breakpoint-xl) mx-auto px-4 pt-6">
+          <div className="my-3">
+            <nav aria-label="breadcrumb">
+              <ol className="flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5">
+                <li className="inline-flex items-center gap-1.5">
+                  <Link className="flex items-center hover:text-gofarm-light-green transition-colors" href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+                      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    <span className="ml-1">Home</span>
+                  </Link>
+                </li>
+                <li aria-hidden="true">
+                  <ChevronRightIcon className="w-3.5 h-3.5" />
+                </li>
+                <li className="inline-flex items-center gap-1.5">
+                  <span aria-current="page" className="text-gofarm-green font-medium truncate max-w-xs">
+                    Deal
+                  </span>
+                </li>
+              </ol>
+            </nav>
           </div>
+        </div>
 
-          <div className="mt-4 grid gap-6 lg:grid-cols-[1.35fr_0.85fr] lg:items-center">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight lg:text-5xl">Weekly Hot Deals</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/90 lg:text-base">
-                Don&apos;t miss our incredible limited-time offers. Save big on our favorite products with discounts up to 10% off.
-                Limited stock available.
-              </p>
+        <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
+          <section className="rounded-xl bg-linear-to-r from-red-500 to-orange-500 text-white border-0 shadow-xl overflow-hidden">
+            <div className="p-6 sm:p-8 lg:p-12">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+                <div className="flex-1 space-y-4 sm:space-y-6">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-white/20 rounded-full px-3 sm:px-4 py-1 sm:py-2">
+                      <FlameIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300" />
+                      <span className="text-xs sm:text-sm font-semibold">HOT DEALS</span>
+                    </div>
+                    <div className="inline-flex items-center rounded-md bg-red-700/80 px-2.5 py-0.5 text-xs sm:text-sm font-semibold shadow-sm">
+                      Up to 10% OFF
+                    </div>
+                  </div>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <MiniStat label="Products" value="5" />
-                <MiniStat label="Discount" value="10%" />
-                <MiniStat label="Happy Customers" value="2.5k+" />
-              </div>
-            </div>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-4">
+                      Weekly Hot Deals
+                    </h1>
+                    <p className="text-sm sm:text-base md:text-lg text-white/90 max-w-2xl">
+                      Don&apos;t miss out on these incredible limited-time offers! Save big on your favorite products with discounts up to 10% off. Limited stock available.
+                    </p>
+                  </div>
 
-            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between gap-3 rounded-xl bg-white/15 px-4 py-3">
-                <div className="text-sm font-semibold">Deal ends in</div>
-                <div className="grid grid-cols-4 gap-2 text-center text-gofarm-black">
-                  <CountBox value="02" label="Days" />
-                  <CountBox value="14" label="Hours" />
-                  <CountBox value="35" label="Mins" />
-                  <CountBox value="38" label="Secs" />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    <StatBox label="Products" value="5" />
+                    <StatBox label="Avg. Discount" value="10%" />
+                    <StatBox label="Happy Customers" value="2.5K+" />
+                  </div>
+                </div>
+
+                <div className="lg:shrink-0">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="flex items-center gap-1 sm:gap-2 text-red-600">
+                        <TimerIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-sm sm:text-base font-semibold">Deal Ends In:</span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-1 sm:gap-2">
+                        <CountdownBox value="02" label="Days" />
+                        <CountdownBox value="14" label="Hours" />
+                        <CountdownBox value="35" label="Mins" />
+                        <CountdownBox value="42" label="Secs" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+          </section>
+        </div>
+
+        <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-6 sm:py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <FeatureCard
+              tone="bg-yellow-50 border-yellow-200"
+              title="Lightning Deals"
+              description="Flash sales with limited time offers"
+              icon={<ZapIcon className="w-8 h-8 text-yellow-600" />}
+            />
+            <FeatureCard
+              tone="bg-purple-50 border-purple-200"
+              title="Premium Quality"
+              description="Top-rated products with best reviews"
+              icon={<StarIcon className="w-8 h-8 text-purple-600" />}
+            />
+            <FeatureCard
+              tone="bg-pink-50 border-pink-200"
+              title="Customer Favorites"
+              description="Most loved items by our customers"
+              icon={<HeartIcon className="w-8 h-8 text-pink-600" />}
+            />
+            <FeatureCard
+              tone="bg-red-50 border-red-200"
+              title="Limited Time"
+              description="Hurry! These deals won't last long"
+              icon={<ClockIcon className="w-8 h-8 text-red-600" />}
+            />
           </div>
-        </section>
+        </div>
 
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <FeatureBox icon="⚡" title="Lightning Deals" description="Flash sales with limited time offers" />
-          <FeatureBox icon="✨" title="Premium Quality" description="Hand-picked products with best values" />
-          <FeatureBox icon="♡" title="Customer Favorites" description="Most loved items by our customers" />
-          <FeatureBox icon="⏱" title="Limited Time" description="Hurry! These deals won't last long" />
-        </section>
-
-        <section className="mt-10 text-center">
-          <div className="inline-flex items-center gap-3 text-[#ff4d21]">
-            <span className="text-2xl">🔥</span>
-            <h2 className="text-2xl font-extrabold text-gofarm-black lg:text-3xl">Hot Deals Collection</h2>
-            <span className="text-2xl">🔥</span>
+        <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
+              <FlameIcon className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-0">Hot Deals Collection</h2>
+              <FlameIcon className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+            </div>
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+              Discover amazing deals on premium products. Limited quantities available at these special prices.
+            </p>
           </div>
-          <p className="mt-2 text-sm text-gofarm-gray lg:text-base">
-            Discover amazing deals on premium products. Limited quantities available at these special prices.
-          </p>
-        </section>
 
-        <section className="mt-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 gap-3">
             {dealProducts.map((product) => (
-              <DealCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
-        </section>
+        </div>
 
-        <section className="mt-8">
-          <div className="rounded-2xl bg-[#25a843] px-6 py-8 text-center text-white shadow-[0_16px_35px_rgba(37,168,67,0.28)]">
-            <h3 className="text-2xl font-extrabold">Don&apos;t Miss Out on These Amazing Deals!</h3>
-            <p className="mt-2 text-sm text-white/90">
+        <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
+          <div
+            className="rounded-2xl px-6 py-8 text-center text-white shadow-[0_16px_35px_rgba(37,168,67,0.28)] sm:px-10 sm:py-12"
+            style={{ background: "linear-gradient(90deg, #2eaf4e 0%, #2ea447 50%, #58a63f 100%)" }}
+          >
+            <h3 className="text-2xl font-extrabold sm:text-3xl">Don&apos;t Miss Out on These Amazing Deals!</h3>
+            <p className="mx-auto mt-3 max-w-3xl text-sm text-white/90 sm:text-base">
               Subscribe to our newsletter to get notified about fresh sales, exclusive deals, and new arrivals.
             </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-4">
               <Link
                 href="/shop"
-                className="inline-flex items-center justify-center rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-gofarm-black"
+                className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gofarm-black shadow-sm transition-transform hover:scale-[1.02]"
               >
                 Explore All Products
               </Link>
-              <button className="inline-flex items-center justify-center rounded-md border border-white/60 px-5 py-2.5 text-sm font-semibold text-white">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg border border-white/60 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              >
                 Subscribe for Deals
               </button>
             </div>
           </div>
-        </section>
+        </div>
 
-        <footer className="mt-8 rounded-t-3xl bg-white px-4 py-8 shadow-[0_-1px_10px_rgba(15,23,42,0.04)] lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_1.2fr_1.2fr_1.1fr]">
-            <div>
-              <Link href="/" className="inline-flex items-center">
-                <img src="/images/logo.svg" alt="gofarm" className="h-8 w-auto" />
-              </Link>
-              <p className="mt-4 text-sm leading-6 text-gofarm-gray">
-                Your trusted online shopping destination for quality products, fast delivery, and dependable service.
-              </p>
+        <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b">
+              <FooterContactCard
+                href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
+                target="_blank"
+                icon={<MapPinIcon className="h-6 w-6" />}
+                title="Visit Us"
+                description="123 Shopping Street, Commerce District, New York, NY 10001, USA"
+              />
+              <FooterContactCard
+                href="tel:15551234567"
+                icon={<PhoneIcon className="h-6 w-6" />}
+                title="Call Us"
+                description="+1 (555) 123-4567"
+              />
+              <div className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer">
+                <div className="text-gray-600 group-hover:text-primary transition-colors">
+                  <ClockIcon className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Working Hours</h3>
+                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">Monday - Friday: 9AM - 6PM</p>
+                </div>
+              </div>
+              <FooterContactCard
+                href="mailto:support@gofarm.com"
+                icon={<MailIcon className="h-6 w-6" />}
+                title="Email Us"
+                description="support@gofarm.com"
+              />
             </div>
-            <FooterColumn title="Quick Links" items={["About Us", "Contact Us", "Terms & Conditions", "Privacy Policy", "Track Order", "Help"]} />
-            <FooterColumn title="Categories" items={["Ice and Cold", "Dry Food", "Fast Food", "Fruits", "Fish", "Vegetables"]} />
-            <div>
-              <h4 className="text-sm font-bold text-gofarm-black">Newsletter</h4>
-              <p className="mt-3 text-sm leading-6 text-gofarm-gray">
-                Subscribe to stay updated with our latest offers and product news.
-              </p>
-              <div className="mt-4 flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none"
-                />
-                <button className="rounded-xl bg-gofarm-green px-4 py-3 text-sm font-semibold text-white hover:bg-gofarm-light-green">
-                  Subscribe
-                </button>
+
+            <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="space-y-4">
+                <div className="mb-2">
+                  <Link href="/">
+                    <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
+                  </Link>
+                </div>
+                <p className="text-gofarm-gray text-sm">
+                  Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.
+                </p>
+                <div className="flex items-center gap-3.5 text-gofarm-black/60">
+                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
+                    <span className="sr-only">YouTube</span>
+                  </a>
+                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
+                    <span className="sr-only">Social</span>
+                  </a>
+                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
+                    <span className="sr-only">Social</span>
+                  </a>
+                </div>
+              </div>
+
+              <FooterColumn title="Quick Links" items={quickLinks} />
+              <FooterColumn title="Categories" items={categories} />
+
+              <div>
+                <h3 className="font-semibold text-gofarm-black mb-4">Newsletter</h3>
+                <p className="text-gofarm-gray text-sm mb-4">Subscribe to our newsletter to receive updates and exclusive offers.</p>
+                <form className="space-y-3">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-2 border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green disabled:bg-gofarm-light-gray/50 disabled:cursor-not-allowed transition-all text-gofarm-black placeholder:text-gofarm-gray"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-gofarm-green text-gofarm-white px-4 py-2 rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+                  >
+                    Subscribe
+                  </button>
+                </form>
               </div>
             </div>
-          </div>
 
-          <div className="mt-8 border-t border-gray-100 pt-5 text-center text-sm text-gofarm-gray">
-            © 2026 gofarm. All rights reserved.
+            <div className="py-6 border-t border-gofarm-light-gray text-center text-sm text-gofarm-gray">
+              <p>
+                © 2026{" "}
+                <span className="text-gofarm-black font-black tracking-wider uppercase hover:text-gofarm-green hoverEffect group font-sans">
+                  Gofar<span className="text-gofarm-green group-hover:text-gofarm-black hoverEffect">m</span>
+                </span>
+                . All rights reserved.
+              </p>
+            </div>
           </div>
         </footer>
       </main>
