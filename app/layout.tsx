@@ -12,12 +12,15 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="stylesheet" href="/css/0k64glnxo6zf5.css" />
         <link rel="stylesheet" href="/css/172o935743au2.css" />
       </head>
-      <body className="jost_490f54e-module__zngVWW__variable antialiased">
+      <body
+        className="jost_490f54e-module__zngVWW__variable antialiased"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
