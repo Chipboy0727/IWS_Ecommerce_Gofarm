@@ -68,10 +68,7 @@ type BackendDb = {
 
 const DEFAULT_SEED_DIR = path.resolve(
   process.cwd(),
-  "..",
-  "gofarm-yt-main (1)",
-  "gofarm-yt-main",
-  "server",
+  "data",
   "seed",
   "production-export-2025-11-30t08-28-44-763z"
 );
