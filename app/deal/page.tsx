@@ -3,6 +3,7 @@ import SiteHeader from "@/components/site-header";
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
 import RealCountdown from "./RealCountDown";
 import SubscribeButton from "./SubscribeButton";
+import ProductCard from "./ProductCard";
 
 export const metadata = {
   title: "Hot Deal | gofarm",
@@ -162,101 +163,6 @@ function CompareIcon({ className }: { className?: string }) {
       <path d="m16 21 4-4-4-4" />
       <path d="M20 17H4" />
     </Icon>
-  );
-}
-
-function ProductCard({ product }: { product: LocalProduct }) {
-  const salePrice = salePriceFor(product);
-  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
-
-  return (
-    <div className="transform hover:scale-105 transition-transform duration-300">
-      <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
-        <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
-          <Link href={`/shop/${product.slug}`} className="block h-full">
-            <img
-              src={product.imageSrc}
-              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-              alt={product.imageAlt}
-              loading="lazy"
-            />
-          </Link>
-
-          <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-            <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
-              {status}
-            </div>
-            {product.discount ? (
-              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
-                -{product.discount}%
-              </div>
-            ) : null}
-          </div>
-
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-            <button
-              type="button"
-              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-              title="Add to wishlist"
-            >
-              <HeartIcon className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-              title="Compare product"
-            >
-              <CompareIcon className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
-              title="Share product"
-            >
-              <ShareIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="p-3 space-y-2">
-          <Link href={`/shop/${product.slug}`}>
-            <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
-              {product.name}
-            </h2>
-          </Link>
-
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center">
-              {Array.from({ length: 5 }, (_, index) => (
-                <StarIcon key={index} className="w-3 h-3 text-gray-300" />
-              ))}
-            </div>
-            <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
-          </div>
-
-          <div className="flex items-center justify-between gap-5">
-            <div className="flex items-center gap-2">
-              <span className="text-gofarm-green text-base font-bold">{formatPrice(salePrice)}</span>
-              {product.discount ? (
-                <div className="flex items-center gap-1">
-                  <span className="line-through text-zinc-500 text-base font-bold">{formatPrice(product.price)}</span>
-                  <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
-                    -{product.discount}%
-                  </span>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors"
-          >
-            Add to Cart
-          </button>
-        </div>
-      </article>
-    </div>
   );
 }
 

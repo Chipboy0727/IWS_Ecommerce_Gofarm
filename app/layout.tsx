@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { CartProvider } from "@/app/context/CartContext";
 
 export const metadata: Metadata = {
   title: "gofarm - Your Trusted Online Shopping Destination",
@@ -22,7 +23,9 @@ export default function RootLayout({
         className="jost_490f54e-module__zngVWW__variable antialiased"
         suppressHydrationWarning
       >
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

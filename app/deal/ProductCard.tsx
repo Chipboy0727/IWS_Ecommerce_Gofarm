@@ -1,0 +1,232 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { useCart } from "@/app/context/CartContext";
+import type { LocalProduct } from "@/lib/local-catalog";
+
+function formatPrice(price: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(price);
+}
+
+function salePriceFor(product: LocalProduct) {
+  return product.discount && product.discount > 0
+    ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
+    : product.price;
+}
+
+function StarIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </svg>
+  );
+}
+
+function HeartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+    </svg>
+  );
+}
+
+function CompareIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M8 3 4 7l4 4" />
+      <path d="M4 7h16" />
+      <path d="m16 21 4-4-4-4" />
+      <path d="M20 17H4" />
+    </svg>
+  );
+}
+
+function ShareIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+    </svg>
+  );
+}
+
+export default function ProductCard({ product }: { product: LocalProduct }) {
+  const salePrice = salePriceFor(product);
+  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsAdding(true);
+    
+    try {
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: salePrice,
+        imageSrc: product.imageSrc,
+        quantity: 1,
+      });
+      
+      // Show toast notification
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+      
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="transform hover:scale-105 transition-transform duration-300">
+        <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
+          <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+            <Link href={`/shop/${product.slug}`} className="block h-full">
+              <img
+                src={product.imageSrc}
+                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                alt={product.imageAlt}
+                loading="lazy"
+              />
+            </Link>
+
+            <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
+                {status}
+              </div>
+              {product.discount ? (
+                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
+                  -{product.discount}%
+                </div>
+              ) : null}
+            </div>
+
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+              <button
+                type="button"
+                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+                title="Add to wishlist"
+              >
+                <HeartIcon className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+                title="Compare product"
+              >
+                <CompareIcon className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
+                title="Share product"
+              >
+                <ShareIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-3 space-y-2">
+            <Link href={`/shop/${product.slug}`}>
+              <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
+                {product.name}
+              </h2>
+            </Link>
+
+            <div className="flex items-center gap-1.5">
+              <div className="flex items-center">
+                {Array.from({ length: 5 }, (_, index) => (
+                  <StarIcon key={index} className="w-3 h-3 text-gray-300" />
+                ))}
+              </div>
+              <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
+            </div>
+
+            <div className="flex items-center justify-between gap-5">
+              <div className="flex items-center gap-2">
+                <span className="text-gofarm-green text-base font-bold">{formatPrice(salePrice)}</span>
+                {product.discount ? (
+                  <div className="flex items-center gap-1">
+                    <span className="line-through text-zinc-500 text-base font-bold">{formatPrice(product.price)}</span>
+                    <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
+                      -{product.discount}%
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding}
+              className="w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isAdding ? "Adding..." : "Add to Cart"}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
+          <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Added to cart!</span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

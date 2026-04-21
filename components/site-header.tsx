@@ -325,9 +325,32 @@ export default function SiteHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">
-        {/* Top promo bar */}
-        <div className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green text-white text-center py-1.5 text-sm">
-          🎉 Free shipping on orders over $50
+        {/* Top promo bar - nền xanh lá, chữ trắng to, chạy ngang nối đuôi */}
+        <div className="bg-gofarm-green text-white py-2.5 text-base overflow-hidden whitespace-nowrap font-semibold">
+          <div className="inline-block animate-marquee">
+            {/* Nội dung lần 1 */}
+            <span className="mx-5">🎉 Free shipping on orders over $50</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">🎁 Get 10% off your first order</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">🚚 Free returns within 30 days</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">💳 Secure payment guaranteed</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">⭐ 24/7 Customer support</span>
+            <span className="mx-2">✦</span>
+            {/* Nội dung lần 2 (nhân đôi để nối đuôi) */}
+            <span className="mx-5">🎉 Free shipping on orders over $50</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">🎁 Get 10% off your first order</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">🚚 Free returns within 30 days</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">💳 Secure payment guaranteed</span>
+            <span className="mx-2">✦</span>
+            <span className="mx-5">⭐ 24/7 Customer support</span>
+            <span className="mx-2">✦</span>
+          </div>
         </div>
 
         {/* Main header */}

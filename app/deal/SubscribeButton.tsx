@@ -31,10 +31,8 @@ export default function SubscribeButton() {
     if (!email) return;
     
     setLoading(true);
-    // Giả lập gửi email (sau này thay bằng API thật)
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Lưu email vào localStorage
     const existingEmails = JSON.parse(localStorage.getItem("subscribedEmails") || "[]");
     existingEmails.push(email);
     localStorage.setItem("subscribedEmails", JSON.stringify(existingEmails));
@@ -61,7 +59,7 @@ export default function SubscribeButton() {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-2xl relative animate-in fade-in zoom-in duration-300">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-2xl relative">
             {!subscribed ? (
               <>
                 <div className="text-center mb-6">
@@ -110,7 +108,7 @@ export default function SubscribeButton() {
             
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
