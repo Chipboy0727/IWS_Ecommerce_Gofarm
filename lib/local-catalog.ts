@@ -18,6 +18,8 @@ export type LocalProduct = {
   reviews: number;
   stock: number | null;
   status: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type LocalCategory = {
@@ -26,6 +28,8 @@ export type LocalCategory = {
   slug: string;
   imageSrc: string | null;
   count: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type SeedDocument = {
@@ -57,6 +61,11 @@ type SeedAssets = Record<
   }
 >;
 
+type BackendDb = {
+  products?: LocalProduct[];
+  categories?: LocalCategory[];
+};
+
 const DEFAULT_SEED_DIR = path.resolve(
   process.cwd(),
   "..",
@@ -66,6 +75,7 @@ const DEFAULT_SEED_DIR = path.resolve(
   "seed",
   "production-export-2025-11-30t08-28-44-763z"
 );
+const BACKEND_DB_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
 
 function resolveSeedDir() {
   return process.env.GOFARM_SEED_DIR
@@ -105,6 +115,21 @@ export async function loadLocalCatalog(): Promise<{
   products: LocalProduct[];
   categories: LocalCategory[];
 }> {
+  const backendRaw = await fs.readFile(BACKEND_DB_PATH, "utf8").catch(() => "");
+  if (backendRaw.trim()) {
+    try {
+      const backendDb = JSON.parse(backendRaw) as BackendDb;
+      if (Array.isArray(backendDb.products) && Array.isArray(backendDb.categories)) {
+        return {
+          products: backendDb.products,
+          categories: backendDb.categories,
+        };
+      }
+    } catch {
+      // fall through to seed export
+    }
+  }
+
   const seedDir = resolveSeedDir();
   const ndjsonPath = path.join(seedDir, "data.ndjson");
   const assetsPath = path.join(seedDir, "assets.json");
