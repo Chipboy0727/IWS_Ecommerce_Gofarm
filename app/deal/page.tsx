@@ -1,6 +1,8 @@
 import Link from "next/link";
 import SiteHeader from "@/components/site-header";
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
+import RealCountdown from "./RealCountDown";
+import SubscribeButton from "./SubscribeButton";
 
 export const metadata = {
   title: "Hot Deal | gofarm",
@@ -96,32 +98,12 @@ function TimerIcon({ className }: { className?: string }) {
   );
 }
 
-function UsersIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <path d="M16 3.128a4 4 0 0 1 0 7.744" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <circle cx="9" cy="7" r="4" />
-    </Icon>
-  );
-}
-
 function BagIcon({ className }: { className?: string }) {
   return (
     <Icon className={className}>
       <path d="M16 10a4 4 0 0 1-8 0" />
       <path d="M3.103 6.034h17.794" />
       <path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z" />
-    </Icon>
-  );
-}
-
-function TrendingDownIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M16 17h6v-6" />
-      <path d="m22 17-8.5-8.5-5 5L2 7" />
     </Icon>
   );
 }
@@ -290,15 +272,6 @@ function StatBox({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CountdownBox({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex flex-col items-center bg-white rounded-lg p-2 sm:p-3 shadow-md border">
-      <span className="text-lg sm:text-2xl md:text-3xl font-bold text-gofarm-green">{value}</span>
-      <span className="text-xs sm:text-sm text-gray-600 font-medium">{label}</span>
-    </div>
-  );
-}
-
 function FeatureCard({
   title,
   description,
@@ -449,12 +422,7 @@ export default async function DealPage() {
                         <TimerIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="text-sm sm:text-base font-semibold">Deal Ends In:</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-1 sm:gap-2">
-                        <CountdownBox value="02" label="Days" />
-                        <CountdownBox value="14" label="Hours" />
-                        <CountdownBox value="35" label="Mins" />
-                        <CountdownBox value="42" label="Secs" />
-                      </div>
+                      <RealCountdown />
                     </div>
                   </div>
                 </div>
@@ -504,7 +472,7 @@ export default async function DealPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {dealProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -513,26 +481,21 @@ export default async function DealPage() {
 
         <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
           <div
-            className="rounded-2xl px-6 py-8 text-center text-white shadow-[0_16px_35px_rgba(37,168,67,0.28)] sm:px-10 sm:py-12"
+            className="rounded-2xl px-6 py-8 text-center shadow-[0_16px_35px_rgba(37,168,67,0.28)] sm:px-10 sm:py-12"
             style={{ background: "linear-gradient(90deg, #2eaf4e 0%, #2ea447 50%, #58a63f 100%)" }}
           >
-            <h3 className="text-2xl font-extrabold sm:text-3xl">Don&apos;t Miss Out on These Amazing Deals!</h3>
+            <h3 className="text-2xl font-extrabold sm:text-3xl text-white">Don&apos;t Miss Out on These Amazing Deals!</h3>
             <p className="mx-auto mt-3 max-w-3xl text-sm text-white/90 sm:text-base">
               Subscribe to our newsletter to get notified about fresh sales, exclusive deals, and new arrivals.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               <Link
                 href="/shop"
-                className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gofarm-black shadow-sm transition-transform hover:scale-[1.02]"
+                className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black shadow-sm transition-transform hover:scale-[1.02]"
               >
                 Explore All Products
               </Link>
-              <button
-                type="button"
-                className="inline-flex items-center justify-center rounded-lg border border-white/60 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                Subscribe for Deals
-              </button>
+              <SubscribeButton />
             </div>
           </div>
         </div>
