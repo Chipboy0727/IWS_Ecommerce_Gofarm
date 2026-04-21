@@ -36,6 +36,18 @@ export function HomeHero({ stats }: { stats: HomeStat[] }) {
             >
               View deals
             </Link>
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center justify-center rounded-full border border-gofarm-green bg-gofarm-green px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gofarm-light-green"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-gofarm-green border border-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white"
+            >
+              Sign Up
+            </Link>
           </div>
 
           <div className="grid gap-3 pt-2 sm:grid-cols-2 xl:grid-cols-4">
