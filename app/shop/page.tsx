@@ -1,6 +1,7 @@
 // ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 import { loadLocalCatalog } from "@/lib/local-catalog";
 import ShopBrowser from "./shop-browser";
+import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "Shop | gofarm",
@@ -16,6 +17,7 @@ export default async function ShopPage() {
       <main>
         <ShopBrowser products={products} categories={categories} />
       </main>
+      <SiteFooter />
     </div>
   );
 }

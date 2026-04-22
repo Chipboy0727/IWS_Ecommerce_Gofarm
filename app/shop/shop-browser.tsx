@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
+import { ProductModal } from "@/components/product-modal";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -79,11 +80,12 @@ function StarIcon({ className = "", filled = false }: { className?: string; fill
   );
 }
 
-function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: { 
+function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQuickView }: { 
   product: LocalProduct; 
   onAddToCart: (product: LocalProduct) => void;
   onToggleWishlist: (product: LocalProduct) => void;
   isWishlisted: boolean;
+  onQuickView: (product: LocalProduct) => void;
 }) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
@@ -91,9 +93,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsAdding(true);
-    onAddToCart(product);
-    setTimeout(() => setIsAdding(false), 500);
+    onQuickView(product);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -104,7 +104,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
   return (
     <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative">
-        <Link href={`/shop/${product.slug}`} className="block">
+        <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-white">
             <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
               <span className="inline-flex items-center rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">
@@ -124,7 +124,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
               loading="lazy"
             />
           </div>
-        </Link>
+        </button>
 
         {/* Action Buttons - Wishlist, Compare, Share */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
@@ -154,11 +154,11 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
       </div>
 
       <div className="px-4 pb-4 pt-2">
-        <Link href={`/shop/${product.slug}`} className="block">
+        <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
           <h3 className="text-[17px] font-bold text-gofarm-black leading-tight hover:text-gofarm-green transition-colors">
             {product.name}
           </h3>
-        </Link>
+        </button>
 
         <div className="mt-1 flex items-center gap-1 text-[12px] leading-none">
           {[...Array(5)].map((_, i) => (
@@ -184,10 +184,9 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
         {/* Button Add to Cart - Màu xanh giống collection */}
         <button
           onClick={handleAddToCart}
-          disabled={isAdding}
-          className="mt-4 w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors"
         >
-          {isAdding ? "Adding..." : "Add to Cart"}
+          Add to Cart
         </button>
       </div>
     </article>
@@ -238,6 +237,13 @@ export default function ShopBrowser({
   const [activeBrand, setActiveBrand] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortMode>("featured");
   const [wishlistStatus, setWishlistStatus] = useState<Record<string, boolean>>({});
+  const [selectedProduct, setSelectedProduct] = useState<LocalProduct | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 24;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, activeBrand, sortBy, products]);
 
   // Load wishlist status
   useEffect(() => {
@@ -276,6 +282,12 @@ export default function ShopBrowser({
           return 0;
       }
     });
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginatedProducts = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleAddToCart = (product: LocalProduct) => {
     const salePrice = salePriceFor(product);
@@ -397,23 +409,113 @@ export default function ShopBrowser({
                 </select>
               </label>
 
-              <div className="text-sm text-gofarm-gray">Showing {filtered.length} of {products.length}</div>
+              <div className="text-sm text-gofarm-gray">Showing {Math.min(filtered.length, currentPage * itemsPerPage)} of {filtered.length}</div>
             </div>
           </div>
 
           <div className="px-4 py-5 sm:px-6">
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                {filtered.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={handleAddToCart}
-                    onToggleWishlist={handleToggleWishlist}
-                    isWishlisted={wishlistStatus[product.id] || false}
-                  />
-                ))}
-              </div>
+            {paginatedProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                  {paginatedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onToggleWishlist={handleToggleWishlist}
+                      isWishlisted={wishlistStatus[product.id] || false}
+                      onQuickView={setSelectedProduct}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex items-center justify-center gap-3 text-lg text-gray-500">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="flex h-10 w-10 items-center justify-center hover:text-gofarm-green hover:bg-gofarm-green/5 rounded-xl disabled:opacity-30 disabled:hover:text-gray-500 disabled:hover:bg-transparent transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+
+                    {(() => {
+                      const maxVisible = 5;
+                      let startPage = Math.max(1, currentPage - 2);
+                      let endPage = Math.min(totalPages, currentPage + 2);
+
+                      if (startPage === 1) {
+                        endPage = Math.min(totalPages, startPage + maxVisible - 1);
+                      } else if (endPage === totalPages) {
+                        startPage = Math.max(1, endPage - maxVisible + 1);
+                      }
+
+                      const pages = [];
+                      for (let i = startPage; i <= endPage; i++) {
+                        pages.push(i);
+                      }
+
+                      return (
+                        <>
+                          {startPage > 1 && (
+                            <>
+                              <button
+                                onClick={() => setCurrentPage(1)}
+                                className={`flex h-10 min-w-10 items-center justify-center rounded-xl px-2 transition-colors ${
+                                  currentPage === 1 ? "bg-gofarm-green/10 text-gofarm-green font-bold" : "font-medium hover:text-gofarm-green hover:bg-gofarm-green/5"
+                                }`}
+                              >
+                                1
+                              </button>
+                              {startPage > 2 && <span className="px-1 tracking-widest text-gray-400">...</span>}
+                            </>
+                          )}
+
+                          {pages.map(number => {
+                            if (number === 1 && startPage > 1) return null;
+                            if (number === totalPages && endPage < totalPages) return null;
+
+                            return (
+                              <button
+                                key={number}
+                                onClick={() => setCurrentPage(number)}
+                                className={`flex h-10 min-w-10 items-center justify-center rounded-xl px-2 transition-colors ${
+                                  currentPage === number ? "bg-gofarm-green/10 text-gofarm-green font-bold" : "font-medium hover:text-gofarm-green hover:bg-gofarm-green/5"
+                                }`}
+                              >
+                                {number}
+                              </button>
+                            );
+                          })}
+
+                          {endPage < totalPages && (
+                            <>
+                              {endPage < totalPages - 1 && <span className="px-1 tracking-widest text-gray-400">...</span>}
+                              <button
+                                onClick={() => setCurrentPage(totalPages)}
+                                className={`flex h-10 min-w-10 items-center justify-center rounded-xl px-2 transition-colors ${
+                                  currentPage === totalPages ? "bg-gofarm-green/10 text-gofarm-green font-bold" : "font-medium hover:text-gofarm-green hover:bg-gofarm-green/5"
+                                }`}
+                              >
+                                {totalPages}
+                              </button>
+                            </>
+                          )}
+                        </>
+                      );
+                    })()}
+
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                      className="flex h-10 w-10 items-center justify-center hover:text-gofarm-green hover:bg-gofarm-green/5 rounded-xl disabled:opacity-30 disabled:hover:text-gray-500 disabled:hover:bg-transparent transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="rounded-3xl border border-dashed border-gofarm-light-green/30 bg-white px-6 py-20 text-center">
                 <h3 className="text-2xl font-bold text-gofarm-black">No products match your filters</h3>
@@ -423,6 +525,12 @@ export default function ShopBrowser({
           </div>
         </section>
       </section>
+
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 }
