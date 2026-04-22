@@ -16,7 +16,7 @@ async function readOriginalBody() {
 
   const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = withoutPromoBanner.match(mainContentRegex);
-  const mainContentStart = mainContentMatch ? mainContentMatch.index : -1;
+  const mainContentStart = mainContentMatch?.index ?? -1;
   const headerOnly =
     mainContentStart >= 0 ? withoutPromoBanner.slice(0, mainContentStart) : withoutPromoBanner;
   const restContent =
@@ -84,7 +84,7 @@ export default async function HomePage() {
     productCount: fruitsProducts.length,
   });
   const juicesMarkup = sectionCarouselHtml({
-    title: "Jucies",
+    title: "Juices",
     href: "/collection",
     products: juicesProducts,
     productCount: juicesProducts.length,
@@ -100,7 +100,7 @@ export default async function HomePage() {
 
   const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = transformedBody.match(mainContentRegex);
-  const featuredSectionStart = mainContentMatch ? mainContentMatch.index : -1;
+  const featuredSectionStart = mainContentMatch?.index ?? -1;
 
   const skeletonRegex = /<div class="space-y-6 mb-12">/i;
   const skeletonMatch = featuredSectionStart >= 0
@@ -127,7 +127,7 @@ export default async function HomePage() {
   const nextSectionStart = nextSectionMatch ? emptyStateStart + nextSectionMatch.index! : -1;
 
   if (
-    featuredSectionStart !== undefined && featuredSectionStart >= 0 &&
+    featuredSectionStart >= 0 &&
     skeletonStart >= 0 &&
     filtersStart >= 0 &&
     emptyStateStart >= 0 &&
