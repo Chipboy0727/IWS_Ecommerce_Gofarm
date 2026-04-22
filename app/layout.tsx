@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { CartProvider } from "@/app/context/CartContext";
 import { WishlistProvider } from "@/app/context/WishlistContext";
+import { OrderProvider } from "@/app/context/OrderContext";
 import SiteHeader from "@/components/site-header";
 
 export const metadata: Metadata = {
@@ -27,8 +28,10 @@ export default function RootLayout({
       >
         <CartProvider>
           <WishlistProvider>
-            <SiteHeader />
-            {children}
+            <OrderProvider>
+              <SiteHeader />
+              {children}
+            </OrderProvider>
           </WishlistProvider>
         </CartProvider>
       </body>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
+import { useOrders } from "@/app/context/OrderContext";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -35,7 +36,6 @@ function IconHeart() {
   );
 }
 
-// THÊM ICON ORDERS
 function IconOrders() {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -287,12 +287,13 @@ export default function SiteHeader() {
   const router = useRouter();
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
+  const { totalOrders: orderCount } = useOrders(); // Dùng context cho orders
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
-  const [orderCount, setOrderCount] = useState(0); // THÊM STATE CHO SỐ LƯỢNG ĐƠN HÀNG
+  const [, forceUpdate] = useState(0); // Force re-render khi có event
 
   // Load user data
   useEffect(() => {
@@ -309,22 +310,13 @@ export default function SiteHeader() {
     loadUser();
   }, []);
 
-  // THÊM EFFECT ĐỂ LOAD SỐ LƯỢNG ĐƠN HÀNG
+  // Lắng nghe event orders-updated để force re-render
   useEffect(() => {
-    const loadOrders = () => {
-      const orders = localStorage.getItem("orders");
-      if (orders) {
-        try {
-          const ordersList = JSON.parse(orders);
-          setOrderCount(ordersList.length);
-        } catch (e) {}
-      }
+    const handleOrdersUpdate = () => {
+      forceUpdate(prev => prev + 1);
     };
-    loadOrders();
-    
-    // Lắng nghe sự kiện storage để cập nhật khi có đơn hàng mới
-    window.addEventListener("storage", loadOrders);
-    return () => window.removeEventListener("storage", loadOrders);
+    window.addEventListener("orders-updated", handleOrdersUpdate);
+    return () => window.removeEventListener("orders-updated", handleOrdersUpdate);
   }, []);
 
   // Keyboard shortcut Ctrl+K
@@ -353,29 +345,16 @@ export default function SiteHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">
-        {/* Top promo bar */}
-        <div className="bg-gofarm-green text-white py-2.5 text-base overflow-hidden whitespace-nowrap font-semibold">
-          <div className="inline-block animate-marquee">
-            <span className="mx-5">🎉 Free shipping on orders over $50</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">🎁 Get 10% off your first order</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">🚚 Free returns within 30 days</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">💳 Secure payment guaranteed</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">⭐ 24/7 Customer support</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">🎉 Free shipping on orders over $50</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">🎁 Get 10% off your first order</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">🚚 Free returns within 30 days</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">💳 Secure payment guaranteed</span>
-            <span className="mx-2">✦</span>
-            <span className="mx-5">⭐ 24/7 Customer support</span>
-            <span className="mx-2">✦</span>
+        {/* Top promo bar - Shopping CTA */}
+        <div className="bg-linear-to-r from-gofarm-green to-emerald-600 text-white text-center py-2.5 px-4">
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <span className="font-semibold">🛍️ Discover fresh and clean produce.</span>
+            <Link href="/shop" className="inline-flex items-center gap-2 font-semibold hover:text-yellow-200 transition-colors underline">
+              Buy now
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
           </div>
         </div>
 
@@ -429,7 +408,7 @@ export default function SiteHeader() {
                   )}
                 </Link>
 
-                {/* THÊM ICON ORDERS - NẰM GIỮA WISHLIST VÀ USER MENU */}
+                {/* Orders - Hiển thị số lượng đơn hàng */}
                 <Link href="/orders" className="relative hover:text-gofarm-green transition-colors">
                   <IconOrders />
                   {orderCount > 0 && (
@@ -466,8 +445,7 @@ export default function SiteHeader() {
                                 <IconUser /> My Account
                               </Link>
                               <Link href="/orders" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-                                My Orders
+                                <IconOrders /> My Orders
                               </Link>
                               <div className="border-t my-1" />
                               <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full">
@@ -499,7 +477,7 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Navigation bar - Need Help? nằm ở đây */}
+        {/* Navigation bar */}
         <div className="hidden md:block bg-gofarm-white">
           <div className="max-w-(--breakpoint-xl) mx-auto px-4">
             <nav className="flex items-center justify-center gap-6 lg:gap-8 py-3">

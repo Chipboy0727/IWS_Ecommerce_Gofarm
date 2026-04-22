@@ -37,12 +37,12 @@ function StarIcon({ className }: { className?: string }) {
   );
 }
 
-function HeartIcon({ className }: { className?: string }) {
+function HeartIcon({ className, filled }: { className?: string; filled?: boolean }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
@@ -54,25 +54,7 @@ function HeartIcon({ className }: { className?: string }) {
   );
 }
 
-function CompareIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M8 3 4 7l4 4" />
-      <path d="M4 7h16" />
-      <path d="m16 21 4-4-4-4" />
-      <path d="M20 17H4" />
-    </svg>
-  );
-}
+// ĐÃ XÓA: CompareIcon function
 
 function ShareIcon({ className }: { className?: string }) {
   return (
@@ -95,7 +77,12 @@ function ShareIcon({ className }: { className?: string }) {
   );
 }
 
-export default function ProductCard({ product }: { product: LocalProduct }) {
+interface ProductCardProps {
+  product: LocalProduct;
+  onShare?: (product: LocalProduct) => void;
+}
+
+export default function ProductCard({ product, onShare }: ProductCardProps) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
   const { addToCart } = useCart();
@@ -141,9 +128,16 @@ export default function ProductCard({ product }: { product: LocalProduct }) {
     setIsWishlisted(!isWishlisted);
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onShare) {
+      onShare(product);
+    }
+  };
+
   return (
     <>
-      <div className="transform hover:scale-105 transition-transform duration-300">
+      <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
           <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
             <Link href={`/shop/${product.slug}`} className="block h-full">
@@ -173,19 +167,15 @@ export default function ProductCard({ product }: { product: LocalProduct }) {
                 className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+                <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
               </button>
+              {/* ĐÃ XÓA: Compare button */}
               <button
                 type="button"
-                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-                title="Compare product"
-              >
-                <CompareIcon className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
+                onClick={handleShare}
                 className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
                 title="Share product"
+                aria-label="Share product"
               >
                 <ShareIcon className="w-4 h-4" />
               </button>

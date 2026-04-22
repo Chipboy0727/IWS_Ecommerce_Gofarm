@@ -39,17 +39,7 @@ function HeartIcon({ className = "", filled = false }: { className?: string; fil
   );
 }
 
-// Icon Compare
-function CompareIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-      <path d="M8 3 4 7l4 4" />
-      <path d="M4 7h16" />
-      <path d="m16 21 4-4-4-4" />
-      <path d="M20 17H4" />
-    </svg>
-  );
-}
+// ĐÃ XÓA: CompareIcon function
 
 // Icon Share
 function ShareIcon({ className = "" }: { className?: string }) {
@@ -79,11 +69,12 @@ function StarIcon({ className = "", filled = false }: { className?: string; fill
   );
 }
 
-function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: { 
+function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onShare }: { 
   product: LocalProduct; 
   onAddToCart: (product: LocalProduct) => void;
   onToggleWishlist: (product: LocalProduct) => void;
   isWishlisted: boolean;
+  onShare: (product: LocalProduct) => void;
 }) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
@@ -101,8 +92,13 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
     onToggleWishlist(product);
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onShare(product);
+  };
+
   return (
-    <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl" data-product-id={product.id}>
       <div className="relative">
         <Link href={`/shop/${product.slug}`} className="block">
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-white">
@@ -126,7 +122,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
           </div>
         </Link>
 
-        {/* Action Buttons - Wishlist, Compare, Share */}
+        {/* Action Buttons - Wishlist and Share (ĐÃ XÓA COMPARE) */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
           <button
             type="button"
@@ -136,17 +132,13 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
           >
             <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
           </button>
+          {/* ĐÃ XÓA: Compare button */}
           <button
             type="button"
-            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-            title="Compare product"
-          >
-            <CompareIcon className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
+            onClick={handleShare}
             className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
             title="Share product"
+            aria-label="Share product"
           >
             <ShareIcon className="w-4 h-4" />
           </button>
@@ -181,7 +173,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: {
           ) : null}
         </div>
 
-        {/* Button Add to Cart - Màu xanh giống collection */}
+        {/* Button Add to Cart */}
         <button
           onClick={handleAddToCart}
           disabled={isAdding}
@@ -238,6 +230,8 @@ export default function ShopBrowser({
   const [activeBrand, setActiveBrand] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortMode>("featured");
   const [wishlistStatus, setWishlistStatus] = useState<Record<string, boolean>>({});
+  const [selectedShareProduct, setSelectedShareProduct] = useState<LocalProduct | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Load wishlist status
   useEffect(() => {
@@ -305,124 +299,155 @@ export default function ShopBrowser({
     }
   };
 
+  const handleShare = (product: LocalProduct) => {
+    setSelectedShareProduct(product);
+    setShowShareModal(true);
+  };
+
+  const shareUrl = selectedShareProduct && typeof window !== 'undefined' 
+    ? `${window.location.origin}/shop/${selectedShareProduct.slug}` 
+    : '';
+
+  // Import ShareModal dynamically to avoid issues
+  const [ShareModalComponent, setShareModalComponent] = useState<any>(null);
+  
+  useEffect(() => {
+    import("@/app/share/ShareModal").then((mod) => {
+      setShareModalComponent(() => mod.default);
+    });
+  }, []);
+
   return (
-    <div className="max-w-(--breakpoint-xl) mx-auto px-4 pb-16">
-      <section className="pt-8 lg:pt-10">
-        <div className="rounded-[18px] border border-gray-200 bg-white px-6 py-8 shadow-[0_1px_10px_rgba(15,23,42,0.05)]">
-          <h1 className="text-[42px] font-extrabold tracking-tight text-gofarm-black">Shop Products</h1>
-          <p className="mt-3 text-[15px] text-gofarm-gray">Discover amazing products tailored to your needs</p>
-        </div>
-      </section>
-
-      <section className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start">
-        <aside className="order-1 lg:sticky lg:top-28 lg:w-[320px] lg:shrink-0 rounded-[18px] border border-gray-200 bg-white shadow-[0_1px_10px_rgba(15,23,42,0.05)] overflow-hidden">
-          <div className="border-b border-gray-200 px-5 py-5">
-            <h2 className="text-[22px] font-bold text-gofarm-black">Filters</h2>
+    <>
+      <div className="max-w-(--breakpoint-xl) mx-auto px-4 pb-16">
+        <section className="pt-8 lg:pt-10">
+          <div className="rounded-[18px] border border-gray-200 bg-white px-6 py-8 shadow-[0_1px_10px_rgba(15,23,42,0.05)]">
+            <h1 className="text-[42px] font-extrabold tracking-tight text-gofarm-black">Shop Products</h1>
+            <p className="mt-3 text-[15px] text-gofarm-gray">Discover amazing products tailored to your needs</p>
           </div>
+        </section>
 
-          <div className="px-5 py-6 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gofarm-black">Categories</h3>
-              <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
-                {categories.length}
-              </span>
+        <section className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start">
+          <aside className="order-1 lg:sticky lg:top-28 lg:w-[320px] lg:shrink-0 rounded-[18px] border border-gray-200 bg-white shadow-[0_1px_10px_rgba(15,23,42,0.05)] overflow-hidden">
+            <div className="border-b border-gray-200 px-5 py-5">
+              <h2 className="text-[22px] font-bold text-gofarm-black">Filters</h2>
             </div>
 
-            <div className="mt-5 space-y-4">
-              <FilterOption
-                active={activeCategory === "all"}
-                label="All"
-                count={products.length}
-                onClick={() => setActiveCategory("all")}
-              />
-              {categories.map((category) => (
+            <div className="px-5 py-6 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gofarm-black">Categories</h3>
+                <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
+                  {categories.length}
+                </span>
+              </div>
+
+              <div className="mt-5 space-y-4">
                 <FilterOption
-                  key={category.id}
-                  active={activeCategory === category.id}
-                  label={category.title}
-                  count={category.count}
-                  onClick={() => setActiveCategory(category.id)}
+                  active={activeCategory === "all"}
+                  label="All"
+                  count={products.length}
+                  onClick={() => setActiveCategory("all")}
                 />
-              ))}
-            </div>
-          </div>
-
-          <div className="px-5 py-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gofarm-black">Brands</h3>
-              <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
-                {brands.length}
-              </span>
-            </div>
-
-            <div className="mt-5 space-y-4">
-              <FilterOption
-                active={activeBrand === "all"}
-                label="All"
-                count={products.length}
-                onClick={() => setActiveBrand("all")}
-              />
-              {brands.map((brand) => (
-                <FilterOption
-                  key={brand.title}
-                  active={activeBrand === brand.title}
-                  label={brand.title}
-                  count={brand.count}
-                  onClick={() => setActiveBrand(brand.title)}
-                />
-              ))}
-            </div>
-          </div>
-        </aside>
-
-        <section className="order-2 min-w-0 flex-1 rounded-[18px] border border-gray-200 bg-white shadow-[0_1px_10px_rgba(15,23,42,0.05)] overflow-hidden">
-          <div className="flex flex-col gap-4 border-b border-gray-200 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gofarm-black">{filtered.length} Products Found</h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3">
-                <span className="text-sm text-gofarm-gray">Sort</span>
-                <select
-                  value={sortBy}
-                  onChange={(event) => setSortBy(event.target.value as SortMode)}
-                  className="bg-transparent text-sm font-medium outline-none"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="name">Name (A-Z)</option>
-                  <option value="price-asc">Price (Low to High)</option>
-                  <option value="price-desc">Price (High to Low)</option>
-                  <option value="rating">Rating</option>
-                </select>
-              </label>
-
-              <div className="text-sm text-gofarm-gray">Showing {filtered.length} of {products.length}</div>
-            </div>
-          </div>
-
-          <div className="px-4 py-5 sm:px-6">
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                {filtered.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={handleAddToCart}
-                    onToggleWishlist={handleToggleWishlist}
-                    isWishlisted={wishlistStatus[product.id] || false}
+                {categories.map((category) => (
+                  <FilterOption
+                    key={category.id}
+                    active={activeCategory === category.id}
+                    label={category.title}
+                    count={category.count}
+                    onClick={() => setActiveCategory(category.id)}
                   />
                 ))}
               </div>
-            ) : (
-              <div className="rounded-3xl border border-dashed border-gofarm-light-green/30 bg-white px-6 py-20 text-center">
-                <h3 className="text-2xl font-bold text-gofarm-black">No products match your filters</h3>
-                <p className="mt-3 text-gofarm-gray">Try a different category or brand.</p>
+            </div>
+
+            <div className="px-5 py-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gofarm-black">Brands</h3>
+                <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
+                  {brands.length}
+                </span>
               </div>
-            )}
-          </div>
+
+              <div className="mt-5 space-y-4">
+                <FilterOption
+                  active={activeBrand === "all"}
+                  label="All"
+                  count={products.length}
+                  onClick={() => setActiveBrand("all")}
+                />
+                {brands.map((brand) => (
+                  <FilterOption
+                    key={brand.title}
+                    active={activeBrand === brand.title}
+                    label={brand.title}
+                    count={brand.count}
+                    onClick={() => setActiveBrand(brand.title)}
+                  />
+                ))}
+              </div>
+            </div>
+          </aside>
+
+          <section className="order-2 min-w-0 flex-1 rounded-[18px] border border-gray-200 bg-white shadow-[0_1px_10px_rgba(15,23,42,0.05)] overflow-hidden">
+            <div className="flex flex-col gap-4 border-b border-gray-200 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gofarm-black">{filtered.length} Products Found</h2>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3">
+                  <span className="text-sm text-gofarm-gray">Sort</span>
+                  <select
+                    value={sortBy}
+                    onChange={(event) => setSortBy(event.target.value as SortMode)}
+                    className="bg-transparent text-sm font-medium outline-none"
+                  >
+                    <option value="featured">Featured</option>
+                    <option value="name">Name (A-Z)</option>
+                    <option value="price-asc">Price (Low to High)</option>
+                    <option value="price-desc">Price (High to Low)</option>
+                    <option value="rating">Rating</option>
+                  </select>
+                </label>
+
+                <div className="text-sm text-gofarm-gray">Showing {filtered.length} of {products.length}</div>
+              </div>
+            </div>
+
+            <div className="px-4 py-5 sm:px-6">
+              {filtered.length > 0 ? (
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                  {filtered.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                      onToggleWishlist={handleToggleWishlist}
+                      isWishlisted={wishlistStatus[product.id] || false}
+                      onShare={handleShare}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-3xl border border-dashed border-gofarm-light-green/30 bg-white px-6 py-20 text-center">
+                  <h3 className="text-2xl font-bold text-gofarm-black">No products match your filters</h3>
+                  <p className="mt-3 text-gofarm-gray">Try a different category or brand.</p>
+                </div>
+              )}
+            </div>
+          </section>
         </section>
-      </section>
-    </div>
+      </div>
+
+      {/* Share Modal */}
+      {showShareModal && ShareModalComponent && selectedShareProduct && (
+        <ShareModalComponent
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          url={shareUrl}
+          title={selectedShareProduct.name}
+        />
+      )}
+    </>
   );
 }

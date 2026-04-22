@@ -20,7 +20,7 @@ export function sectionCarouselHtml({ title, href, products, productCount }: Sec
             ${productCount} Products
           </span>
         </div>
-        <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="${href}">
+        <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="/shop">
           <span>View More</span>
           <span aria-hidden="true">→</span>
         </a>
@@ -55,7 +55,9 @@ export function sectionCarouselHtml({ title, href, products, productCount }: Sec
               .map(
                 (product, index) => `
                   <div id="veg-item-${index}" class="snap-start">
-                    ${productCardHtml(product)}
+                    <a href="/shop/${product.slug}" class="block">
+                      ${productCardHtml(product)}
+                    </a>
                   </div>
                 `
               )
@@ -81,7 +83,7 @@ export function sectionCarouselHtml({ title, href, products, productCount }: Sec
 export function vegetableSectionHtml(products: LocalProduct[], productCount: number) {
   return sectionCarouselHtml({
     title: "Vegetables",
-    href: "/category/vegetables",
+    href: "/shop",
     products,
     productCount,
   });

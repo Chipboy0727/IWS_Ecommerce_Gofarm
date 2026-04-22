@@ -1,3 +1,4 @@
+// product-card.tsx - ĐÃ XÓA ICON COMPARE
 import type { LocalProduct } from "@/lib/local-catalog";
 
 function formatPrice(price: number) {
@@ -13,75 +14,87 @@ export function productCardHtml(product: LocalProduct) {
     product.discount && product.discount > 0
       ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
       : product.price;
-  const stars = Array.from({ length: 5 }, (_, index) => index < Math.round(product.rating));
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
 
   return `
-    <article class="group rounded-[10px] border border-gray-200 bg-white overflow-hidden shadow-[0_1px_8px_rgba(15,23,42,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div class="relative h-[330px] bg-white flex items-center justify-center overflow-hidden px-4 pt-4">
-        <div class="absolute left-3 top-3 z-10 flex flex-col gap-2">
-          <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-gofarm-green text-white shadow">${product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New"}</span>
-          ${
-            product.discount
-              ? `<span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-red-500 text-white shadow">-${product.discount}%</span>`
-              : ""
-          }
+    <div class="transform hover:scale-105 transition-transform duration-300" data-product-id="${product.id}">
+      <article class="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
+        <div class="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+          <img
+            src="${product.imageSrc}"
+            class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+            alt="${product.imageAlt}"
+            loading="lazy"
+          />
+
+          <div class="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+            <div class="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
+              ${status}
+            </div>
+            ${
+              product.discount
+                ? `<div class="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
+                     -${product.discount}%
+                   </div>`
+                : ""
+            }
+          </div>
+
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+            <button type="button" class="wishlist-btn p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}" aria-label="Add to wishlist">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3">
+                <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+              </svg>
+            </button>
+            <!-- ĐÃ XÓA: Compare button -->
+            <button type="button" class="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" aria-label="Share product">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3 h-3">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+                <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+              </svg>
+            </button>
+          </div>
         </div>
-        <img
-          src="${product.imageSrc}"
-          alt="${product.imageAlt}"
-          class="max-h-[240px] w-auto object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-[0_22px_22px_rgba(0,0,0,0.08)]"
-          loading="lazy"
-        >
-        <div class="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2 opacity-0 pointer-events-none transition-all duration-300 group-hover:opacity-100 group-hover:pointer-events-auto">
-          <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green" aria-label="Add to wishlist">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-.06-.06a5.5 5.5 0 0 0-7.78 7.78l.06.06L12 21l7.78-7.55.06-.06a5.5 5.5 0 0 0 0-7.78Z" />
-            </svg>
+
+        <div class="p-2 space-y-1">
+          <a href="/shop/${product.slug}" class="block">
+            <h2 class="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
+              ${product.name}
+            </h2>
+          </a>
+
+          <div class="flex items-center gap-1">
+            <div class="flex items-center">
+              ${Array.from({ length: 5 }, (_, index) => {
+                const isActive = index < Math.round(product.rating);
+                return `<svg key="${index}" class="w-2.5 h-2.5 ${isActive ? "text-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>`;
+              }).join("")}
+            </div>
+            <span class="text-[9px] text-gofarm-gray">(${product.reviews})</span>
+          </div>
+
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1 flex-wrap">
+              <span class="text-gofarm-green text-sm font-bold">${formatPrice(salePrice)}</span>
+              ${
+                product.discount
+                  ? `<span class="text-[10px] text-gray-400 line-through">${formatPrice(product.price)}</span>`
+                  : ""
+              }
+            </div>
+          </div>
+
+          <button class="add-to-cart-btn w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors" data-product-id="${product.id}" data-product-name="${product.name}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">
+            Add to Cart
           </button>
-          <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green" aria-label="Compare product">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
-              <path d="M16 3h5v5" />
-              <path d="M4 20 20 4" />
-              <path d="M8 21H3v-5" />
-            </svg>
-          </button>
-          <button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green" aria-label="Share product">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4" aria-hidden="true">
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <path d="M8.59 13.51 15.42 17.49" />
-              <path d="M15.41 6.51 8.59 10.49" />
-            </svg>
-          </button>
         </div>
-      </div>
-      <div class="px-4 pb-4 pt-2">
-        <h4 class="text-[17px] font-bold text-gofarm-black leading-tight mb-1 line-clamp-1">${product.name}</h4>
-        <div class="flex items-center gap-1 text-[12px] leading-none">
-          ${stars.map((active) => `<span class="${active ? "text-yellow-400" : "text-gray-300"}">&#9733;</span>`).join("")}
-          <span class="ml-1 text-gofarm-gray">(${product.reviews})</span>
-        </div>
-        <div class="flex items-end gap-2 mt-2 mb-4 flex-nowrap">
-          <span class="text-[22px] font-bold text-gofarm-green leading-none">${formatPrice(salePrice)}</span>
-          ${
-            product.discount
-              ? `<span class="text-[18px] font-semibold text-gray-500 line-through leading-none">${formatPrice(product.price)}</span>`
-              : ""
-          }
-          ${
-            product.discount
-              ? `<span class="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium text-red-500">-${product.discount}%</span>`
-              : ""
-          }
-        </div>
-      </div>
-        <button class="w-full inline-flex items-center justify-center gap-2 rounded-[8px] border border-gofarm-light-green/35 bg-white px-4 py-3 text-[15px] font-semibold text-gofarm-black whitespace-nowrap transition-all duration-200 hover:border-gofarm-green hover:bg-gofarm-light-orange/10">
-          <span>&#128722;</span>
-          <span>Add to Cart</span>
-        </button>
-    </article>
+      </article>
+    </div>
   `;
 }
 
