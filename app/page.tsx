@@ -10,13 +10,13 @@ async function readOriginalBody() {
   const match = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   const body = match?.[1] ?? html;
   const withoutPromoBanner = body.replace(
-    /<div class="bg-linear-to-r from-gofarm-green to-emerald-600 text-white text-center py-1 px-4">[\s\S]*?<\/div><div class="border-b border-gofarm-light-gray">/,
+    /<div class="bg-linear-to-r from-gofarm-green to-emerald-600 text-white text-center py-1 px-4">[\s\S]*?<\/div>\s*<div class="border-b border-gofarm-light-gray">/i,
     '<div class="border-b border-gofarm-light-gray">'
   );
 
-  const mainContentMarker =
-    '<div><div class="max-w-(--breakpoint-xl) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">';
-  const mainContentStart = withoutPromoBanner.indexOf(mainContentMarker);
+  const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
+  const mainContentMatch = withoutPromoBanner.match(mainContentRegex);
+  const mainContentStart = mainContentMatch ? mainContentMatch.index : -1;
   const headerOnly =
     mainContentStart >= 0 ? withoutPromoBanner.slice(0, mainContentStart) : withoutPromoBanner;
   const restContent =
@@ -98,37 +98,36 @@ export default async function HomePage() {
 
   let transformedBody = bodyHtml.replace(/0(?:<!-- -->)? products/g, `${products.length} products`);
 
-  const featuredSectionStart = transformedBody.indexOf(
-    '<div><div class="max-w-(--breakpoint-xl) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">'
-  );
-  const skeletonStart =
-    featuredSectionStart >= 0
-      ? transformedBody.indexOf('<div class="space-y-6 mb-12">', featuredSectionStart)
-      : -1;
-  const filtersStart =
-    featuredSectionStart >= 0
-      ? transformedBody.indexOf(
-          '<div class="bg-gofarm-white rounded-2xl shadow-lg border border-gofarm-light-green/20 p-6 mb-8">',
-          featuredSectionStart
-        )
-      : -1;
-  const emptyStateStart =
-    filtersStart >= 0
-      ? transformedBody.indexOf(
-          '<div class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50/50 to-white rounded-xl border border-gray-200/50 w-full">',
-          filtersStart
-        )
-      : -1;
-  const nextSectionStart =
-    emptyStateStart >= 0
-      ? transformedBody.indexOf(
-          '<section class="py-16 lg:py-20 bg-linear-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">',
-          emptyStateStart
-        )
-      : -1;
+  const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
+  const mainContentMatch = transformedBody.match(mainContentRegex);
+  const featuredSectionStart = mainContentMatch ? mainContentMatch.index : -1;
+
+  const skeletonRegex = /<div class="space-y-6 mb-12">/i;
+  const skeletonMatch = featuredSectionStart >= 0
+    ? transformedBody.slice(featuredSectionStart).match(skeletonRegex)
+    : null;
+  const skeletonStart = skeletonMatch ? featuredSectionStart + skeletonMatch.index! : -1;
+
+  const filtersRegex = /<div class="bg-gofarm-white rounded-2xl shadow-lg border border-gofarm-light-green\/20 p-6 mb-8">/i;
+  const filtersMatch = featuredSectionStart >= 0
+    ? transformedBody.slice(featuredSectionStart).match(filtersRegex)
+    : null;
+  const filtersStart = filtersMatch ? featuredSectionStart + filtersMatch.index! : -1;
+
+  const emptyStateRegex = /<div class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50\/50 to-white rounded-xl border border-gray-200\/50 w-full">/i;
+  const emptyStateMatch = filtersStart >= 0
+    ? transformedBody.slice(filtersStart).match(emptyStateRegex)
+    : null;
+  const emptyStateStart = emptyStateMatch ? filtersStart + emptyStateMatch.index! : -1;
+
+  const nextSectionRegex = /<section class="py-16 lg:py-20 bg-linear-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">/i;
+  const nextSectionMatch = emptyStateStart >= 0
+    ? transformedBody.slice(emptyStateStart).match(nextSectionRegex)
+    : null;
+  const nextSectionStart = nextSectionMatch ? emptyStateStart + nextSectionMatch.index! : -1;
 
   if (
-    featuredSectionStart >= 0 &&
+    featuredSectionStart !== undefined && featuredSectionStart >= 0 &&
     skeletonStart >= 0 &&
     filtersStart >= 0 &&
     emptyStateStart >= 0 &&
@@ -150,9 +149,10 @@ export default async function HomePage() {
   }
 
   transformedBody = transformedBody.replace(
-    /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/,
+    /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/i,
     ""
   );
 
   return <div dangerouslySetInnerHTML={{ __html: transformedBody }} />;
 }
+
