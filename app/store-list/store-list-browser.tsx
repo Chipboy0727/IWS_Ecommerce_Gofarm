@@ -299,67 +299,6 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
   );
 }
 
-// ==================== FOOTER ====================
-function Footer() {
-  return (
-    <footer className="mt-12 border-t border-gray-100 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-          <div className="col-span-1">
-            <Link href="/" className="inline-block">
-              <img alt="logo" className="h-7 w-auto" src="/images/logo.svg" />
-            </Link>
-            <p className="mt-3 text-xs text-gray-500 leading-relaxed">
-              Fresh, organic farm products delivered to your door.
-            </p>
-          </div>
-          <div>
-            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Quick Links</h4>
-            <ul className="space-y-1.5">
-              {["About us", "Contact us", "FAQs", "Help"].map((item) => (
-                <li key={item}>
-                  <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-xs text-gray-500 hover:text-gofarm-green transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Categories</h4>
-            <ul className="space-y-1.5">
-              {["Vegetables", "Fruits", "Meat", "Fish", "Dairy"].map((item) => (
-                <li key={item}>
-                  <Link href={`/category/${item.toLowerCase()}`} className="text-xs text-gray-500 hover:text-gofarm-green transition-colors">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Newsletter</h4>
-            <p className="mb-2 text-xs text-gray-500">Get updates and exclusive offers.</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-gofarm-green"
-              />
-              <button className="rounded-lg bg-gofarm-green px-3 py-1.5 text-xs font-semibold text-white hover:bg-gofarm-light-green">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="mt-6 border-t border-gray-100 pt-4 text-center text-xs text-gray-400">
-          © 2026 GoFarm. All rights reserved.
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 // ==================== MAIN COMPONENT ====================
 export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -514,7 +453,6 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }
