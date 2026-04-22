@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 import StoreListBrowser from "./store-list-browser";
 import { storeItems } from "@/lib/store-list-data";
+import SiteFooter from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "Local Stores | gofarm",
@@ -17,6 +18,7 @@ export default function StoreListPage() {
           <StoreListBrowser stores={storeItems} />
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

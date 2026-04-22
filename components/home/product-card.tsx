@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import type { LocalProduct } from "@/lib/local-catalog";
+import { ProductModal } from "@/components/product-modal";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -86,7 +90,23 @@ export function productCardHtml(product: LocalProduct) {
 }
 
 export function ProductCard({ product }: { product: LocalProduct }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
-    <div dangerouslySetInnerHTML={{ __html: productCardHtml(product) }} />
+    <>
+      <div 
+        dangerouslySetInnerHTML={{ __html: productCardHtml(product) }} 
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest('button')) return;
+          setIsModalOpen(true);
+        }}
+        className="cursor-pointer"
+      />
+      <ProductModal 
+        product={product} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
+    </>
   );
 }
