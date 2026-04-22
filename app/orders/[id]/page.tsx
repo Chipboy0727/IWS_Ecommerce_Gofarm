@@ -143,7 +143,7 @@ export default function OrderDetailPage() {
   // Tính toán lại tổng tiền từ products nếu có
   const subtotal = order.total / 1.1;
   const tax = order.total - subtotal;
-  const shipping = 0;
+  const shipping: number = 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 lg:py-12">

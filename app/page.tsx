@@ -5,6 +5,7 @@ import { sectionCarouselHtml, vegetableSectionHtml } from "@/components/home/veg
 import { loadLocalCatalog } from "@/lib/local-catalog";
 import { ProductGridClient } from "@/components/home/ProductGridClient";
 import ProductShareHandler from "@/components/home/ProductShareHandler";
+import { productCardHtmlServer } from "@/components/home/product-card-html";
 
 async function readOriginalBody() {
   const filePath = path.join(process.cwd(), "index.html");
@@ -49,14 +50,189 @@ async function readOriginalBody() {
   );
 }
 
+// Hàm tạo HTML cho product card với đầy đủ data attributes cho add-to-cart, wishlist, share
+function enhancedProductCardHtml(product: any) {
+  const salePrice = product.discount && product.discount > 0
+    ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
+    : product.price;
+  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
+  const formattedSalePrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(salePrice);
+  const formattedPrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(product.price);
+  
+  // Escape các ký tự đặc biệt trong tên sản phẩm
+  const escapedName = product.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  
+  return `
+    <div class="transform hover:scale-105 transition-transform duration-300">
+      <article class="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id="${product.id}">
+        <a href="/shop/${product.slug}" class="block">
+          <div class="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+            <img
+              src="${product.imageSrc}"
+              class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+              alt="${product.imageAlt || product.name}"
+              loading="lazy"
+            />
+
+            <div class="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
+              <div class="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
+                ${status}
+              </div>
+              ${product.discount ? `
+                <div class="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
+                  -${product.discount}%
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+              <button type="button" class="wishlist-btn p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}" aria-label="Add to wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" class="w-3 h-3">
+                  <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                </svg>
+              </button>
+              <button type="button" class="share-btn p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-slug="${product.slug}" aria-label="Share product">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" class="w-3 h-3">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-2 space-y-1">
+            <h2 class="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
+              ${product.name}
+            </h2>
+
+            <div class="flex items-center gap-1">
+              <div class="flex items-center">
+                ${Array.from({ length: 5 }, (_, index) => `
+                  <svg class="w-2.5 h-2.5 ${index < Math.round(product.rating) ? "text-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="${index < Math.round(product.rating) ? "currentColor" : "none"}" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                `).join('')}
+              </div>
+              <span class="text-[9px] text-gofarm-gray">(${product.reviews})</span>
+            </div>
+
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="text-gofarm-green text-sm font-bold">${formattedSalePrice}</span>
+                ${product.discount ? `
+                  <span class="text-[10px] text-gray-400 line-through">${formattedPrice}</span>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        </a>
+        
+        <button class="add-to-cart-btn w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors mx-2 mb-2" style="width: calc(100% - 16px)" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">
+          Add to Cart
+        </button>
+      </article>
+    </div>
+  `;
+}
+
 export default async function HomePage() {
   const bodyHtml = await readOriginalBody();
   const catalog = await loadLocalCatalog();
   const allProducts = catalog.products;
   const products = allProducts.slice(0, 13);
-  const productGridMarkup = featuredProductsGridHtml(products);
+  
+  // Sử dụng hàm enhancedProductCardHtml thay vì productCardHtmlServer
+  const productGridMarkup = `
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      ${products.map(enhancedProductCardHtml).join("")}
+    </div>
+  `;
+  
   const vegetableProducts = products.slice(0, 10);
-  const vegetableMarkup = vegetableSectionHtml(vegetableProducts, vegetableProducts.length);
+  
+  // Hàm tạo carousel với enhanced product cards
+  const enhancedSectionCarouselHtml = ({ title, href, products, productCount }: { title: string; href: string; products: any[]; productCount: number }) => {
+    const items = products.slice(0, 10);
+    return `
+      <div class="bg-gofarm-white rounded-2xl shadow-lg border border-gofarm-light-green/20 p-6 mb-8">
+        <div class="flex items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-4">
+            <h3 class="text-2xl font-bold text-gofarm-black">${title}</h3>
+            <span class="inline-flex items-center rounded-full bg-gofarm-light-orange/40 px-4 py-2 text-sm font-semibold text-gofarm-green">
+              ${productCount} Products
+            </span>
+          </div>
+          <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="/shop">
+            <span>View More</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="border-t border-gofarm-light-gray pt-8 relative">
+          <button
+            type="button"
+            class="absolute left-[-16px] top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
+            aria-label="Previous products"
+            onclick="(function(el){if(el){el.scrollBy({left:-el.clientWidth,behavior:'smooth'})}})(document.getElementById('carousel-${title.replace(/\s/g, '')}'))"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="absolute right-2 top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
+            aria-label="Next products"
+            onclick="(function(el){if(el){el.scrollBy({left:el.clientWidth,behavior:'smooth'})}})(document.getElementById('carousel-${title.replace(/\s/g, '')}'))"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+
+          <div id="carousel-${title.replace(/\s/g, '')}" class="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-20 pr-16">
+            <div class="pb-2" style="display:grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 64px) / 5); gap: 16px;">
+              ${items.map((product, index) => `
+                <div id="carousel-item-${title.replace(/\s/g, '')}-${index}" class="snap-start">
+                  ${enhancedProductCardHtml(product)}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-2 pt-8">
+          <span class="h-3 w-8 rounded-full bg-gofarm-green"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+          <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+        </div>
+      </div>
+    `;
+  };
+
+  const vegetableMarkup = enhancedSectionCarouselHtml({
+    title: "Vegetables",
+    href: "/shop",
+    products: vegetableProducts,
+    productCount: vegetableProducts.length,
+  });
 
   const usedSlugs = new Set<string>();
   for (const product of vegetableProducts) {
@@ -93,20 +269,19 @@ export default async function HomePage() {
     allProducts.filter((product) => /drink|drinks|water|tea|milk|coffee|cola/i.test(product.name))
   );
 
-  // Tất cả các section đều có href="/shop"
-  const fruitsMarkup = sectionCarouselHtml({
+  const fruitsMarkup = enhancedSectionCarouselHtml({
     title: "Fruits",
     href: "/shop",
     products: fruitsProducts,
     productCount: fruitsProducts.length,
   });
-  const juicesMarkup = sectionCarouselHtml({
+  const juicesMarkup = enhancedSectionCarouselHtml({
     title: "Juices",
     href: "/shop",
     products: juicesProducts,
     productCount: juicesProducts.length,
   });
-  const drinksMarkup = sectionCarouselHtml({
+  const drinksMarkup = enhancedSectionCarouselHtml({
     title: "Drinks",
     href: "/shop",
     products: drinksProducts,
@@ -143,11 +318,6 @@ export default async function HomePage() {
     : null;
   const nextSectionStart = nextSectionMatch ? emptyStateStart + nextSectionMatch.index! : -1;
 
-  // Tìm vị trí kết thúc của phần cần thay thế (footer)
-  const footerRegex = /<footer class="bg-gofarm-white border-t border-gofarm-light-gray mt-10">/i;
-  const footerMatch = transformedBody.slice(nextSectionStart).match(footerRegex);
-  const footerStart = footerMatch ? nextSectionStart + footerMatch.index! : transformedBody.length;
-
   if (
     featuredSectionStart !== undefined && featuredSectionStart >= 0 &&
     skeletonStart >= 0 &&
@@ -156,8 +326,7 @@ export default async function HomePage() {
     nextSectionStart > emptyStateStart
   ) {
     const titleBlock = transformedBody.slice(featuredSectionStart, skeletonStart);
-    // Lấy toàn bộ phần còn lại từ nextSectionStart đến footer (bao gồm WhyShop, BrandsGrid, WhyChoose)
-    const remainingContent = transformedBody.slice(nextSectionStart, footerStart);
+    const filtersBlock = transformedBody.slice(filtersStart, emptyStateStart);
 
     transformedBody =
       transformedBody.slice(0, featuredSectionStart) +
@@ -167,8 +336,7 @@ export default async function HomePage() {
       juicesMarkup +
       drinksMarkup +
       `<div class="pt-8">${productGridMarkup}</div>` +
-      remainingContent +  // ← GIỮ LẠI WhyShop, BrandsGrid, WhyChoose
-      transformedBody.slice(footerStart);
+      transformedBody.slice(nextSectionStart);
   }
 
   // Sửa tất cả link "Become a Vendor" và "Learn More" về /contact
@@ -194,7 +362,6 @@ export default async function HomePage() {
   transformedBody = transformedBody.replace(/href="\/category\/vegetables"/g, 'href="/shop"');
   transformedBody = transformedBody.replace(/href="\/collection"/g, 'href="/shop"');
 
-  // Xóa floating button Buy Production Code
   transformedBody = transformedBody.replace(
     /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/i,
     ""
@@ -213,4 +380,4 @@ export default async function HomePage() {
       <ProductShareHandler products={products} />
     </>
   );
-} 
+}

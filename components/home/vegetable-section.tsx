@@ -1,5 +1,8 @@
+// components/home/vegetable-section.tsx
+// KHÔNG có "use client" ở đầu file
+
 import type { LocalProduct } from "@/lib/local-catalog";
-import { productCardHtml } from "@/components/home/product-card";
+import { productCardHtmlServer } from "@/lib/product-card-html"; // ĐỔI IMPORT
 
 type SectionCarouselProps = {
   title: string;
@@ -56,7 +59,7 @@ export function sectionCarouselHtml({ title, href, products, productCount }: Sec
                 (product, index) => `
                   <div id="veg-item-${index}" class="snap-start">
                     <a href="/shop/${product.slug}" class="block">
-                      ${productCardHtml(product)}
+                      ${productCardHtmlServer(product)}
                     </a>
                   </div>
                 `
