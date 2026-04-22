@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
 
 function formatPrice(price: number) {
@@ -98,31 +99,46 @@ export default function ProductCard({ product }: { product: LocalProduct }) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  useEffect(() => {
+    setIsWishlisted(isInWishlist(product.id));
+  }, [isInWishlist, product.id]);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsAdding(true);
     
-    try {
-      await addToCart({
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: salePrice,
+      imageSrc: product.imageSrc,
+      slug: product.slug,
+    });
+    
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+    setIsAdding(false);
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist({
         id: product.id,
         name: product.name,
         price: salePrice,
         imageSrc: product.imageSrc,
-        quantity: 1,
+        slug: product.slug,
       });
-      
-      // Show toast notification
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
-      
-    } catch (error) {
-      console.error("Failed to add to cart:", error);
-    } finally {
-      setIsAdding(false);
     }
+    setIsWishlisted(!isWishlisted);
   };
 
   return (
@@ -153,10 +169,11 @@ export default function ProductCard({ product }: { product: LocalProduct }) {
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
               <button
                 type="button"
+                onClick={handleWishlist}
                 className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-                title="Add to wishlist"
+                title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <HeartIcon className="w-4 h-4" />
+                <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
               </button>
               <button
                 type="button"
@@ -216,7 +233,6 @@ export default function ProductCard({ product }: { product: LocalProduct }) {
         </article>
       </div>
 
-      {/* Toast notification */}
       {showToast && (
         <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
           <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">

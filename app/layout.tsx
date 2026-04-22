@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { CartProvider } from "@/app/context/CartContext";
+import { WishlistProvider } from "@/app/context/WishlistContext";
+import SiteHeader from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "gofarm - Your Trusted Online Shopping Destination",
@@ -24,7 +26,10 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <CartProvider>
-          {children}
+          <WishlistProvider>
+            <SiteHeader />
+            {children}
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

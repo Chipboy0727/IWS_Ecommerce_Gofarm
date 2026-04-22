@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
@@ -51,18 +51,20 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
 
 export default function CartPage() {
   const router = useRouter();
-  const { items: cartItems, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
+  const { items: cartItems, removeFromCart, updateQuantity, totalItems, totalPrice, clearCart } = useCart();
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [promoApplied, setPromoApplied] = useState(false);
   const [showConfirm, setShowConfirm] = useState<string | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showReviewOrder, setShowReviewOrder] = useState(false); // Modal xác nhận đơn hàng
 
   const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
   const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"];
 
   const handleUpdateQuantity = (id: string, quantity: number) => {
     if (quantity < 1) return;
-    updateQuantity(id, quantity); // Cập nhật ngay lập tức
+    updateQuantity(id, quantity);
   };
 
   const handleRemoveItem = (id: string) => {
@@ -70,12 +72,25 @@ export default function CartPage() {
   };
 
   const confirmRemove = (id: string) => {
-    removeFromCart(id); // Xóa ngay lập tức
+    removeFromCart(id);
     setShowConfirm(null);
   };
 
   const cancelRemove = () => {
     setShowConfirm(null);
+  };
+
+  const handleClearCart = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearCart = () => {
+    clearCart();
+    setShowClearConfirm(false);
+  };
+
+  const cancelClearCart = () => {
+    setShowClearConfirm(false);
   };
 
   const applyPromo = () => {
@@ -96,9 +111,118 @@ export default function CartPage() {
   const tax = (subtotal - discount) * 0.1;
   const finalTotal = subtotal - discount + shipping + tax;
 
+  // Mở modal review order
+  const handleReviewOrder = () => {
+    setShowReviewOrder(true);
+  };
+
+  // Xác nhận đặt hàng - chuyển sang checkout
+  const confirmOrder = () => {
+    setShowReviewOrder(false);
+    router.push("/checkout");
+  };
+
+  // Hủy - quay lại giỏ hàng
+  const cancelOrder = () => {
+    setShowReviewOrder(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
-      {/* Confirm Delete Modal */}
+      {/* Modal Review Order - Xem lại đơn hàng trước khi thanh toán */}
+      {showReviewOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gofarm-black">Review Your Order</h2>
+              <button onClick={cancelOrder} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Order Items */}
+              <div>
+                <h3 className="font-semibold text-gofarm-black mb-3">Order Items ({totalItems})</h3>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex gap-3 py-2 border-b border-gray-100">
+                      <img src={item.imageSrc} alt={item.name} className="w-16 h-16 object-cover rounded-lg" />
+                      <div className="flex-1">
+                        <p className="font-medium text-gofarm-black">{item.name}</p>
+                        <p className="text-sm text-gofarm-gray">Quantity: {item.quantity}</p>
+                      </div>
+                      <p className="font-semibold text-gofarm-green">${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Summary */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <h3 className="font-semibold text-gofarm-black mb-3">Order Summary</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Discount</span>
+                      <span className="font-medium text-red-500">-${discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Shipping</span>
+                    <span className="font-medium">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Tax (10%)</span>
+                    <span className="font-medium">${tax.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t pt-2 mt-2">
+                    <div className="flex justify-between font-bold">
+                      <span className="text-gofarm-black">Total</span>
+                      <span className="text-gofarm-green text-lg">${finalTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping Info Preview */}
+              <div className="bg-blue-50 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                  </svg>
+                  <p className="text-sm font-medium text-blue-800">Shipping Information</p>
+                </div>
+                <p className="text-sm text-gray-600">Standard shipping (3-5 business days)</p>
+                <p className="text-xs text-gray-500 mt-1">You'll enter delivery address on next step</p>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-100 px-6 py-4 flex gap-3">
+              <button
+                onClick={cancelOrder}
+                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-colors"
+              >
+                Back to Cart
+              </button>
+              <button
+                onClick={confirmOrder}
+                className="flex-1 px-4 py-2 bg-gofarm-green text-white rounded-xl font-semibold hover:bg-gofarm-light-green transition-colors"
+              >
+                Proceed to Checkout →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Delete Modal - Xóa 1 sản phẩm */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
@@ -111,16 +235,35 @@ export default function CartPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-2">Remove Item?</h3>
               <p className="text-gray-500 text-sm mb-6">Are you sure you want to remove this item from your cart?</p>
               <div className="flex gap-3">
-                <button
-                  onClick={() => confirmRemove(showConfirm)}
-                  className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                >
+                <button onClick={() => confirmRemove(showConfirm)} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
                   Yes, Remove
                 </button>
-                <button
-                  onClick={cancelRemove}
-                  className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
+                <button onClick={cancelRemove} className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Clear Cart Modal - Xóa tất cả */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Clear Entire Cart?</h3>
+              <p className="text-gray-500 text-sm mb-6">Are you sure you want to remove all items from your cart?</p>
+              <div className="flex gap-3">
+                <button onClick={confirmClearCart} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                  Yes, Clear All
+                </button>
+                <button onClick={cancelClearCart} className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
                   Cancel
                 </button>
               </div>
@@ -131,10 +274,23 @@ export default function CartPage() {
 
       <div className="py-12 lg:py-16">
         <div className="max-w-6xl mx-auto px-4">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-gofarm-black">Shopping Cart</h1>
-            <p className="text-gofarm-gray mt-2">{totalItems} {totalItems === 1 ? "item" : "items"} in your cart</p>
+          {/* Header with Clear Cart button */}
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-gofarm-black">Shopping Cart</h1>
+              <p className="text-gofarm-gray mt-2">{totalItems} {totalItems === 1 ? "item" : "items"} in your cart</p>
+            </div>
+            {cartItems.length > 0 && (
+              <button
+                onClick={handleClearCart}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 text-sm font-semibold rounded-lg hover:bg-red-50 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear Cart
+              </button>
+            )}
           </div>
 
           {cartItems.length === 0 ? (
@@ -163,23 +319,10 @@ export default function CartPage() {
                           <h3 className="font-semibold text-gofarm-black">{item.name}</h3>
                           <p className="text-gofarm-green font-semibold mt-1">${item.price.toFixed(2)}</p>
                           <div className="flex items-center gap-3 mt-3">
-                            <button
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                              className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-100 hover:border-gofarm-green transition-colors"
-                            >
-                              -
-                            </button>
+                            <button onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-100 hover:border-gofarm-green transition-colors">-</button>
                             <span className="w-8 text-center font-medium">{item.quantity}</span>
-                            <button
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                              className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-100 hover:border-gofarm-green transition-colors"
-                            >
-                              +
-                            </button>
-                            <button
-                              onClick={() => handleRemoveItem(item.id)}
-                              className="ml-auto text-red-500 hover:text-red-600 text-sm flex items-center gap-1"
-                            >
+                            <button onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-100 hover:border-gofarm-green transition-colors">+</button>
+                            <button onClick={() => handleRemoveItem(item.id)} className="ml-auto text-red-500 hover:text-red-600 text-sm flex items-center gap-1">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
@@ -192,7 +335,6 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Continue Shopping Button */}
                 <div className="mt-6">
                   <Link href="/shop" className="inline-flex items-center gap-2 text-gofarm-green hover:text-gofarm-light-green font-medium transition-colors">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,72 +350,33 @@ export default function CartPage() {
                 <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
                   <h2 className="text-xl font-bold text-gofarm-black mb-4">Order Summary</h2>
                   
-                  {/* Promo Code */}
                   <div className="mb-4">
                     <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value)}
-                        placeholder="Promo code"
-                        className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 text-sm"
-                      />
-                      <button
-                        onClick={applyPromo}
-                        className="px-4 py-2 bg-gray-100 text-gofarm-black rounded-lg hover:bg-gofarm-green hover:text-white transition-colors text-sm font-medium"
-                      >
-                        Apply
-                      </button>
+                      <input type="text" value={promoCode} onChange={(e) => setPromoCode(e.target.value)} placeholder="Promo code" className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 text-sm" />
+                      <button onClick={applyPromo} className="px-4 py-2 bg-gray-100 text-gofarm-black rounded-lg hover:bg-gofarm-green hover:text-white transition-colors text-sm font-medium">Apply</button>
                     </div>
-                    {promoApplied && (
-                      <p className="text-xs text-gofarm-green mt-2">✓ Promo code applied!</p>
-                    )}
+                    {promoApplied && <p className="text-xs text-gofarm-green mt-2">✓ Promo code applied!</p>}
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gofarm-gray">Subtotal</span>
-                      <span className="font-semibold">${subtotal.toFixed(2)}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-gofarm-gray">Discount</span>
-                        <span className="font-semibold text-red-500">-${discount.toFixed(2)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-gofarm-gray">Shipping</span>
-                      <span className="font-semibold">
-                        {shipping === 0 ? (
-                          <span className="text-gofarm-green">Free</span>
-                        ) : (
-                          `$${shipping.toFixed(2)}`
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gofarm-gray">Tax (10%)</span>
-                      <span className="font-semibold">${tax.toFixed(2)}</span>
-                    </div>
+                    <div className="flex justify-between"><span className="text-gofarm-gray">Subtotal</span><span className="font-semibold">${subtotal.toFixed(2)}</span></div>
+                    {discount > 0 && <div className="flex justify-between"><span className="text-gofarm-gray">Discount</span><span className="font-semibold text-red-500">-${discount.toFixed(2)}</span></div>}
+                    <div className="flex justify-between"><span className="text-gofarm-gray">Shipping</span><span className="font-semibold">{shipping === 0 ? <span className="text-gofarm-green">Free</span> : `$${shipping.toFixed(2)}`}</span></div>
+                    <div className="flex justify-between"><span className="text-gofarm-gray">Tax (10%)</span><span className="font-semibold">${tax.toFixed(2)}</span></div>
                     
                     {subtotal > 0 && subtotal < 50 && (
                       <div className="bg-gofarm-light-green/10 p-3 rounded-lg">
-                        <p className="text-xs text-gofarm-green">
-                          🚚 Add ${(50 - subtotal).toFixed(2)} more to get free shipping!
-                        </p>
+                        <p className="text-xs text-gofarm-green">🚚 Add ${(50 - subtotal).toFixed(2)} more to get free shipping!</p>
                       </div>
                     )}
 
                     <div className="border-t pt-3 mt-3">
-                      <div className="flex justify-between">
-                        <span className="text-lg font-bold text-gofarm-black">Total</span>
-                        <span className="text-xl font-bold text-gofarm-green">${finalTotal.toFixed(2)}</span>
-                      </div>
+                      <div className="flex justify-between"><span className="text-lg font-bold text-gofarm-black">Total</span><span className="text-xl font-bold text-gofarm-green">${finalTotal.toFixed(2)}</span></div>
                     </div>
                   </div>
 
                   <button
-                    onClick={() => router.push("/checkout")}
+                    onClick={handleReviewOrder}
                     className="w-full mt-6 py-3 bg-gofarm-green text-white font-semibold rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg"
                   >
                     Proceed to Checkout
@@ -315,25 +418,12 @@ export default function CartPage() {
           </div>
           <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <div className="mb-2">
-                <Link href="/">
-                  <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-                </Link>
-              </div>
+              <div className="mb-2"><Link href="/"><img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" /></Link></div>
               <p className="text-gofarm-gray text-sm">Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.</p>
               <div className="flex items-center gap-3.5">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">YouTube</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">Facebook</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">Instagram</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85 0 3.205-.012 3.585-.069 4.85-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.85-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85 0-3.204.012-3.584.07-4.85.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">YouTube</span><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Facebook</span><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Instagram</span><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85 0 3.205-.012 3.585-.069 4.85-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.85-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85 0-3.204.012-3.584.07-4.85.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
               </div>
             </div>
             <FooterColumn title="Quick Links" items={quickLinks} />

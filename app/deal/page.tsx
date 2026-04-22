@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
+// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
 import RealCountdown from "./RealCountDown";
 import SubscribeButton from "./SubscribeButton";
@@ -261,35 +261,10 @@ export default async function DealPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-red-50 to-orange-50">
-      <SiteHeader />
+      {/* ĐÃ XÓA: <SiteHeader /> */}
+      {/* ĐÃ XÓA: Breadcrumb (Home > Deal) */}
 
       <main>
-        <div className="max-w-(--breakpoint-xl) mx-auto px-4 pt-6">
-          <div className="my-3">
-            <nav aria-label="breadcrumb">
-              <ol className="flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5">
-                <li className="inline-flex items-center gap-1.5">
-                  <Link className="flex items-center hover:text-gofarm-light-green transition-colors" href="/">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-                      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    </svg>
-                    <span className="ml-1">Home</span>
-                  </Link>
-                </li>
-                <li aria-hidden="true">
-                  <ChevronRightIcon className="w-3.5 h-3.5" />
-                </li>
-                <li className="inline-flex items-center gap-1.5">
-                  <span aria-current="page" className="text-gofarm-green font-medium truncate max-w-xs">
-                    Deal
-                  </span>
-                </li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-
         <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
           <section className="rounded-xl bg-linear-to-r from-red-500 to-orange-500 text-white border-0 shadow-xl overflow-hidden">
             <div className="p-6 sm:p-8 lg:p-12">
@@ -452,12 +427,15 @@ export default async function DealPage() {
                 <div className="flex items-center gap-3.5 text-gofarm-black/60">
                   <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
                     <span className="sr-only">YouTube</span>
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                   </a>
-                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                    <span className="sr-only">Social</span>
+                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
+                    <span className="sr-only">Facebook</span>
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
                   </a>
-                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                    <span className="sr-only">Social</span>
+                  <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
+                    <span className="sr-only">Instagram</span>
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85 0 3.205-.012 3.585-.069 4.85-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.85-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85 0-3.204.012-3.584.07-4.85.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                   </a>
                 </div>
               </div>
@@ -479,6 +457,9 @@ export default async function DealPage() {
                     className="w-full bg-gofarm-green text-gofarm-white px-4 py-2 rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
                   >
                     Subscribe
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                   </button>
                 </form>
               </div>

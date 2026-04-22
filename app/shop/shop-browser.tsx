@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
@@ -20,32 +22,136 @@ function salePriceFor(product: LocalProduct) {
     : product.price;
 }
 
-function ProductCard({ product }: { product: LocalProduct }) {
+// Icon Heart
+function HeartIcon({ className = "", filled = false }: { className?: string; filled?: boolean }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+    </svg>
+  );
+}
+
+// Icon Compare
+function CompareIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M8 3 4 7l4 4" />
+      <path d="M4 7h16" />
+      <path d="m16 21 4-4-4-4" />
+      <path d="M20 17H4" />
+    </svg>
+  );
+}
+
+// Icon Share
+function ShareIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
+      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
+    </svg>
+  );
+}
+
+// Star Icon
+function StarIcon({ className = "", filled = false }: { className?: string; filled?: boolean }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
+    </svg>
+  );
+}
+
+function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: { 
+  product: LocalProduct; 
+  onAddToCart: (product: LocalProduct) => void;
+  onToggleWishlist: (product: LocalProduct) => void;
+  isWishlisted: boolean;
+}) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsAdding(true);
+    onAddToCart(product);
+    setTimeout(() => setIsAdding(false), 500);
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onToggleWishlist(product);
+  };
 
   return (
     <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <Link href={`/shop/${product.slug}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-white">
-          <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
-            <span className="inline-flex items-center rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">
-              {status}
-            </span>
-            {product.discount ? (
-              <span className="inline-flex items-center rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white shadow">
-                -{product.discount}%
+      <div className="relative">
+        <Link href={`/shop/${product.slug}`} className="block">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-white">
+            <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
+              <span className="inline-flex items-center rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">
+                {status}
               </span>
-            ) : null}
+              {product.discount ? (
+                <span className="inline-flex items-center rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white shadow">
+                  -{product.discount}%
+                </span>
+              ) : null}
+            </div>
+
+            <img
+              src={product.imageSrc}
+              alt={product.imageAlt}
+              className="h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
           </div>
-          <img
-            src={product.imageSrc}
-            alt={product.imageAlt}
-            className="h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
+        </Link>
+
+        {/* Action Buttons - Wishlist, Compare, Share */}
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+          <button
+            type="button"
+            onClick={handleWishlist}
+            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+          </button>
+          <button
+            type="button"
+            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+            title="Compare product"
+          >
+            <CompareIcon className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
+            title="Share product"
+          >
+            <ShareIcon className="w-4 h-4" />
+          </button>
         </div>
-      </Link>
+      </div>
 
       <div className="px-4 pb-4 pt-2">
         <Link href={`/shop/${product.slug}`} className="block">
@@ -55,9 +161,10 @@ function ProductCard({ product }: { product: LocalProduct }) {
         </Link>
 
         <div className="mt-1 flex items-center gap-1 text-[12px] leading-none">
-          <span className="text-gofarm-orange">★</span>
-          <span className="font-semibold text-gofarm-black">{product.rating.toFixed(1)}</span>
-          <span className="text-gofarm-gray">({product.reviews})</span>
+          {[...Array(5)].map((_, i) => (
+            <StarIcon key={i} className={`w-3 h-3 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
+          ))}
+          <span className="text-gofarm-gray ml-1">({product.reviews})</span>
         </div>
 
         <div className="mt-2 flex items-end gap-2 flex-wrap">
@@ -74,11 +181,47 @@ function ProductCard({ product }: { product: LocalProduct }) {
           ) : null}
         </div>
 
-        <button className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-[8px] border border-gofarm-light-green/35 bg-white px-4 py-3 text-[15px] font-semibold text-gofarm-black transition-all duration-200 hover:border-gofarm-green hover:bg-gofarm-light-orange/10">
-          <span>Add to Cart</span>
+        {/* Button Add to Cart - Màu xanh giống collection */}
+        <button
+          onClick={handleAddToCart}
+          disabled={isAdding}
+          className="mt-4 w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isAdding ? "Adding..." : "Add to Cart"}
         </button>
       </div>
     </article>
+  );
+}
+
+function FilterOption({
+  active,
+  label,
+  count,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  count: number;
+  onClick: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} className="flex w-full items-center gap-3 text-left">
+      <span
+        className={[
+          "flex h-5 w-5 items-center justify-center rounded-full border transition-colors",
+          active ? "border-gofarm-green bg-gofarm-green" : "border-gray-300 bg-white",
+        ].join(" ")}
+      >
+        <span className="h-2.5 w-2.5 rounded-full bg-white" />
+      </span>
+      <span className={["flex-1 text-[15px]", active ? "text-gofarm-black font-medium" : "text-gofarm-gray"].join(" ")}>
+        {label}
+      </span>
+      <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
+        {count}
+      </span>
+    </button>
   );
 }
 
@@ -89,9 +232,21 @@ export default function ShopBrowser({
   products: LocalProduct[];
   categories: LocalCategory[];
 }) {
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [activeBrand, setActiveBrand] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortMode>("featured");
+  const [wishlistStatus, setWishlistStatus] = useState<Record<string, boolean>>({});
+
+  // Load wishlist status
+  useEffect(() => {
+    const status: Record<string, boolean> = {};
+    products.forEach(product => {
+      status[product.id] = isInWishlist(product.id);
+    });
+    setWishlistStatus(status);
+  }, [products, isInWishlist]);
 
   const brands = Array.from(
     products.reduce((map, product) => {
@@ -121,6 +276,34 @@ export default function ShopBrowser({
           return 0;
       }
     });
+
+  const handleAddToCart = (product: LocalProduct) => {
+    const salePrice = salePriceFor(product);
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: salePrice,
+      imageSrc: product.imageSrc,
+      slug: product.slug,
+    });
+  };
+
+  const handleToggleWishlist = (product: LocalProduct) => {
+    const salePrice = salePriceFor(product);
+    if (wishlistStatus[product.id]) {
+      removeFromWishlist(product.id);
+      setWishlistStatus(prev => ({ ...prev, [product.id]: false }));
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: salePrice,
+        imageSrc: product.imageSrc,
+        slug: product.slug,
+      });
+      setWishlistStatus(prev => ({ ...prev, [product.id]: true }));
+    }
+  };
 
   return (
     <div className="max-w-(--breakpoint-xl) mx-auto px-4 pb-16">
@@ -222,7 +405,13 @@ export default function ShopBrowser({
             {filtered.length > 0 ? (
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                 {filtered.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAddToCart={handleAddToCart}
+                    onToggleWishlist={handleToggleWishlist}
+                    isWishlisted={wishlistStatus[product.id] || false}
+                  />
                 ))}
               </div>
             ) : (
@@ -235,36 +424,5 @@ export default function ShopBrowser({
         </section>
       </section>
     </div>
-  );
-}
-
-function FilterOption({
-  active,
-  label,
-  count,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  count: number;
-  onClick: () => void;
-}) {
-  return (
-    <button type="button" onClick={onClick} className="flex w-full items-center gap-3 text-left">
-      <span
-        className={[
-          "flex h-5 w-5 items-center justify-center rounded-full border transition-colors",
-          active ? "border-gofarm-green bg-gofarm-green" : "border-gray-300 bg-white",
-        ].join(" ")}
-      >
-        <span className="h-2.5 w-2.5 rounded-full bg-white" />
-      </span>
-      <span className={["flex-1 text-[15px]", active ? "text-gofarm-black font-medium" : "text-gofarm-gray"].join(" ")}>
-        {label}
-      </span>
-      <span className="inline-flex min-w-8 items-center justify-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold text-gofarm-gray">
-        {count}
-      </span>
-    </button>
   );
 }

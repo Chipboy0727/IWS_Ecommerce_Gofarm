@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -11,6 +13,7 @@ const navItems = [
   { href: "/collection", label: "Collection" },
   { href: "/store-list", label: "Local Stores" },
   { href: "/contact", label: "Contact" },
+  { href: "/help", label: "Need Help?" },
 ];
 
 // Icons
@@ -28,6 +31,17 @@ function IconHeart() {
   return (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+    </svg>
+  );
+}
+
+// THÊM ICON ORDERS
+function IconOrders() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
     </svg>
   );
 }
@@ -79,15 +93,27 @@ function IconLogout() {
   );
 }
 
+function IconHelp() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
 function NavLink({ href, label, active }: { href: string; label: string; active: boolean }) {
+  const isHelp = label === "Need Help?";
   return (
     <Link
       href={href}
       className={[
-        "text-sm lg:text-[15px] font-semibold transition-colors duration-200",
+        "text-sm lg:text-[15px] font-semibold transition-colors duration-200 inline-flex items-center gap-1.5",
         active ? "text-gofarm-green" : "text-gofarm-gray hover:text-gofarm-green",
       ].join(" ")}
     >
+      {isHelp && <IconHelp />}
       {label}
     </Link>
   );
@@ -219,8 +245,9 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className={`text-base ${pathname === item.href ? "text-gofarm-green font-semibold" : "text-gofarm-gray"}`}
+              className={`text-base flex items-center gap-2 ${pathname === item.href ? "text-gofarm-green font-semibold" : "text-gofarm-gray"}`}
             >
+              {item.label === "Need Help?" && <IconHelp />}
               {item.label}
             </Link>
           ))}
@@ -258,31 +285,18 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 export default function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const { totalItems: cartCount } = useCart();
+  const { totalItems: wishlistCount } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [orderCount, setOrderCount] = useState(0); // THÊM STATE CHO SỐ LƯỢNG ĐƠN HÀNG
 
-  // Load data from localStorage
+  // Load user data
   useEffect(() => {
-    const loadData = () => {
-      const cart = localStorage.getItem("cart");
-      if (cart) {
-        try {
-          const items = JSON.parse(cart);
-          setCartCount(items.length);
-        } catch (e) {}
-      }
-      const wishlist = localStorage.getItem("wishlist");
-      if (wishlist) {
-        try {
-          const items = JSON.parse(wishlist);
-          setWishlistCount(items.length);
-        } catch (e) {}
-      }
+    const loadUser = () => {
       const user = localStorage.getItem("user");
       if (user) {
         try {
@@ -292,9 +306,25 @@ export default function SiteHeader() {
         } catch (e) {}
       }
     };
-    loadData();
-    window.addEventListener("storage", loadData);
-    return () => window.removeEventListener("storage", loadData);
+    loadUser();
+  }, []);
+
+  // THÊM EFFECT ĐỂ LOAD SỐ LƯỢNG ĐƠN HÀNG
+  useEffect(() => {
+    const loadOrders = () => {
+      const orders = localStorage.getItem("orders");
+      if (orders) {
+        try {
+          const ordersList = JSON.parse(orders);
+          setOrderCount(ordersList.length);
+        } catch (e) {}
+      }
+    };
+    loadOrders();
+    
+    // Lắng nghe sự kiện storage để cập nhật khi có đơn hàng mới
+    window.addEventListener("storage", loadOrders);
+    return () => window.removeEventListener("storage", loadOrders);
   }, []);
 
   // Keyboard shortcut Ctrl+K
@@ -317,18 +347,15 @@ export default function SiteHeader() {
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
     setIsLoggedIn(false);
-    setCartCount(0);
-    setWishlistCount(0);
     router.push("/");
   };
 
   return (
     <>
       <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">
-        {/* Top promo bar - nền xanh lá, chữ trắng to, chạy ngang nối đuôi */}
+        {/* Top promo bar */}
         <div className="bg-gofarm-green text-white py-2.5 text-base overflow-hidden whitespace-nowrap font-semibold">
           <div className="inline-block animate-marquee">
-            {/* Nội dung lần 1 */}
             <span className="mx-5">🎉 Free shipping on orders over $50</span>
             <span className="mx-2">✦</span>
             <span className="mx-5">🎁 Get 10% off your first order</span>
@@ -339,7 +366,6 @@ export default function SiteHeader() {
             <span className="mx-2">✦</span>
             <span className="mx-5">⭐ 24/7 Customer support</span>
             <span className="mx-2">✦</span>
-            {/* Nội dung lần 2 (nhân đôi để nối đuôi) */}
             <span className="mx-5">🎉 Free shipping on orders over $50</span>
             <span className="mx-2">✦</span>
             <span className="mx-5">🎁 Get 10% off your first order</span>
@@ -388,7 +414,7 @@ export default function SiteHeader() {
                   <IconCart />
                   {cartCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-gofarm-green text-white text-xs font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                      {cartCount > 9 ? "9+" : cartCount}
+                      {cartCount > 99 ? "99+" : cartCount}
                     </span>
                   )}
                 </Link>
@@ -398,7 +424,17 @@ export default function SiteHeader() {
                   <IconHeart />
                   {wishlistCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                      {wishlistCount > 9 ? "9+" : wishlistCount}
+                      {wishlistCount > 99 ? "99+" : wishlistCount}
+                    </span>
+                  )}
+                </Link>
+
+                {/* THÊM ICON ORDERS - NẰM GIỮA WISHLIST VÀ USER MENU */}
+                <Link href="/orders" className="relative hover:text-gofarm-green transition-colors">
+                  <IconOrders />
+                  {orderCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-semibold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                      {orderCount > 99 ? "99+" : orderCount}
                     </span>
                   )}
                 </Link>
@@ -463,7 +499,7 @@ export default function SiteHeader() {
           </div>
         </div>
 
-        {/* Navigation bar */}
+        {/* Navigation bar - Need Help? nằm ở đây */}
         <div className="hidden md:block bg-gofarm-white">
           <div className="max-w-(--breakpoint-xl) mx-auto px-4">
             <nav className="flex items-center justify-center gap-6 lg:gap-8 py-3">
@@ -477,17 +513,6 @@ export default function SiteHeader() {
               ))}
             </nav>
           </div>
-        </div>
-
-        {/* Mobile bottom help button */}
-        <div className="md:hidden fixed bottom-6 right-6 z-50">
-          <Link href="/help" className="bg-gofarm-green text-white p-3 rounded-full shadow-lg hover:bg-gofarm-light-green transition-colors">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-          </Link>
         </div>
       </header>
 

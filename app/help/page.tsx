@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
+// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
@@ -202,7 +202,7 @@ export default function HelpPage() {
 
   return (
     <>
-      <SiteHeader />
+      {/* ĐÃ XÓA: <SiteHeader /> */}
       <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
         <section className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green text-white py-16 lg:py-20">
           <div className="max-w-4xl mx-auto px-4 text-center">

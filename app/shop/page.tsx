@@ -1,4 +1,4 @@
-import SiteHeader from "@/components/site-header";
+// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 import { loadLocalCatalog } from "@/lib/local-catalog";
 import ShopBrowser from "./shop-browser";
 
@@ -12,7 +12,7 @@ export default async function ShopPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
-      <SiteHeader />
+      {/* ĐÃ XÓA: <SiteHeader /> */}
       <main>
         <ShopBrowser products={products} categories={categories} />
       </main>

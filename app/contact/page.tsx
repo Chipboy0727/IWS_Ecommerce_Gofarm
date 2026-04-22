@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
+// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "Contact Us | gofarm",
@@ -205,7 +205,9 @@ function Footer() {
             <ul className="space-y-3">
               {["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"].map((item) => (
                 <li key={item} className="text-sm font-medium text-gofarm-gray hover:text-gofarm-green">
-                  {item}
+                  <Link href={item === "About us" ? "/about" : item === "Contact us" ? "/contact" : "#"}>
+                    {item}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -249,7 +251,7 @@ function Footer() {
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
-      <SiteHeader />
+      {/* ĐÃ XÓA: <SiteHeader /> */}
 
       <section className="bg-linear-to-r from-gofarm-green to-gofarm-light-green py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">

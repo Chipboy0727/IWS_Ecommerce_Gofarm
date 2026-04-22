@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { StoreItem } from "@/lib/store-list-data";
 
+// ==================== ICONS ====================
 function IconStore({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5" />
       <path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244" />
       <path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05" />
@@ -16,7 +17,7 @@ function IconStore({ className = "" }: { className?: string }) {
 
 function IconSearch({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.34-4.34" />
     </svg>
@@ -25,7 +26,7 @@ function IconSearch({ className = "" }: { className?: string }) {
 
 function IconMapPin({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -34,7 +35,7 @@ function IconMapPin({ className = "" }: { className?: string }) {
 
 function IconGlobe({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="12" r="10" />
       <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
       <path d="M2 12h20" />
@@ -44,7 +45,7 @@ function IconGlobe({ className = "" }: { className?: string }) {
 
 function IconPhone({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a1 1 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
     </svg>
   );
@@ -52,7 +53,7 @@ function IconPhone({ className = "" }: { className?: string }) {
 
 function IconClock({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="12" r="10" />
       <path d="M12 6v6l4 2" />
     </svg>
@@ -61,408 +62,459 @@ function IconClock({ className = "" }: { className?: string }) {
 
 function IconMail({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
       <rect x="2" y="4" width="20" height="16" rx="2" />
     </svg>
   );
 }
 
-function IconFilter({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z" />
-    </svg>
-  );
-}
-
 function IconChevronDown({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
 }
 
-function IconCart({ className = "" }: { className?: string }) {
+function IconX({ className = "" }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="9" cy="20" r="1" />
-      <circle cx="17" cy="20" r="1" />
-      <path d="M3 4h2l2.4 11.2A2 2 0 0 0 9.35 17h7.65a2 2 0 0 0 1.96-1.57L21 8H6" />
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
 
-function StoreCard({ store }: { store: StoreItem }) {
+function IconExternal({ className = "" }: { className?: string }) {
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-gofarm-light-green/20 bg-white shadow-lg transition-shadow hover:shadow-xl">
-      <div className="relative h-40 overflow-hidden bg-linear-to-br from-gofarm-light-green/10 via-white to-gofarm-light-orange/10 sm:h-48">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(22,163,74,0.12),transparent_62%)]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <IconMapPin className="h-24 w-24 text-slate-500/70 sm:h-28 sm:w-28" />
-        </div>
-        <span className="absolute right-4 top-4 rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow-sm">
-          Open
-        </span>
-      </div>
-
-      <div className="flex flex-1 flex-col p-6">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="text-xl font-bold text-gofarm-black">{store.name}</h3>
-            <p className="mt-1 truncate text-sm text-gofarm-gray">
-              {store.city}, {store.country}
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-3 text-sm text-gofarm-gray">
-          <div className="flex items-start gap-2">
-            <IconMapPin className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>{store.address}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <IconPhone className="h-4 w-4 shrink-0" />
-            <span>{store.phone}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <IconMail className="h-4 w-4 shrink-0" />
-            <span className="truncate">{store.email}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <IconClock className="h-4 w-4 shrink-0" />
-            <span>{store.hours}</span>
-          </div>
-        </div>
-
-        <div className="mt-5">
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex w-full items-center justify-center rounded-xl bg-gofarm-green px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gofarm-light-green"
-          >
-            Get Directions
-          </a>
-        </div>
-      </div>
-    </article>
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
+    </svg>
   );
 }
 
-function MapPanel({ stores }: { stores: StoreItem[] }) {
+function IconStar({ className = "" }: { className?: string }) {
   return (
-    <section className="overflow-hidden rounded-xl border border-gofarm-light-green/20 shadow-lg">
-      <div className="bg-linear-to-br from-gofarm-light-green/10 via-white to-gofarm-light-orange/10 p-6">
-        <h2 className="mb-2 flex items-center gap-2 text-2xl font-bold text-gofarm-black">
-          <IconGlobe className="h-6 w-6 shrink-0 text-gofarm-green" />
-          Store Locations Map
-        </h2>
-        <p className="text-gofarm-gray">View all our store locations on the map below</p>
-      </div>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  );
+}
 
-      <div className="relative h-[600px] bg-gray-100">
-        <svg viewBox="0 0 1200 620" className="block h-full w-full">
-          <defs>
-            <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8ad4e5" />
-              <stop offset="100%" stopColor="#71c8de" />
-            </linearGradient>
-          </defs>
-          <rect width="1200" height="620" fill="url(#sea)" />
-          <path d="M140 500 C200 430, 240 380, 280 320 C320 260, 380 220, 440 210 C500 200, 560 250, 620 285 C680 320, 720 350, 760 388 C800 426, 860 430, 920 390 C980 350, 1040 300, 1110 250 L1110 620 L140 620 Z" fill="#f4e6b4" opacity="0.88" />
-          <path d="M0 600 C120 560, 170 510, 250 470 C330 430, 370 390, 400 340 C430 290, 520 250, 620 260 C720 270, 790 310, 870 340 C950 370, 1030 370, 1200 330 L1200 620 L0 620 Z" fill="#efe0ac" opacity="0.35" />
-          <path d="M180 370 C260 340, 350 330, 420 300" stroke="#9dbd78" strokeWidth="18" strokeLinecap="round" opacity="0.75" />
-          <path d="M520 380 C610 320, 700 295, 820 300" stroke="#87b46e" strokeWidth="20" strokeLinecap="round" opacity="0.82" />
-          <path d="M810 180 C900 220, 960 250, 1030 330" stroke="#9fc279" strokeWidth="16" strokeLinecap="round" opacity="0.7" />
-          <path d="M280 110 C380 150, 470 170, 560 160" stroke="#c8d7a5" strokeWidth="14" strokeLinecap="round" opacity="0.65" />
+// ==================== STORE CARD ====================
+function StoreCard({ store }: { store: StoreItem }) {
+  const openGoogleMaps = () => {
+    const address = encodeURIComponent(`${store.address}, ${store.city}, ${store.country}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+  };
 
-          {stores.map((store) => (
-            <g key={store.id} transform={`translate(${store.pinX}%, ${store.pinY}%)`}>
-              <circle cx="0" cy="0" r="16" fill={store.tint === "red" ? "#ef4444" : "#16a34a"} />
-              <circle cx="0" cy="0" r="6" fill="#fff" />
-            </g>
-          ))}
-        </svg>
-
-        <div className="absolute left-4 top-4 max-h-[200px] overflow-y-auto rounded-lg bg-white/95 p-3 text-xs shadow-lg backdrop-blur">
-          <p className="mb-2 font-semibold text-gray-900">Store Locations:</p>
-          <div className="space-y-1">
-            {stores.slice(0, 3).map((store, index) => (
-              <div key={store.id} className="flex items-start gap-2 rounded p-2 transition-colors hover:bg-gray-100">
-                <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white ${store.tint === "red" ? "bg-red-500" : "bg-gofarm-green"}`}>
-                  {index + 1}
-                </span>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{store.name}</p>
-                  <p className="text-gray-600">
-                    {store.city}, {store.country}
-                  </p>
-                </div>
-              </div>
-            ))}
+  return (
+    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-gofarm-green/0 via-gofarm-green/10 to-gofarm-green/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <div className="relative p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gofarm-green/15 to-gofarm-light-green/10">
+            <IconStore className="h-6 w-6 text-gofarm-green" />
           </div>
-        </div>
-
-        <div className="absolute bottom-6 left-6 right-6 rounded-xl border border-gofarm-light-green/20 bg-white/95 p-4 shadow-lg backdrop-blur">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="font-semibold text-gofarm-black">
-                Showing {stores.length} {stores.length === 1 ? "store" : "stores"}
-              </p>
-              <p className="text-sm text-gofarm-gray">Click on store names in the list to view on Google Maps</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {stores.slice(0, 3).map((store) => (
-                <span key={store.id} className="rounded-full border border-gofarm-light-green/30 bg-gofarm-light-green/20 px-3 py-1 text-xs font-semibold text-gofarm-green">
-                  {store.name}
-                </span>
+          <div className="flex items-center gap-1.5">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <IconStar key={i} className={`h-3 w-3 ${i < 4 ? "text-yellow-400" : "text-gray-200"}`} />
               ))}
             </div>
+            <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+              Open
+            </span>
           </div>
         </div>
+        
+        <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-gofarm-green transition-colors line-clamp-1">
+          {store.name}
+        </h3>
+        <div className="flex items-center gap-1 mb-3">
+          <IconMapPin className="h-3 w-3 text-gray-400" />
+          <p className="text-xs text-gray-500">{store.city}, {store.country}</p>
+        </div>
+        
+        <div className="space-y-2 text-sm border-t border-gray-100 pt-3">
+          <div className="flex items-start gap-2 text-gray-600">
+            <IconMapPin className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gofarm-green" />
+            <span className="text-xs line-clamp-2">{store.address}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <IconPhone className="h-3.5 w-3.5 shrink-0 text-gofarm-green" />
+            <a href={`tel:${store.phone}`} className="text-xs hover:text-gofarm-green transition-colors">
+              {store.phone}
+            </a>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <IconClock className="h-3.5 w-3.5 shrink-0 text-gofarm-green" />
+            <span className="text-xs line-clamp-1">{store.hours}</span>
+          </div>
+        </div>
+        
+        <button
+          onClick={openGoogleMaps}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white transition-all hover:bg-gofarm-green hover:gap-3"
+        >
+          <IconMapPin className="h-3.5 w-3.5" />
+          Get Directions
+          <IconExternal className="h-3 w-3 opacity-70" />
+        </button>
       </div>
-    </section>
-  );
-}
-
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div>
-      <h4 className="mb-4 font-semibold text-gofarm-black">{title}</h4>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={item} className="text-sm font-medium text-gofarm-gray transition-colors hover:text-gofarm-green">
-            {item}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
 
-function Footer() {
+// ==================== MAP PANEL ====================
+function MapPanel({ stores }: { stores: StoreItem[] }) {
+  const [selectedStore, setSelectedStore] = useState<StoreItem | null>(stores[0] || null);
+
+  const openGoogleMaps = (store: StoreItem) => {
+    const address = encodeURIComponent(`${store.address}, ${store.city}, ${store.country}`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${address}`, "_blank");
+  };
+
+  const getDirections = (store: StoreItem) => {
+    const address = encodeURIComponent(`${store.address}, ${store.city}, ${store.country}`);
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`, "_blank");
+  };
+
   return (
-    <footer className="mt-10 border-t border-gofarm-light-gray bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 py-12 md:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <div className="mb-2">
-              <Link href="/">
-                <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-              </Link>
-            </div>
-            <p className="text-sm text-gofarm-gray">
-              Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.
-            </p>
+    <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
+      <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gofarm-green/10">
+            <IconGlobe className="h-4 w-4 text-gofarm-green" />
           </div>
-          <FooterColumn title="Quick Links" items={["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"]} />
-          <FooterColumn title="Categories" items={["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"]} />
           <div>
-            <h4 className="mb-4 font-semibold text-gofarm-black">Newsletter</h4>
-            <p className="mb-4 text-sm text-gofarm-gray">Subscribe to our newsletter to receive updates and exclusive offers.</p>
-            <form className="space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-lg border border-gofarm-light-gray px-4 py-2 text-gofarm-black outline-none focus:border-gofarm-light-green focus:ring-2 focus:ring-gofarm-light-green"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-gofarm-green px-4 py-2 font-semibold text-white transition-colors hover:bg-gofarm-light-green"
-              >
-                Subscribe
-              </button>
-            </form>
+            <h2 className="text-base font-bold text-gray-900">Store Locations Map</h2>
+            <p className="text-xs text-gray-500">{stores.length} stores available</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="border-r border-gray-100 bg-gray-50/30 max-h-96 overflow-y-auto">
+          <div className="p-3">
+            <div className="space-y-1.5">
+              {stores.map((store, idx) => (
+                <button
+                  key={store.id}
+                  onClick={() => setSelectedStore(store)}
+                  className={`w-full text-left rounded-xl p-3 transition-all duration-200 ${
+                    selectedStore?.id === store.id
+                      ? "bg-gofarm-green text-white shadow-md"
+                      : "bg-white hover:bg-gofarm-green/5 border border-gray-100 hover:border-gofarm-green/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                      selectedStore?.id === store.id
+                        ? "bg-white/20 text-white"
+                        : "bg-gofarm-green/10 text-gofarm-green"
+                    }`}>
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className={`font-semibold text-sm ${selectedStore?.id === store.id ? "text-white" : "text-gray-900"}`}>
+                        {store.name}
+                      </p>
+                      <p className={`text-xs ${selectedStore?.id === store.id ? "text-white/70" : "text-gray-500"}`}>
+                        {store.city}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gofarm-light-gray py-6 text-center text-sm text-gofarm-gray">
-          (c) 2026 gofarm. All rights reserved.
+        <div className="bg-white p-5">
+          {selectedStore ? (
+            <div className="text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gofarm-green/10 mx-auto">
+                <IconStore className="h-8 w-8 text-gofarm-green" />
+              </div>
+              
+              <h3 className="text-lg font-bold text-gray-900 mb-1">{selectedStore.name}</h3>
+              <p className="text-xs text-gray-500 mb-4">{selectedStore.address}</p>
+
+              <div className="flex flex-col gap-2 mb-4">
+                <button
+                  onClick={() => openGoogleMaps(selectedStore)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gofarm-green px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green"
+                >
+                  <IconMapPin className="h-4 w-4" />
+                  Open in Google Maps
+                  <IconExternal className="h-3 w-3" />
+                </button>
+                <button
+                  onClick={() => getDirections(selectedStore)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gofarm-green bg-white px-4 py-2.5 text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Get Directions
+                </button>
+              </div>
+
+              <div className="border-t border-gray-100 pt-4 mt-2">
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="text-left">
+                    <p className="text-gray-400 mb-0.5">📞 Phone</p>
+                    <a href={`tel:${selectedStore.phone}`} className="text-gofarm-green hover:underline text-xs">
+                      {selectedStore.phone}
+                    </a>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-gray-400 mb-0.5">✉️ Email</p>
+                    <a href={`mailto:${selectedStore.email}`} className="text-gofarm-green hover:underline text-xs truncate block">
+                      {selectedStore.email}
+                    </a>
+                  </div>
+                  <div className="col-span-2 text-left">
+                    <p className="text-gray-400 mb-0.5">🕒 Hours</p>
+                    <p className="text-gray-600 text-xs">{selectedStore.hours}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <IconMapPin className="h-12 w-12 text-gray-300 mb-3" />
+              <p className="text-sm text-gray-500">Select a store to view details</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==================== FOOTER ====================
+function Footer() {
+  return (
+    <footer className="mt-12 border-t border-gray-100 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div className="col-span-1">
+            <Link href="/" className="inline-block">
+              <img alt="logo" className="h-7 w-auto" src="/images/logo.svg" />
+            </Link>
+            <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+              Fresh, organic farm products delivered to your door.
+            </p>
+          </div>
+          <div>
+            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Quick Links</h4>
+            <ul className="space-y-1.5">
+              {["About us", "Contact us", "FAQs", "Help"].map((item) => (
+                <li key={item}>
+                  <Link href={`/${item.toLowerCase().replace(" ", "-")}`} className="text-xs text-gray-500 hover:text-gofarm-green transition-colors">
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Categories</h4>
+            <ul className="space-y-1.5">
+              {["Vegetables", "Fruits", "Meat", "Fish", "Dairy"].map((item) => (
+                <li key={item}>
+                  <Link href={`/category/${item.toLowerCase()}`} className="text-xs text-gray-500 hover:text-gofarm-green transition-colors">
+                    {item}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 text-xs font-semibold text-gray-900 uppercase tracking-wider">Newsletter</h4>
+            <p className="mb-2 text-xs text-gray-500">Get updates and exclusive offers.</p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs outline-none focus:border-gofarm-green"
+              />
+              <button className="rounded-lg bg-gofarm-green px-3 py-1.5 text-xs font-semibold text-white hover:bg-gofarm-light-green">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 border-t border-gray-100 pt-4 text-center text-xs text-gray-400">
+          © 2026 GoFarm. All rights reserved.
         </div>
       </div>
     </footer>
   );
 }
 
-function FloatingBuyButton() {
-  return (
-    <a
-      href="https://buymeacoffee.com/reactbd/e/484104"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-20 z-50 group"
-    >
-      <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-linear-to-r from-green-500 to-emerald-500 animate-pulse opacity-75 transition-opacity duration-300 group-hover:opacity-100" />
-        <div className="relative flex items-center gap-2.5 overflow-hidden rounded-full bg-linear-to-r from-green-600 to-emerald-600 px-5 py-3.5 text-white shadow-lg transition-all duration-300 group-hover:scale-105">
-          <span className="absolute inset-0 -translate-y-full bg-gofarm-orange transition-transform duration-500 ease-out group-hover:translate-y-0" />
-          <IconCart className="relative z-10 h-5 w-5 shrink-0" />
-          <span className="relative z-10 whitespace-nowrap text-sm font-semibold">Buy Production Code</span>
-        </div>
-      </div>
-    </a>
-  );
-}
-
+// ==================== MAIN COMPONENT ====================
 export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
-  const [query, setQuery] = useState("");
-  const [country, setCountry] = useState("All Countries");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("all");
 
-  const countries = useMemo(() => ["All Countries", ...Array.from(new Set(stores.map((store) => store.country)))], [stores]);
+  const countries = useMemo(() => {
+    return ["all", ...new Set(stores.map(s => s.country))];
+  }, [stores]);
 
   const filteredStores = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return stores.filter((store) => {
-      const matchesCountry = country === "All Countries" || store.country === country;
-      const matchesQuery =
-        !q ||
-        [store.name, store.address, store.email, store.city, store.country, store.hours]
-          .join(" ")
-          .toLowerCase()
-          .includes(q);
-      return matchesCountry && matchesQuery;
+    return stores.filter(store => {
+      const matchesSearch = searchQuery === "" || 
+        store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.city.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCountry = selectedCountry === "all" || store.country === selectedCountry;
+      return matchesSearch && matchesCountry;
     });
-  }, [country, query, stores]);
+  }, [stores, searchQuery, selectedCountry]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCountry("all");
+  };
+
+  const hasFilters = searchQuery !== "" || selectedCountry !== "all";
 
   return (
-    <div className="relative">
-      <section className="mb-10 text-center">
-        <div className="mb-4 inline-flex items-center gap-3">
-          <div className="h-1 w-12 rounded-full bg-linear-to-r from-gofarm-light-green to-gofarm-green" />
-          <IconStore className="h-8 w-8 shrink-0 text-gofarm-green" />
-          <h1 className="text-3xl font-bold text-gofarm-black lg:text-5xl">Our Store Locations</h1>
-          <IconMapPin className="h-8 w-8 shrink-0 text-gofarm-green" />
-          <div className="h-1 w-12 rounded-full bg-linear-to-l from-gofarm-light-green to-gofarm-green" />
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white">
+      {/* Hero Section */}
+      <div className="mb-10 text-center">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-gofarm-green shadow-md">
+          <IconMapPin className="h-4 w-4" />
+          Find your nearest store
         </div>
-        <p className="mx-auto max-w-2xl text-lg text-gofarm-gray">Find a GoFarm store near you and visit us today</p>
-        <div className="mt-4">
-          <div className="inline-flex items-center rounded-md border border-gofarm-light-green/30 bg-gofarm-light-green/20 px-4 py-2 text-base font-semibold text-gofarm-green shadow-sm">
-            {filteredStores.length} {filteredStores.length === 1 ? "Store" : "Stores"} Found
-          </div>
-        </div>
-      </section>
+        <h1 className="mb-3 text-4xl font-bold text-gray-900 lg:text-5xl">
+          Store Locations
+        </h1>
+        <p className="mx-auto max-w-md text-gray-500">
+          Visit us at any of our locations across the country
+        </p>
+      </div>
 
-      <section className="mb-8 rounded-xl border border-gofarm-light-green/20 bg-linear-to-br from-white via-gofarm-light-orange/5 to-gofarm-light-green/5 p-6 shadow-lg">
-        <div className="space-y-4">
-          <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="flex-1 space-y-2">
-              <label htmlFor="search" className="text-sm font-medium text-gofarm-black">
-                Search Stores
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gofarm-gray">
-                  <IconSearch className="h-5 w-5 shrink-0" />
-                </span>
-                <input
-                  id="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search by store name, city, or address..."
-                  className="h-12 w-full rounded-xl border border-gofarm-light-green/30 bg-white pl-12 pr-10 text-base outline-none transition-colors placeholder:text-gray-400 focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green"
-                />
-              </div>
+      {/* Search and Filter Bar - ĐÃ SỬA LỖI ICON ĐÈ CHỮ */}
+      <div className="mb-8">
+        <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-md sm:flex-row">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <IconSearch className="h-5 w-5 text-gray-400" />
             </div>
-
-            <div className="space-y-2 lg:w-64">
-              <label htmlFor="country" className="text-sm font-medium text-gofarm-black">
-                Filter by Country
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gofarm-green">
-                  <IconGlobe className="h-4 w-4 shrink-0 text-gofarm-green" />
-                </span>
-                <select
-                  id="country"
-                  value={country}
-                  onChange={(event) => setCountry(event.target.value)}
-                  className="h-12 w-full rounded-xl border border-gofarm-light-green/30 bg-white pl-11 pr-10 text-sm outline-none transition-colors focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green"
-                >
-                  {countries.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <IconChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              </div>
-            </div>
-
-            <div className="flex items-end">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by store name or city..."
+              className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-12 pr-10 text-base outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
+            />
+            {searchQuery && (
               <button
-                type="button"
-                className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-gofarm-light-green/30 bg-white px-6 text-sm font-medium text-gofarm-black shadow-sm transition-colors hover:bg-gofarm-light-green/10 lg:w-auto"
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
               >
-                <IconFilter className="h-5 w-5 shrink-0" />
-                <span className="ml-2">More Filters</span>
+                <IconX className="h-5 w-5" />
               </button>
+            )}
+          </div>
+
+          {/* Country Filter - ĐÃ TĂNG PADDING ĐỂ KHÔNG ĐÈ ICON */}
+          <div className="relative w-full sm:w-56">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+              <IconGlobe className="h-5 w-5 text-gray-400" />
+            </div>
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="h-12 w-full appearance-none rounded-xl border border-gray-200 bg-white pl-12 pr-10 text-base outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
+            >
+              {countries.map(country => (
+                <option key={country} value={country}>
+                  {country === "all" ? " All Countries" : ` ${country}`}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <IconChevronDown className="h-5 w-5 text-gray-400" />
             </div>
           </div>
+
+          {/* Clear Button */}
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="flex h-12 items-center gap-2 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-500 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+            >
+              <IconX className="h-4 w-4" />
+              Clear
+            </button>
+          )}
         </div>
-      </section>
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredStores.map((store) => (
-          <StoreCard key={store.id} store={store} />
-        ))}
-      </section>
-
-      <section className="mt-8">
-        <MapPanel stores={filteredStores} />
-      </section>
-
-      <section className="mt-8 grid gap-4 border-t border-gofarm-light-gray pt-2 sm:grid-cols-2 xl:grid-cols-4">
-        <a
-          href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50"
-        >
-          <IconMapPin className="h-6 w-6 shrink-0 text-gofarm-gray" />
-          <div>
-            <h3 className="font-semibold text-gray-900">Visit Us</h3>
-            <p className="mt-1 text-sm text-gray-600">123 Shopping Street, Commerce District, New York, NY 10001, USA</p>
-          </div>
-        </a>
-        <a href="tel:15551234567" className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50">
-          <IconPhone className="h-6 w-6 shrink-0 text-gofarm-gray" />
-          <div>
-            <h3 className="font-semibold text-gray-900">Call Us</h3>
-            <p className="mt-1 text-sm text-gray-600">+1 (555) 123-4567</p>
-          </div>
-        </a>
-        <div className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50">
-          <IconClock className="h-6 w-6 shrink-0 text-gofarm-gray" />
-          <div>
-            <h3 className="font-semibold text-gray-900">Working Hours</h3>
-            <p className="mt-1 text-sm text-gray-600">Monday - Friday: 9AM - 6PM</p>
-          </div>
+        {/* Result count */}
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-gray-500">
+            Found <span className="font-semibold text-gofarm-green">{filteredStores.length}</span> stores
+          </p>
         </div>
-        <a href="mailto:support@gofarm.com" className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50">
-          <IconMail className="h-6 w-6 shrink-0 text-gofarm-gray" />
-          <div>
-            <h3 className="font-semibold text-gray-900">Email Us</h3>
-            <p className="mt-1 text-sm text-gray-600">support@gofarm.com</p>
-          </div>
-        </a>
-      </section>
+      </div>
 
-      <section className="mt-10 rounded-2xl bg-white px-6 py-8 text-center shadow-[0_16px_35px_rgba(37,168,67,0.12)]">
-        <h3 className="text-2xl font-extrabold text-gofarm-green">Need help finding a store?</h3>
-        <p className="mt-2 text-sm text-gofarm-gray">Use the filters above or contact us and we&apos;ll point you to the nearest location.</p>
-        <div className="mt-5 flex flex-wrap justify-center gap-3">
-          <Link href="/contact" className="inline-flex items-center justify-center rounded-md bg-gofarm-green px-5 py-2.5 text-sm font-semibold text-white">
-            Contact Us
+      {/* Results */}
+      {filteredStores.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center shadow-sm">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+            <IconStore className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="mb-2 text-xl font-semibold text-gray-900">No stores found</h3>
+          <p className="mb-6 text-gray-500">Try adjusting your search or filter criteria</p>
+          <button
+            onClick={clearFilters}
+            className="rounded-xl bg-gofarm-green px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gofarm-light-green"
+          >
+            Clear all filters
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredStores.map((store) => (
+              <StoreCard key={store.id} store={store} />
+            ))}
+          </div>
+          <MapPanel stores={filteredStores} />
+        </>
+      )}
+
+      {/* CTA Section */}
+      <div className="mt-10 rounded-2xl bg-gradient-to-r from-gofarm-green/5 via-white to-gofarm-light-green/5 p-6 text-center">
+        <h3 className="text-lg font-bold text-gray-900">Need help finding a store?</h3>
+        <p className="mt-1 text-sm text-gray-500">Contact us and we'll point you to the nearest location.</p>
+        <div className="mt-4 flex justify-center gap-3">
+          <Link
+            href="/contact"
+            className="rounded-xl bg-gofarm-green px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green hover:scale-105"
+          >
+            Contact Support
           </Link>
-          <Link href="/shop" className="inline-flex items-center justify-center rounded-md border border-gofarm-green px-5 py-2.5 text-sm font-semibold text-gofarm-green">
-            Shop Now
+          <Link
+            href="/shop"
+            className="rounded-xl border-2 border-gofarm-green bg-white px-5 py-2 text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white hover:scale-105"
+          >
+            Shop Online
           </Link>
         </div>
-      </section>
+      </div>
 
       <Footer />
-      <FloatingBuyButton />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import SiteHeader from "@/components/site-header";
 import { useCart } from "@/app/context/CartContext";
 import type { LocalProduct } from "@/lib/local-catalog";
 
@@ -150,7 +149,7 @@ function ProductCardComponent({ product, viewMode = "grid" }: { product: LocalPr
         name: product.name,
         price: salePrice,
         imageSrc: product.imageSrc,
-        quantity: 1,
+        slug: product.slug,
       });
       
       setShowToast(true);
@@ -439,18 +438,15 @@ export default function CollectionPage() {
 
   if (loading) {
     return (
-      <>
-        <SiteHeader />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
+      </div>
     );
   }
 
   return (
     <div className="bg-linear-to-b from-gofarm-light-green/5 via-gofarm-white to-gofarm-light-orange/5 min-h-screen">
-      <SiteHeader />
+      {/* ĐÃ XÓA: <SiteHeader /> */}
 
       <main>
         <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 lg:py-12">
