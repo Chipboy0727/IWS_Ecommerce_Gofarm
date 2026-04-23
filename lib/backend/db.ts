@@ -1,38 +1,20 @@
 import fs from "node:fs/promises";
-import fsSync from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { DatabaseSync } from "node:sqlite";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { hashPassword } from "@/lib/backend/auth";
-import { loadLocalCatalog } from "@/lib/local-catalog";
+import { loadSeedCatalog, type BackendUser, type SeedCatalog } from "@/lib/backend/catalog-seed";
 import { normalizeProductCategories } from "@/lib/backend/products";
+import { getMysqlPool } from "@/lib/backend/mysql";
 
-export type BackendUser = {
-  id: string;
-  name: string;
-  email: string;
-  passwordHash: string;
-  role: "admin" | "user";
-  createdAt: string;
-  updatedAt: string;
-  resetTokenHash?: string | null;
-  resetTokenExpiresAt?: string | null;
-};
+export type { BackendUser };
 
-export type BackendDb = {
-  products: LocalProduct[];
-  categories: LocalCategory[];
-  users: BackendUser[];
-  meta: {
-    version: number;
-    updatedAt: string;
-  };
-};
+export type BackendDb = SeedCatalog;
 
-const DB_PATH = path.resolve(process.cwd(), "data", "gofarm-backend.db");
 const LEGACY_JSON_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
-let database: DatabaseSync | null = null;
+
+let mysqlReady: boolean | null = null;
+let mysqlInitPromise: Promise<boolean> | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 
 function nowIso() {
@@ -88,116 +70,6 @@ function normalizeCategory(category: LocalCategory, index: number): LocalCategor
   };
 }
 
-function getDatabase() {
-  if (!database) {
-    database = new DatabaseSync(DB_PATH);
-    database.exec(`
-      PRAGMA journal_mode = WAL;
-      PRAGMA foreign_keys = ON;
-
-      CREATE TABLE IF NOT EXISTS products (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        slug TEXT NOT NULL UNIQUE,
-        imageSrc TEXT NOT NULL,
-        imageAlt TEXT NOT NULL,
-        price REAL NOT NULL,
-        discount REAL,
-        brand TEXT,
-        categoryId TEXT,
-        categoryTitle TEXT,
-        description TEXT NOT NULL DEFAULT '',
-        rating REAL NOT NULL DEFAULT 0,
-        reviews INTEGER NOT NULL DEFAULT 0,
-        stock INTEGER,
-        status TEXT,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS categories (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        slug TEXT NOT NULL UNIQUE,
-        imageSrc TEXT,
-        count INTEGER NOT NULL DEFAULT 0,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        passwordHash TEXT NOT NULL,
-        role TEXT NOT NULL CHECK (role IN ('admin', 'user')),
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL,
-        resetTokenHash TEXT,
-        resetTokenExpiresAt TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS meta (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL
-      );
-    `);
-  }
-
-  return database;
-}
-
-function readLegacyDbState(): BackendDb | null {
-  try {
-    const raw = fsSync.readFileSync(LEGACY_JSON_PATH, "utf8");
-    if (!raw.trim()) return null;
-    const parsed = JSON.parse(raw) as Partial<BackendDb>;
-    if (!Array.isArray(parsed.products) || !Array.isArray(parsed.categories)) return null;
-    return {
-      products: parsed.products.map(normalizeProduct),
-      categories: parsed.categories.map(normalizeCategory),
-      users: Array.isArray(parsed.users) && parsed.users.length > 0 ? (parsed.users as BackendUser[]) : [createSeedAdmin()],
-      meta: {
-        version: parsed.meta?.version ?? 1,
-        updatedAt: parsed.meta?.updatedAt ?? nowIso(),
-      },
-    };
-  } catch {
-    return null;
-  }
-}
-
-function readSeedCatalog(): BackendDb {
-  return {
-    products: [],
-    categories: [],
-    users: [createSeedAdmin()],
-    meta: { version: 1, updatedAt: nowIso() },
-  };
-}
-
-async function ensureSeedData() {
-  const db = getDatabase();
-  const categoryCount = db.prepare("SELECT COUNT(*) AS count FROM categories").get() as { count: number };
-  const productCount = db.prepare("SELECT COUNT(*) AS count FROM products").get() as { count: number };
-  const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get() as { count: number };
-
-  if (categoryCount.count > 0 || productCount.count > 0 || userCount.count > 0) {
-    return;
-  }
-
-  const legacySeed = readLegacyDbState();
-  const catalog = legacySeed ?? (await loadLocalCatalog());
-  const state: BackendDb = {
-    products: catalog.products.map(normalizeProduct),
-    categories: catalog.categories.map(normalizeCategory),
-    users: legacySeed?.users?.length ? legacySeed.users : [createSeedAdmin()],
-    meta: legacySeed?.meta ?? { version: 1, updatedAt: nowIso() },
-  };
-
-  await persistDb(state);
-}
-
 function rowToProduct(row: Record<string, unknown>): LocalProduct {
   return {
     id: String(row.id ?? ""),
@@ -246,66 +118,155 @@ function rowToUser(row: Record<string, unknown>): BackendUser {
   };
 }
 
-async function readStateFromDb(): Promise<BackendDb> {
-  await ensureSeedData();
-  const db = getDatabase();
-  const products = db.prepare("SELECT * FROM products ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToProduct);
-  const rawCategories = db.prepare("SELECT * FROM categories ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToCategory);
-  const users = db.prepare("SELECT * FROM users ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToUser);
+async function ensureMysqlSchema() {
+  const pool = getMysqlPool();
+  if (!pool) return false;
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS products (
+      id VARCHAR(64) PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      slug VARCHAR(255) NOT NULL UNIQUE,
+      imageSrc TEXT NOT NULL,
+      imageAlt TEXT NOT NULL,
+      price DECIMAL(12,2) NOT NULL,
+      discount DECIMAL(12,2) NULL,
+      brand VARCHAR(255) NULL,
+      categoryId VARCHAR(64) NULL,
+      categoryTitle VARCHAR(255) NULL,
+      description TEXT NOT NULL,
+      rating DECIMAL(4,2) NOT NULL DEFAULT 0,
+      reviews INT NOT NULL DEFAULT 0,
+      stock INT NULL,
+      status VARCHAR(64) NULL,
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL
+    )
+  `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id VARCHAR(64) PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      slug VARCHAR(255) NOT NULL UNIQUE,
+      imageSrc TEXT NULL,
+      count INT NOT NULL DEFAULT 0,
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL
+    )
+  `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS users (
+      id VARCHAR(64) PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      passwordHash TEXT NOT NULL,
+      role VARCHAR(16) NOT NULL,
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL,
+      resetTokenHash TEXT NULL,
+      resetTokenExpiresAt VARCHAR(32) NULL
+    )
+  `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS meta (
+      \`key\` VARCHAR(64) PRIMARY KEY,
+      value LONGTEXT NOT NULL
+    )
+  `);
+
+  return true;
+}
+
+async function ensureMysqlSeedData() {
+  const pool = getMysqlPool();
+  if (!pool) return false;
+
+  const [productRows] = await pool.query("SELECT COUNT(*) AS count FROM products");
+  const [categoryRows] = await pool.query("SELECT COUNT(*) AS count FROM categories");
+  const [userRows] = await pool.query("SELECT COUNT(*) AS count FROM users");
+
+  const productCount = Number((productRows as Array<{ count: number }>)[0]?.count ?? 0);
+  const categoryCount = Number((categoryRows as Array<{ count: number }>)[0]?.count ?? 0);
+  const userCount = Number((userRows as Array<{ count: number }>)[0]?.count ?? 0);
+
+  if (productCount > 0 || categoryCount > 0 || userCount > 0) {
+    return true;
+  }
+
+  const seed = await loadSeedCatalog();
+  await persistMysqlState(seed);
+  return true;
+}
+
+async function initializeMysql() {
+  if (mysqlReady === true) return true;
+  if (mysqlReady === false) return false;
+  if (mysqlInitPromise) return mysqlInitPromise;
+
+  mysqlInitPromise = (async () => {
+    try {
+      const schemaReady = await ensureMysqlSchema();
+      if (!schemaReady) {
+        mysqlReady = false;
+        return false;
+      }
+      await ensureMysqlSeedData();
+      mysqlReady = true;
+      return true;
+    } catch {
+      mysqlReady = false;
+      return false;
+    } finally {
+      mysqlInitPromise = null;
+    }
+  })();
+
+  return mysqlInitPromise;
+}
+
+async function readMysqlState(): Promise<BackendDb | null> {
+  const ready = await initializeMysql();
+  if (!ready) return null;
+
+  const pool = getMysqlPool();
+  if (!pool) return null;
+
+  const [productsResult] = await pool.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
+  const [categoriesResult] = await pool.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
+  const [usersResult] = await pool.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
+
+  const products = (productsResult as Array<Record<string, unknown>>).map(rowToProduct);
+  const categories = (categoriesResult as Array<Record<string, unknown>>).map(rowToCategory);
+  const users = (usersResult as Array<Record<string, unknown>>).map(rowToUser);
+
+  const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
+  const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
+  const meta = metaValue
+    ? (JSON.parse(metaValue) as BackendDb["meta"])
+    : { version: 1, updatedAt: nowIso() };
+
   return {
     products,
-    categories: normalizeProductCategories(products, rawCategories),
+    categories: normalizeProductCategories(products, categories),
     users,
-    meta: readMeta(),
+    meta,
   };
 }
 
-function readMeta() {
-  const db = getDatabase();
-  const row = db.prepare("SELECT value FROM meta WHERE key = 'state'").get() as { value?: string } | undefined;
-  if (!row?.value) {
-    return { version: 1, updatedAt: nowIso() };
-  }
+async function persistMysqlState(state: BackendDb) {
+  const pool = getMysqlPool();
+  if (!pool) return false;
 
+  const connection = await pool.getConnection();
   try {
-    return JSON.parse(row.value) as BackendDb["meta"];
-  } catch {
-    return { version: 1, updatedAt: nowIso() };
-  }
-}
-
-async function persistDb(state: BackendDb) {
-  const db = getDatabase();
-  await fs.mkdir(path.dirname(DB_PATH), { recursive: true });
-  db.exec("BEGIN IMMEDIATE TRANSACTION");
-  try {
-    db.exec("DELETE FROM products; DELETE FROM categories; DELETE FROM users; DELETE FROM meta;");
-
-    const insertProduct = db.prepare(`
-      INSERT INTO products (
-        id, name, slug, imageSrc, imageAlt, price, discount, brand, categoryId, categoryTitle,
-        description, rating, reviews, stock, status, createdAt, updatedAt
-      ) VALUES (
-        @id, @name, @slug, @imageSrc, @imageAlt, @price, @discount, @brand, @categoryId, @categoryTitle,
-        @description, @rating, @reviews, @stock, @status, @createdAt, @updatedAt
-      )
-    `);
-
-    const insertCategory = db.prepare(`
-      INSERT INTO categories (
-        id, title, slug, imageSrc, count, createdAt, updatedAt
-      ) VALUES (
-        @id, @title, @slug, @imageSrc, @count, @createdAt, @updatedAt
-      )
-    `);
-
-    const insertUser = db.prepare(`
-      INSERT INTO users (
-        id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt
-      ) VALUES (
-        @id, @name, @email, @passwordHash, @role, @createdAt, @updatedAt, @resetTokenHash, @resetTokenExpiresAt
-      )
-    `);
+    await connection.beginTransaction();
+    await connection.query("DELETE FROM products");
+    await connection.query("DELETE FROM categories");
+    await connection.query("DELETE FROM users");
+    await connection.query("DELETE FROM meta");
 
     const usedProductSlugs = new Set<string>();
     for (const product of state.products.map(normalizeProduct)) {
@@ -316,15 +277,33 @@ async function persistDb(state: BackendDb) {
         slug = `${baseSlug}-${suffix++}`;
       }
       usedProductSlugs.add(slug);
-      insertProduct.run({
-        ...product,
-        slug,
-        brand: product.brand,
-        categoryId: product.categoryId,
-        categoryTitle: product.categoryTitle,
-        discount: product.discount,
-        stock: product.stock,
-      });
+      await connection.execute(
+        `
+          INSERT INTO products (
+            id, name, slug, imageSrc, imageAlt, price, discount, brand, categoryId, categoryTitle,
+            description, rating, reviews, stock, status, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          product.id,
+          product.name,
+          slug,
+          product.imageSrc,
+          product.imageAlt,
+          product.price,
+          product.discount,
+          product.brand,
+          product.categoryId,
+          product.categoryTitle,
+          product.description,
+          product.rating,
+          product.reviews,
+          product.stock,
+          product.status,
+          product.createdAt ?? nowIso(),
+          product.updatedAt ?? nowIso(),
+        ]
+      );
     }
 
     const usedCategorySlugs = new Set<string>();
@@ -336,41 +315,85 @@ async function persistDb(state: BackendDb) {
         slug = `${baseSlug}-${suffix++}`;
       }
       usedCategorySlugs.add(slug);
-      insertCategory.run({
-        ...category,
-        slug,
-      });
+      await connection.execute(
+        `
+          INSERT INTO categories (
+            id, title, slug, imageSrc, count, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          category.id,
+          category.title,
+          slug,
+          category.imageSrc,
+          category.count,
+          category.createdAt ?? nowIso(),
+          category.updatedAt ?? nowIso(),
+        ]
+      );
     }
 
     for (const user of state.users) {
-      insertUser.run({
-        ...user,
-        resetTokenHash: user.resetTokenHash ?? null,
-        resetTokenExpiresAt: user.resetTokenExpiresAt ?? null,
-      });
+      await connection.execute(
+        `
+          INSERT INTO users (
+            id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          user.id,
+          user.name,
+          user.email,
+          user.passwordHash,
+          user.role,
+          user.createdAt,
+          user.updatedAt,
+          user.resetTokenHash ?? null,
+          user.resetTokenExpiresAt ?? null,
+        ]
+      );
     }
 
-    db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES ('state', ?)").run(JSON.stringify(state.meta ?? { version: 1, updatedAt: nowIso() }));
-    db.exec("COMMIT");
+    await connection.execute("INSERT INTO meta (`key`, value) VALUES (?, ?)", [
+      "state",
+      JSON.stringify(state.meta ?? { version: 1, updatedAt: nowIso() }),
+    ]);
+
+    await connection.commit();
+    return true;
   } catch (error) {
-    db.exec("ROLLBACK");
+    await connection.rollback();
     throw error;
+  } finally {
+    connection.release();
   }
 }
 
+async function persistFallbackState(state: BackendDb) {
+  await fs.mkdir(path.dirname(LEGACY_JSON_PATH), { recursive: true });
+  await fs.writeFile(LEGACY_JSON_PATH, JSON.stringify(state, null, 2), "utf8");
+}
+
 export async function readDb() {
-  return readStateFromDb();
+  const mysqlState = await readMysqlState();
+  if (mysqlState) return mysqlState;
+  return loadSeedCatalog();
 }
 
 export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
   writeQueue = writeQueue.then(async () => {
-    const current = await readStateFromDb();
+    const current = (await readMysqlState()) ?? (await loadSeedCatalog());
     const next = await mutator(current);
     next.meta = {
       version: next.meta?.version ?? 1,
       updatedAt: nowIso(),
     };
-    await persistDb(next);
+
+    const persisted = await persistMysqlState(next).catch(() => false);
+    if (!persisted) {
+      await persistFallbackState(next);
+      mysqlReady = false;
+    }
   });
 
   await writeQueue;
@@ -389,3 +412,4 @@ export async function updateDb(mutator: (db: BackendDb) => BackendDb | Promise<B
 export function cloneDb<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
+
