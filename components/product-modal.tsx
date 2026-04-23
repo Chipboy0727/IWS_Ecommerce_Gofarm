@@ -78,9 +78,9 @@ export function ProductModal({
     try {
       for (let i = 0; i < quantity; i++) {
         await addToCart({
-          id: product.id,
-          name: product.name,
-          price: salePrice,
+          id: `${product.id}-${selectedWeight}`, // Unique ID for different weights
+          name: `${product.name} (${selectedWeight})`,
+          price: currentUnitSalePrice,
           imageSrc: product.imageSrc,
           slug: product.slug,
         });
@@ -98,6 +98,22 @@ export function ProductModal({
   };
 
   const weights = ["500g", "1 kg", "2 kg", "5 kg"];
+
+  const getWeightMultiplier = (weight: string) => {
+    if (weight === "500g") return 0.5;
+    if (weight.includes("kg") || weight.includes("1 kg")) {
+      const value = parseFloat(weight.replace(" kg", ""));
+      return isNaN(value) ? 1 : value;
+    }
+    return 1;
+  };
+
+  const weightMultiplier = getWeightMultiplier(selectedWeight);
+  const currentUnitSalePrice = salePrice * weightMultiplier;
+  const currentUnitOriginalPrice = product.price * weightMultiplier;
+  const totalPrice = currentUnitSalePrice * quantity;
+  const totalOriginalPrice = currentUnitOriginalPrice * quantity;
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-12">
@@ -208,9 +224,9 @@ export function ProductModal({
                 </div>
 
                 <div className="flex items-end gap-3 mb-8">
-                  <span className="text-4xl font-extrabold text-gofarm-green">{formatPrice(salePrice)}</span>
+                  <span className="text-4xl font-extrabold text-gofarm-green">{formatPrice(totalPrice)}</span>
                   {product.discount ? (
-                    <span className="text-xl font-bold text-gray-400 line-through mb-1">{formatPrice(product.price)}</span>
+                    <span className="text-xl font-bold text-gray-400 line-through mb-1">{formatPrice(totalOriginalPrice)}</span>
                   ) : null}
                 </div>
 
