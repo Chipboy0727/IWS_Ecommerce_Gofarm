@@ -2,10 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { featuredProductsGridHtml } from "@/components/home/featured-products";
 import { sectionCarouselHtml, vegetableSectionHtml } from "@/components/home/vegetable-section";
-import { loadLocalCatalog } from "@/lib/local-catalog";
 import { ProductGridClient } from "@/components/home/ProductGridClient";
 import ProductShareHandler from "@/components/home/ProductShareHandler";
 import { productCardHtmlServer } from "@/components/home/product-card-html";
+import { loadLocalCatalog } from "@/lib/local-catalog";
 
 async function readOriginalBody() {
   const filePath = path.join(process.cwd(), "index.html");
@@ -148,8 +148,7 @@ function enhancedProductCardHtml(product: any) {
 
 export default async function HomePage() {
   const bodyHtml = await readOriginalBody();
-  const catalog = await loadLocalCatalog();
-  const allProducts = catalog.products;
+  const { products: allProducts } = await loadLocalCatalog();
   const products = allProducts.slice(0, 13);
   
   // Sử dụng hàm enhancedProductCardHtml thay vì productCardHtmlServer

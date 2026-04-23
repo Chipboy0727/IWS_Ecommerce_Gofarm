@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { DatabaseSync } from "node:sqlite";
 
 export type LocalProduct = {
   id: string;
@@ -73,6 +74,7 @@ const DEFAULT_SEED_DIR = path.resolve(
   "production-export-2025-11-30t08-28-44-763z"
 );
 const BACKEND_DB_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
+const SQLITE_DB_PATH = path.resolve(process.cwd(), "data", "gofarm-backend.db");
 
 function resolveSeedDir() {
   return process.env.GOFARM_SEED_DIR
@@ -112,6 +114,11 @@ export async function loadLocalCatalog(): Promise<{
   products: LocalProduct[];
   categories: LocalCategory[];
 }> {
+  const sqliteCatalog = readCatalogFromSqlite();
+  if (sqliteCatalog) {
+    return sqliteCatalog;
+  }
+
   const backendRaw = await fs.readFile(BACKEND_DB_PATH, "utf8").catch(() => "");
   if (backendRaw.trim()) {
     try {
@@ -211,4 +218,62 @@ export async function loadLocalCatalog(): Promise<{
   }));
 
   return { products, categories: categoryList };
+}
+
+function readCatalogFromSqlite(): { products: LocalProduct[]; categories: LocalCategory[] } | null {
+  try {
+    const db = new DatabaseSync(SQLITE_DB_PATH, { readOnly: true });
+    const tables = db.prepare(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('products', 'categories')"
+    ).all() as Array<{ name: string }>;
+    if (tables.length < 2) return null;
+
+    const products = db.prepare("SELECT * FROM products").all().map((row) => ({
+      ...(row as Record<string, unknown>),
+      id: String((row as Record<string, unknown>).id ?? ""),
+      name: String((row as Record<string, unknown>).name ?? ""),
+      slug: String((row as Record<string, unknown>).slug ?? ""),
+      imageSrc: String((row as Record<string, unknown>).imageSrc ?? "/images/logo.svg"),
+      imageAlt: String((row as Record<string, unknown>).imageAlt ?? "Product image"),
+      price: Number((row as Record<string, unknown>).price ?? 0),
+      discount: (row as Record<string, unknown>).discount === null || (row as Record<string, unknown>).discount === undefined ? null : Number((row as Record<string, unknown>).discount),
+      brand: (row as Record<string, unknown>).brand === null || (row as Record<string, unknown>).brand === undefined ? null : String((row as Record<string, unknown>).brand),
+      categoryId: (row as Record<string, unknown>).categoryId === null || (row as Record<string, unknown>).categoryId === undefined ? null : String((row as Record<string, unknown>).categoryId),
+      categoryTitle: (row as Record<string, unknown>).categoryTitle === null || (row as Record<string, unknown>).categoryTitle === undefined ? null : String((row as Record<string, unknown>).categoryTitle),
+      description: String((row as Record<string, unknown>).description ?? ""),
+      rating: Number((row as Record<string, unknown>).rating ?? 0),
+      reviews: Number((row as Record<string, unknown>).reviews ?? 0),
+      stock: (row as Record<string, unknown>).stock === null || (row as Record<string, unknown>).stock === undefined ? null : Number((row as Record<string, unknown>).stock),
+      status: (row as Record<string, unknown>).status === null || (row as Record<string, unknown>).status === undefined ? null : String((row as Record<string, unknown>).status),
+      createdAt: String((row as Record<string, unknown>).createdAt ?? new Date().toISOString()),
+      updatedAt: String((row as Record<string, unknown>).updatedAt ?? new Date().toISOString()),
+    } satisfies LocalProduct));
+    const categories = db.prepare("SELECT * FROM categories").all().map((row) => ({
+      ...(row as Record<string, unknown>),
+      id: String((row as Record<string, unknown>).id ?? ""),
+      title: String((row as Record<string, unknown>).title ?? "Category"),
+      slug: String((row as Record<string, unknown>).slug ?? ""),
+      imageSrc: (row as Record<string, unknown>).imageSrc === null || (row as Record<string, unknown>).imageSrc === undefined ? null : String((row as Record<string, unknown>).imageSrc),
+      count: Number((row as Record<string, unknown>).count ?? 0),
+      createdAt: String((row as Record<string, unknown>).createdAt ?? new Date().toISOString()),
+      updatedAt: String((row as Record<string, unknown>).updatedAt ?? new Date().toISOString()),
+    } satisfies LocalCategory));
+    if (!products.length && !categories.length) return null;
+
+    const categoryCounts = new Map<string, number>();
+    for (const product of products) {
+      if (!product.categoryId) continue;
+      categoryCounts.set(product.categoryId, (categoryCounts.get(product.categoryId) ?? 0) + 1);
+    }
+
+    return {
+      products,
+      categories: categories.map((category) => ({
+        ...category,
+        count: categoryCounts.get(category.id) ?? 0,
+      })),
+    };
+  } catch {
+    return null;
+  }
 }

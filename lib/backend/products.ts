@@ -10,6 +10,9 @@ export type ProductListQuery = {
   category?: string;
   brand?: string;
   status?: string;
+  filterType?: "all" | "sale" | "featured" | "new" | "hot";
+  minPrice?: number;
+  maxPrice?: number;
   sortBy?: ProductSortBy;
   sortOrder?: SortOrder;
   page?: number;
@@ -96,6 +99,9 @@ export function listProducts(products: LocalProduct[], query: ProductListQuery) 
   const category = query.category?.trim().toLowerCase();
   const brand = query.brand?.trim().toLowerCase();
   const status = query.status?.trim().toLowerCase();
+  const filterType = query.filterType ?? "all";
+  const minPrice = typeof query.minPrice === "number" ? query.minPrice : null;
+  const maxPrice = typeof query.maxPrice === "number" ? query.maxPrice : null;
   const sortBy = query.sortBy ?? "featured";
   const sortOrder = query.sortOrder ?? "desc";
 
@@ -107,6 +113,13 @@ export function listProducts(products: LocalProduct[], query: ProductListQuery) 
     if (category && product.categoryId?.toLowerCase() !== category && product.categoryTitle?.toLowerCase() !== category) return false;
     if (brand && (product.brand ?? "").toLowerCase() !== brand) return false;
     if (status && (product.status ?? "").toLowerCase() !== status) return false;
+    if (filterType === "sale" && !(product.discount && product.discount > 0)) return false;
+    if (filterType === "featured" && !(Boolean((product as { isFeatured?: boolean }).isFeatured) || product.rating >= 4.5)) return false;
+    if (filterType === "new" && !/new|just added/i.test(product.status ?? "")) return false;
+    if (filterType === "hot" && !(product.discount && product.discount >= 15)) return false;
+    const currentPrice = salePrice(product);
+    if (minPrice !== null && currentPrice < minPrice) return false;
+    if (maxPrice !== null && currentPrice > maxPrice) return false;
     return true;
   });
 
