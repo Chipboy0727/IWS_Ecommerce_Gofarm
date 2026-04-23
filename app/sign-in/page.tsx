@@ -78,7 +78,14 @@ export default function SignInPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/");
+      
+      // Chuyển hướng thông minh dựa trên vai trò (role)
+      if (data.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
+      
       router.refresh();
     } catch (err: any) {
       setError(err.message);

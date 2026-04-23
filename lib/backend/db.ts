@@ -1,11 +1,7 @@
-import fs from "node:fs/promises";
-import fsSync from "node:fs";
-import path from "node:path";
+import mysql from "mysql2/promise";
 import { randomUUID } from "node:crypto";
-import { DatabaseSync } from "node:sqlite";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { hashPassword } from "@/lib/backend/auth";
-import { loadLocalCatalog } from "@/lib/local-catalog";
 import { normalizeProductCategories } from "@/lib/backend/products";
 
 export type BackendUser = {
@@ -30,35 +26,39 @@ export type BackendDb = {
   };
 };
 
-const DB_PATH = path.resolve(process.cwd(), "data", "gofarm-backend.db");
-const LEGACY_JSON_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
-let database: DatabaseSync | null = null;
-let writeQueue: Promise<void> = Promise.resolve();
+// Cấu hình kết nối MySQL
+const DB_CONFIG = {
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "gofarm_db",
+};
+
+let pool: mysql.Pool | null = null;
+
+function getPool() {
+  if (!pool) {
+    pool = mysql.createPool({
+      ...DB_CONFIG,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    });
+  }
+  return pool;
+}
 
 function nowIso() {
   return new Date().toISOString();
 }
 
-function createSeedAdmin(): BackendUser {
-  const timestamp = nowIso();
-  return {
-    id: randomUUID(),
-    name: "Admin",
-    email: "admin@gofarm.local",
-    passwordHash: hashPassword("admin123"),
-    role: "admin",
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-}
-
-function normalizeProduct(product: LocalProduct, index: number): LocalProduct {
+function normalizeProduct(product: LocalProduct): LocalProduct {
   return {
     ...product,
     createdAt: product.createdAt ?? nowIso(),
     updatedAt: product.updatedAt ?? nowIso(),
     id: product.id || product.slug || randomUUID(),
-    slug: product.slug || `product-${index + 1}`,
+    slug: product.slug || `product-${randomUUID().slice(0, 8)}`,
     name: product.name || "Unnamed product",
     imageSrc: product.imageSrc || "/images/logo.svg",
     imageAlt: product.imageAlt || product.name || "Product image",
@@ -75,11 +75,11 @@ function normalizeProduct(product: LocalProduct, index: number): LocalProduct {
   };
 }
 
-function normalizeCategory(category: LocalCategory, index: number): LocalCategory {
+function normalizeCategory(category: LocalCategory): LocalCategory {
   return {
     ...category,
     id: category.id || category.slug || randomUUID(),
-    slug: category.slug || `category-${index + 1}`,
+    slug: category.slug || `category-${randomUUID().slice(0, 8)}`,
     title: category.title || "Category",
     imageSrc: category.imageSrc ?? null,
     count: typeof category.count === "number" ? category.count : 0,
@@ -88,292 +88,111 @@ function normalizeCategory(category: LocalCategory, index: number): LocalCategor
   };
 }
 
-function getDatabase() {
-  if (!database) {
-    database = new DatabaseSync(DB_PATH);
-    database.exec(`
-      PRAGMA journal_mode = WAL;
-      PRAGMA foreign_keys = ON;
+export async function readDb(): Promise<BackendDb> {
+  const db = getPool();
+  
+  const [productsRows] = await db.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
+  const [categoriesRows] = await db.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
+  const [usersRows] = await db.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
+  
+  // Convert MySQL rows to application types
+  const products = (productsRows as any[]).map(row => ({
+    ...row,
+    price: Number(row.price),
+    discount: row.discount === null ? null : Number(row.discount),
+    rating: Number(row.rating),
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
+  })) as LocalProduct[];
 
-      CREATE TABLE IF NOT EXISTS products (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        slug TEXT NOT NULL UNIQUE,
-        imageSrc TEXT NOT NULL,
-        imageAlt TEXT NOT NULL,
-        price REAL NOT NULL,
-        discount REAL,
-        brand TEXT,
-        categoryId TEXT,
-        categoryTitle TEXT,
-        description TEXT NOT NULL DEFAULT '',
-        rating REAL NOT NULL DEFAULT 0,
-        reviews INTEGER NOT NULL DEFAULT 0,
-        stock INTEGER,
-        status TEXT,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
-      );
+  const categories = (categoriesRows as any[]).map(row => ({
+    ...row,
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
+  })) as LocalCategory[];
 
-      CREATE TABLE IF NOT EXISTS categories (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        slug TEXT NOT NULL UNIQUE,
-        imageSrc TEXT,
-        count INTEGER NOT NULL DEFAULT 0,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
-      );
+  const users = (usersRows as any[]).map(row => ({
+    ...row,
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
+    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
+    resetTokenExpiresAt: row.resetTokenExpiresAt instanceof Date ? row.resetTokenExpiresAt.toISOString() : row.resetTokenExpiresAt,
+  })) as BackendUser[];
 
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        passwordHash TEXT NOT NULL,
-        role TEXT NOT NULL CHECK (role IN ('admin', 'user')),
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL,
-        resetTokenHash TEXT,
-        resetTokenExpiresAt TEXT
-      );
-
-      CREATE TABLE IF NOT EXISTS meta (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL
-      );
-    `);
-  }
-
-  return database;
-}
-
-function readLegacyDbState(): BackendDb | null {
-  try {
-    const raw = fsSync.readFileSync(LEGACY_JSON_PATH, "utf8");
-    if (!raw.trim()) return null;
-    const parsed = JSON.parse(raw) as Partial<BackendDb>;
-    if (!Array.isArray(parsed.products) || !Array.isArray(parsed.categories)) return null;
-    return {
-      products: parsed.products.map(normalizeProduct),
-      categories: parsed.categories.map(normalizeCategory),
-      users: Array.isArray(parsed.users) && parsed.users.length > 0 ? (parsed.users as BackendUser[]) : [createSeedAdmin()],
-      meta: {
-        version: parsed.meta?.version ?? 1,
-        updatedAt: parsed.meta?.updatedAt ?? nowIso(),
-      },
-    };
-  } catch {
-    return null;
-  }
-}
-
-function readSeedCatalog(): BackendDb {
   return {
-    products: [],
-    categories: [],
-    users: [createSeedAdmin()],
+    products,
+    categories: normalizeProductCategories(products, categories),
+    users,
     meta: { version: 1, updatedAt: nowIso() },
   };
 }
 
-async function ensureSeedData() {
-  const db = getDatabase();
-  const categoryCount = db.prepare("SELECT COUNT(*) AS count FROM categories").get() as { count: number };
-  const productCount = db.prepare("SELECT COUNT(*) AS count FROM products").get() as { count: number };
-  const userCount = db.prepare("SELECT COUNT(*) AS count FROM users").get() as { count: number };
-
-  if (categoryCount.count > 0 || productCount.count > 0 || userCount.count > 0) {
-    return;
-  }
-
-  const legacySeed = readLegacyDbState();
-  const catalog = legacySeed ?? (await loadLocalCatalog());
-  const state: BackendDb = {
-    products: catalog.products.map(normalizeProduct),
-    categories: catalog.categories.map(normalizeCategory),
-    users: legacySeed?.users?.length ? legacySeed.users : [createSeedAdmin()],
-    meta: legacySeed?.meta ?? { version: 1, updatedAt: nowIso() },
-  };
-
-  await persistDb(state);
-}
-
-function rowToProduct(row: Record<string, unknown>): LocalProduct {
-  return {
-    id: String(row.id ?? ""),
-    name: String(row.name ?? ""),
-    slug: String(row.slug ?? ""),
-    imageSrc: String(row.imageSrc ?? "/images/logo.svg"),
-    imageAlt: String(row.imageAlt ?? row.name ?? "Product image"),
-    price: Number(row.price ?? 0),
-    discount: row.discount === null || row.discount === undefined ? null : Number(row.discount),
-    brand: row.brand === null || row.brand === undefined ? null : String(row.brand),
-    categoryId: row.categoryId === null || row.categoryId === undefined ? null : String(row.categoryId),
-    categoryTitle: row.categoryTitle === null || row.categoryTitle === undefined ? null : String(row.categoryTitle),
-    description: String(row.description ?? ""),
-    rating: Number(row.rating ?? 0),
-    reviews: Number(row.reviews ?? 0),
-    stock: row.stock === null || row.stock === undefined ? null : Number(row.stock),
-    status: row.status === null || row.status === undefined ? null : String(row.status),
-    createdAt: String(row.createdAt ?? nowIso()),
-    updatedAt: String(row.updatedAt ?? nowIso()),
-  };
-}
-
-function rowToCategory(row: Record<string, unknown>): LocalCategory {
-  return {
-    id: String(row.id ?? ""),
-    title: String(row.title ?? "Category"),
-    slug: String(row.slug ?? ""),
-    imageSrc: row.imageSrc === null || row.imageSrc === undefined ? null : String(row.imageSrc),
-    count: Number(row.count ?? 0),
-    createdAt: String(row.createdAt ?? nowIso()),
-    updatedAt: String(row.updatedAt ?? nowIso()),
-  };
-}
-
-function rowToUser(row: Record<string, unknown>): BackendUser {
-  return {
-    id: String(row.id ?? ""),
-    name: String(row.name ?? ""),
-    email: String(row.email ?? ""),
-    passwordHash: String(row.passwordHash ?? ""),
-    role: row.role === "admin" ? "admin" : "user",
-    createdAt: String(row.createdAt ?? nowIso()),
-    updatedAt: String(row.updatedAt ?? nowIso()),
-    resetTokenHash: row.resetTokenHash === null || row.resetTokenHash === undefined ? null : String(row.resetTokenHash),
-    resetTokenExpiresAt: row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined ? null : String(row.resetTokenExpiresAt),
-  };
-}
-
-async function readStateFromDb(): Promise<BackendDb> {
-  await ensureSeedData();
-  const db = getDatabase();
-  const products = db.prepare("SELECT * FROM products ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToProduct);
-  const rawCategories = db.prepare("SELECT * FROM categories ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToCategory);
-  const users = db.prepare("SELECT * FROM users ORDER BY datetime(updatedAt) DESC, datetime(createdAt) DESC").all().map(rowToUser);
-  return {
-    products,
-    categories: normalizeProductCategories(products, rawCategories),
-    users,
-    meta: readMeta(),
-  };
-}
-
-function readMeta() {
-  const db = getDatabase();
-  const row = db.prepare("SELECT value FROM meta WHERE key = 'state'").get() as { value?: string } | undefined;
-  if (!row?.value) {
-    return { version: 1, updatedAt: nowIso() };
-  }
-
+export async function persistDb(state: BackendDb) {
+  const db = getPool();
+  const connection = await db.getConnection();
+  
   try {
-    return JSON.parse(row.value) as BackendDb["meta"];
-  } catch {
-    return { version: 1, updatedAt: nowIso() };
-  }
-}
+    await connection.beginTransaction();
+    
+    // Xóa sạch dữ liệu cũ (Tương tự logic SQLite cũ)
+    await connection.query("SET FOREIGN_KEY_CHECKS = 0;");
+    await connection.query("TRUNCATE TABLE products;");
+    await connection.query("TRUNCATE TABLE categories;");
+    await connection.query("TRUNCATE TABLE users;");
+    await connection.query("SET FOREIGN_KEY_CHECKS = 1;");
 
-async function persistDb(state: BackendDb) {
-  const db = getDatabase();
-  await fs.mkdir(path.dirname(DB_PATH), { recursive: true });
-  db.exec("BEGIN IMMEDIATE TRANSACTION");
-  try {
-    db.exec("DELETE FROM products; DELETE FROM categories; DELETE FROM users; DELETE FROM meta;");
+    // Chèn danh mục
+    for (const cat of state.categories.map(normalizeCategory)) {
+      await connection.query(
+        "INSERT INTO categories (id, title, slug, imageSrc, count, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [cat.id, cat.title, cat.slug, cat.imageSrc, cat.count, new Date(cat.createdAt), new Date(cat.updatedAt)]
+      );
+    }
 
-    const insertProduct = db.prepare(`
-      INSERT INTO products (
-        id, name, slug, imageSrc, imageAlt, price, discount, brand, categoryId, categoryTitle,
-        description, rating, reviews, stock, status, createdAt, updatedAt
-      ) VALUES (
-        @id, @name, @slug, @imageSrc, @imageAlt, @price, @discount, @brand, @categoryId, @categoryTitle,
-        @description, @rating, @reviews, @stock, @status, @createdAt, @updatedAt
-      )
-    `);
-
-    const insertCategory = db.prepare(`
-      INSERT INTO categories (
-        id, title, slug, imageSrc, count, createdAt, updatedAt
-      ) VALUES (
-        @id, @title, @slug, @imageSrc, @count, @createdAt, @updatedAt
-      )
-    `);
-
-    const insertUser = db.prepare(`
-      INSERT INTO users (
-        id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt
-      ) VALUES (
-        @id, @name, @email, @passwordHash, @role, @createdAt, @updatedAt, @resetTokenHash, @resetTokenExpiresAt
-      )
-    `);
-
+    // Chèn sản phẩm
     const usedProductSlugs = new Set<string>();
-    for (const product of state.products.map(normalizeProduct)) {
-      const baseSlug = product.slug || `product-${product.id.slice(0, 8)}`;
-      let slug = baseSlug;
+    for (const p of state.products.map(normalizeProduct)) {
+      let slug = p.slug;
       let suffix = 2;
       while (usedProductSlugs.has(slug)) {
-        slug = `${baseSlug}-${suffix++}`;
+        slug = `${p.slug}-${suffix++}`;
       }
       usedProductSlugs.add(slug);
-      insertProduct.run({
-        ...product,
-        slug,
-        brand: product.brand,
-        categoryId: product.categoryId,
-        categoryTitle: product.categoryTitle,
-        discount: product.discount,
-        stock: product.stock,
-      });
+
+      await connection.query(
+        "INSERT INTO products (id, name, slug, imageSrc, imageAlt, price, discount, brand, categoryId, categoryTitle, description, rating, reviews, stock, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          p.id, p.name, slug, p.imageSrc, p.imageAlt, p.price, p.discount, p.brand, 
+          p.categoryId, p.categoryTitle, p.description, p.rating, p.reviews, p.stock, 
+          p.status, new Date(p.createdAt), new Date(p.updatedAt)
+        ]
+      );
     }
 
-    const usedCategorySlugs = new Set<string>();
-    for (const category of state.categories.map(normalizeCategory)) {
-      const baseSlug = category.slug || `category-${category.id.slice(0, 8)}`;
-      let slug = baseSlug;
-      let suffix = 2;
-      while (usedCategorySlugs.has(slug)) {
-        slug = `${baseSlug}-${suffix++}`;
-      }
-      usedCategorySlugs.add(slug);
-      insertCategory.run({
-        ...category,
-        slug,
-      });
+    // Chèn người dùng
+    for (const u of state.users) {
+      await connection.query(
+        "INSERT INTO users (id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          u.id, u.name, u.email, u.passwordHash, u.role, 
+          new Date(u.createdAt), new Date(u.updatedAt), 
+          u.resetTokenHash, u.resetTokenExpiresAt ? new Date(u.resetTokenExpiresAt) : null
+        ]
+      );
     }
 
-    for (const user of state.users) {
-      insertUser.run({
-        ...user,
-        resetTokenHash: user.resetTokenHash ?? null,
-        resetTokenExpiresAt: user.resetTokenExpiresAt ?? null,
-      });
-    }
-
-    db.prepare("INSERT OR REPLACE INTO meta (key, value) VALUES ('state', ?)").run(JSON.stringify(state.meta ?? { version: 1, updatedAt: nowIso() }));
-    db.exec("COMMIT");
+    await connection.commit();
   } catch (error) {
-    db.exec("ROLLBACK");
+    await connection.rollback();
     throw error;
+  } finally {
+    connection.release();
   }
-}
-
-export async function readDb() {
-  return readStateFromDb();
 }
 
 export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
-  writeQueue = writeQueue.then(async () => {
-    const current = await readStateFromDb();
-    const next = await mutator(current);
-    next.meta = {
-      version: next.meta?.version ?? 1,
-      updatedAt: nowIso(),
-    };
-    await persistDb(next);
-  });
-
-  await writeQueue;
+  const current = await readDb();
+  const next = await mutator(current);
+  await persistDb(next);
 }
 
 export async function updateDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
