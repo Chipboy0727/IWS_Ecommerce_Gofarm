@@ -156,7 +156,6 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
           <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
             <button type="button" onClick={handleQuickView} className="block h-full w-full">
-            <Link href={`/shop/${product.slug}`} className="block h-full" onClick={handleProductClick}>
               <img
                 src={product.imageSrc}
                 className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
@@ -198,12 +197,11 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
           </div>
 
           <div className="p-3 space-y-2">
-            <button type="button" onClick={handleQuickView} className="block w-full text-left">
-            <Link href={`/shop/${product.slug}`} onClick={handleProductClick}>
+            <Link href={`/shop/${product.slug}`} onClick={handleProductClick} className="block w-full text-left">
               <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
                 {product.name}
               </h2>
-            </button>
+            </Link>
 
             <div className="flex items-center gap-1.5">
               <div className="flex items-center">

@@ -1,46 +1,20 @@
 import mysql from "mysql2/promise";
-import { randomUUID } from "node:crypto";
-import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { hashPassword } from "@/lib/backend/auth";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { hashPassword } from "@/lib/backend/auth";
 import { loadSeedCatalog, type BackendUser, type SeedCatalog } from "@/lib/backend/catalog-seed";
 import { normalizeProductCategories } from "@/lib/backend/products";
 import { getMysqlPool } from "@/lib/backend/mysql";
 
 export type { BackendUser };
-
 export type BackendDb = SeedCatalog;
 
-// Cấu hình kết nối MySQL
-const DB_CONFIG = {
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "gofarm_db",
-};
 const LEGACY_JSON_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
 
 let mysqlReady: boolean | null = null;
 let mysqlInitPromise: Promise<boolean> | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
-
-let pool: mysql.Pool | null = null;
-
-function getPool() {
-  if (!pool) {
-    pool = mysql.createPool({
-      ...DB_CONFIG,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-    });
-  }
-  return pool;
-}
 
 function nowIso() {
   return new Date().toISOString();
@@ -49,8 +23,6 @@ function nowIso() {
 function normalizeProduct(product: LocalProduct): LocalProduct {
   return {
     ...product,
-    createdAt: product.createdAt ?? nowIso(),
-    updatedAt: product.updatedAt ?? nowIso(),
     id: product.id || product.slug || randomUUID(),
     slug: product.slug || `product-${randomUUID().slice(0, 8)}`,
     name: product.name || "Unnamed product",
@@ -66,6 +38,8 @@ function normalizeProduct(product: LocalProduct): LocalProduct {
     reviews: typeof product.reviews === "number" ? product.reviews : 0,
     stock: typeof product.stock === "number" ? product.stock : null,
     status: product.status ?? null,
+    createdAt: product.createdAt ?? nowIso(),
+    updatedAt: product.updatedAt ?? nowIso(),
   };
 }
 
@@ -82,35 +56,6 @@ function normalizeCategory(category: LocalCategory): LocalCategory {
   };
 }
 
-export async function readDb(): Promise<BackendDb> {
-  const db = getPool();
-  
-  const [productsRows] = await db.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
-  const [categoriesRows] = await db.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
-  const [usersRows] = await db.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
-  
-  // Convert MySQL rows to application types
-  const products = (productsRows as any[]).map(row => ({
-    ...row,
-    price: Number(row.price),
-    discount: row.discount === null ? null : Number(row.discount),
-    rating: Number(row.rating),
-    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
-    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
-  })) as LocalProduct[];
-
-  const categories = (categoriesRows as any[]).map(row => ({
-    ...row,
-    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
-    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
-  })) as LocalCategory[];
-
-  const users = (usersRows as any[]).map(row => ({
-    ...row,
-    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : row.createdAt,
-    updatedAt: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : row.updatedAt,
-    resetTokenExpiresAt: row.resetTokenExpiresAt instanceof Date ? row.resetTokenExpiresAt.toISOString() : row.resetTokenExpiresAt,
-  })) as BackendUser[];
 function rowToProduct(row: Record<string, unknown>): LocalProduct {
   return {
     id: String(row.id ?? ""),
@@ -155,12 +100,19 @@ function rowToUser(row: Record<string, unknown>): BackendUser {
     createdAt: String(row.createdAt ?? nowIso()),
     updatedAt: String(row.updatedAt ?? nowIso()),
     resetTokenHash: row.resetTokenHash === null || row.resetTokenHash === undefined ? null : String(row.resetTokenHash),
-    resetTokenExpiresAt: row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined ? null : String(row.resetTokenExpiresAt),
+    resetTokenExpiresAt:
+      row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined
+        ? null
+        : String(row.resetTokenExpiresAt),
   };
 }
 
+function getPool() {
+  return getMysqlPool();
+}
+
 async function ensureMysqlSchema() {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   await pool.execute(`
@@ -222,7 +174,7 @@ async function ensureMysqlSchema() {
 }
 
 async function ensureMysqlSeedData() {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   const [productRows] = await pool.query("SELECT COUNT(*) AS count FROM products");
@@ -272,7 +224,7 @@ async function readMysqlState(): Promise<BackendDb | null> {
   const ready = await initializeMysql();
   if (!ready) return null;
 
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return null;
 
   const [productsResult] = await pool.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
@@ -285,45 +237,18 @@ async function readMysqlState(): Promise<BackendDb | null> {
 
   const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
   const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
-  const meta = metaValue
-    ? (JSON.parse(metaValue) as BackendDb["meta"])
-    : { version: 1, updatedAt: nowIso() };
+  const meta = metaValue ? (JSON.parse(metaValue) as BackendDb["meta"]) : { version: 1, updatedAt: nowIso() };
 
   return {
     products,
     categories: normalizeProductCategories(products, categories),
     users,
-    meta: { version: 1, updatedAt: nowIso() },
-  };
-}
-
-export async function persistDb(state: BackendDb) {
-  const db = getPool();
-  const connection = await db.getConnection();
-  
-  try {
-    await connection.beginTransaction();
-    
-    // Xóa sạch dữ liệu cũ (Tương tự logic SQLite cũ)
-    await connection.query("SET FOREIGN_KEY_CHECKS = 0;");
-    await connection.query("TRUNCATE TABLE products;");
-    await connection.query("TRUNCATE TABLE categories;");
-    await connection.query("TRUNCATE TABLE users;");
-    await connection.query("SET FOREIGN_KEY_CHECKS = 1;");
-
-    // Chèn danh mục
-    for (const cat of state.categories.map(normalizeCategory)) {
-      await connection.query(
-        "INSERT INTO categories (id, title, slug, imageSrc, count, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [cat.id, cat.title, cat.slug, cat.imageSrc, cat.count, new Date(cat.createdAt), new Date(cat.updatedAt)]
-      );
-    }
     meta,
   };
 }
 
 async function persistMysqlState(state: BackendDb) {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   const connection = await pool.getConnection();
@@ -334,39 +259,16 @@ async function persistMysqlState(state: BackendDb) {
     await connection.query("DELETE FROM users");
     await connection.query("DELETE FROM meta");
 
-    // Chèn sản phẩm
     const usedProductSlugs = new Set<string>();
-    for (const p of state.products.map(normalizeProduct)) {
-      let slug = p.slug;
+    for (const product of state.products.map(normalizeProduct)) {
+      const baseSlug = product.slug || `product-${product.id.slice(0, 8)}`;
+      let slug = baseSlug;
       let suffix = 2;
       while (usedProductSlugs.has(slug)) {
-        slug = `${p.slug}-${suffix++}`;
+        slug = `${baseSlug}-${suffix++}`;
       }
       usedProductSlugs.add(slug);
 
-      await connection.query(
-        "INSERT INTO products (id, name, slug, imageSrc, imageAlt, price, discount, brand, categoryId, categoryTitle, description, rating, reviews, stock, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          p.id, p.name, slug, p.imageSrc, p.imageAlt, p.price, p.discount, p.brand, 
-          p.categoryId, p.categoryTitle, p.description, p.rating, p.reviews, p.stock, 
-          p.status, new Date(p.createdAt), new Date(p.updatedAt)
-        ]
-      );
-    }
-
-    // Chèn người dùng
-    for (const u of state.users) {
-      await connection.query(
-        "INSERT INTO users (id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          u.id, u.name, u.email, u.passwordHash, u.role, 
-          new Date(u.createdAt), new Date(u.updatedAt), 
-          u.resetTokenHash, u.resetTokenExpiresAt ? new Date(u.resetTokenExpiresAt) : null
-        ]
-      );
-    }
-
-    await connection.commit();
       await connection.execute(
         `
           INSERT INTO products (
@@ -405,6 +307,7 @@ async function persistMysqlState(state: BackendDb) {
         slug = `${baseSlug}-${suffix++}`;
       }
       usedCategorySlugs.add(slug);
+
       await connection.execute(
         `
           INSERT INTO categories (
@@ -436,8 +339,8 @@ async function persistMysqlState(state: BackendDb) {
           user.email,
           user.passwordHash,
           user.role,
-          user.createdAt,
-          user.updatedAt,
+          user.createdAt ?? nowIso(),
+          user.updatedAt ?? nowIso(),
           user.resetTokenHash ?? null,
           user.resetTokenExpiresAt ?? null,
         ]
@@ -459,16 +362,12 @@ async function persistMysqlState(state: BackendDb) {
   }
 }
 
-export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
-  const current = await readDb();
-  const next = await mutator(current);
-  await persistDb(next);
 async function persistFallbackState(state: BackendDb) {
   await fs.mkdir(path.dirname(LEGACY_JSON_PATH), { recursive: true });
   await fs.writeFile(LEGACY_JSON_PATH, JSON.stringify(state, null, 2), "utf8");
 }
 
-export async function readDb() {
+export async function readDb(): Promise<BackendDb> {
   const mysqlState = await readMysqlState();
   if (mysqlState) return mysqlState;
   return loadSeedCatalog();
@@ -476,7 +375,7 @@ export async function readDb() {
 
 export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
   writeQueue = writeQueue.then(async () => {
-    const current = (await readMysqlState()) ?? (await loadSeedCatalog());
+    const current = await readDb();
     const next = await mutator(current);
     next.meta = {
       version: next.meta?.version ?? 1,
@@ -506,4 +405,3 @@ export async function updateDb(mutator: (db: BackendDb) => BackendDb | Promise<B
 export function cloneDb<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
-
