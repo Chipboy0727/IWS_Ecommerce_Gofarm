@@ -336,11 +336,29 @@ function ToastMessage() {
 
 
 
+function collectionSortToApi(sortBy: string) {
+  switch (sortBy) {
+    case "name-desc":
+      return { sortBy: "name", sortOrder: "desc" as const };
+    case "price-asc":
+      return { sortBy: "price", sortOrder: "asc" as const };
+    case "price-desc":
+      return { sortBy: "price", sortOrder: "desc" as const };
+    case "rating":
+      return { sortBy: "rating", sortOrder: "desc" as const };
+    case "featured":
+      return { sortBy: "featured", sortOrder: "desc" as const };
+    case "name-asc":
+    default:
+      return { sortBy: "name", sortOrder: "asc" as const };
+  }
+}
+
 export default function CollectionPage() {
   const [products, setProducts] = useState<LocalProduct[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<LocalProduct[]>([]);
-  const [displayCount, setDisplayCount] = useState(20);
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1, hasNextPage: false });
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [sortBy, setSortBy] = useState("name-asc");
@@ -351,76 +369,66 @@ export default function CollectionPage() {
   const [selectedShareProduct, setSelectedShareProduct] = useState<LocalProduct | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [ShareModalComponent, setShareModalComponent] = useState<any>(null);
+  const [page, setPage] = useState(1);
 
-  // Load ShareModal dynamically
   useEffect(() => {
     import("@/app/share/ShareModal").then((mod) => {
       setShareModalComponent(() => mod.default);
     });
   }, []);
 
-  // Load products
   useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+    const isFirstPage = page === 1;
+
     async function loadProducts() {
       try {
-        const res = await fetch("/api/products");
-        if (res.ok) {
-          const data = await res.json();
-          setProducts(data.products || []);
-        }
+        if (isFirstPage) setLoading(true);
+        else setLoadingMore(true);
+
+        const sort = collectionSortToApi(sortBy);
+        const params = new URLSearchParams({
+          paginated: "true",
+          page: String(page),
+          limit: "20",
+          search: searchTerm,
+          filterType,
+          minPrice: String(priceRange.min),
+          maxPrice: String(priceRange.max),
+          sortBy: sort.sortBy,
+          sortOrder: sort.sortOrder,
+        });
+
+        const res = await fetch(`/api/products?${params.toString()}`, { signal: controller.signal });
+        const data = await res.json();
+        if (cancelled) return;
+
+        const nextProducts = Array.isArray(data.products) ? data.products : [];
+        setProducts((current) => (isFirstPage ? nextProducts : [...current, ...nextProducts]));
+        setMeta({
+          total: Number(data.meta?.total ?? nextProducts.length),
+          totalPages: Number(data.meta?.totalPages ?? 1),
+          hasNextPage: Boolean(data.meta?.hasNextPage),
+        });
       } catch (error) {
-        console.error("Failed to load products:", error);
+        if (!cancelled) {
+          console.error("Failed to load products:", error);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     }
+
     loadProducts();
-  }, []);
-
-  // Filter and sort products
-  useEffect(() => {
-    let result = [...products];
-    
-    if (searchTerm) {
-      result = result.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    }
-    
-    switch (filterType) {
-      case "sale":
-        result = result.filter(p => p.discount && p.discount > 0);
-        break;
-      case "featured":
-        result = result.filter(p => p.rating >= 4.5);
-        break;
-      case "new":
-        result = result.filter(p => p.status === "new" || p.status === "just added");
-        break;
-      case "hot":
-        result = result.filter(p => p.discount && p.discount >= 15);
-        break;
-      default:
-        break;
-    }
-    
-    result = result.filter(p => salePriceFor(p) >= priceRange.min && salePriceFor(p) <= priceRange.max);
-    
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case "name-asc": return a.name.localeCompare(b.name);
-        case "name-desc": return b.name.localeCompare(a.name);
-        case "price-asc": return salePriceFor(a) - salePriceFor(b);
-        case "price-desc": return salePriceFor(b) - salePriceFor(a);
-        case "rating": return b.rating - a.rating;
-        default: return 0;
-      }
-    });
-    
-    setFilteredProducts(result);
-    setDisplayCount(20);
-  }, [products, searchTerm, filterType, sortBy, priceRange]);
-
-  const visibleProducts = filteredProducts.slice(0, displayCount);
-  const hasMore = displayCount < filteredProducts.length;
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [page, searchTerm, filterType, sortBy, priceRange.min, priceRange.max]);
 
   const getGridColsClass = () => {
     if (viewMode === "list") return "grid-cols-1";
@@ -437,16 +445,43 @@ export default function CollectionPage() {
     setShowShareModal(true);
   };
 
-  const shareUrl = selectedShareProduct && typeof window !== 'undefined' 
-    ? `${window.location.origin}/shop/${selectedShareProduct.slug}` 
-    : '';
+  const shareUrl = selectedShareProduct && typeof window !== "undefined"
+    ? `${window.location.origin}/shop/${selectedShareProduct.slug}`
+    : "";
 
+  const resetQuery = () => {
+    setProducts([]);
+    setPage(1);
+  };
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    resetQuery();
+  };
 
-  if (loading) {
+  const handleFilterType = (value: string) => {
+    setFilterType(value);
+    resetQuery();
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    resetQuery();
+  };
+
+  const handlePriceChange = (nextRange: { min: number; max: number }) => {
+    setPriceRange(nextRange);
+    resetQuery();
+  };
+
+  const hasMore = meta.hasNextPage;
+  const productCount = products.length;
+  const totalCount = meta.total;
+
+  if (loading && products.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green" />
       </div>
     );
   }
@@ -456,7 +491,6 @@ export default function CollectionPage() {
       <div className="bg-linear-to-b from-gofarm-light-green/5 via-gofarm-white to-gofarm-light-orange/5 min-h-screen">
         <main>
           <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 lg:py-12">
-            {/* Header */}
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-3 mb-4">
                 <div className="h-1 w-12 bg-linear-to-r from-gofarm-light-green to-gofarm-green rounded-full" />
@@ -468,12 +502,11 @@ export default function CollectionPage() {
               <p className="text-gofarm-gray text-lg max-w-2xl mx-auto">Discover our curated collection of premium products</p>
               <div className="mt-4 flex items-center justify-center gap-2">
                 <div className="inline-flex items-center rounded-md border font-semibold transition-colors shadow-sm bg-gofarm-light-green/20 text-gofarm-green border-gofarm-light-green/30 text-base px-4 py-2">
-                  {filteredProducts.length} Products
+                  {totalCount} Products
                 </div>
               </div>
             </div>
 
-            {/* Toolbar */}
             <div className="rounded-xl border bg-card text-card-foreground mb-4 border-gofarm-light-green/20 shadow-lg bg-linear-to-br from-gofarm-white via-gofarm-light-orange/5 to-gofarm-light-green/5">
               <div className="p-6">
                 <div className="flex flex-col lg:flex-row gap-4">
@@ -482,12 +515,12 @@ export default function CollectionPage() {
                     <input
                       type="text"
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => handleSearchChange(e.target.value)}
                       className="w-full border bg-transparent pl-12 pr-4 py-3 text-base border-gofarm-light-green/30 focus:border-gofarm-green focus:ring-gofarm-green rounded-xl outline-none"
                       placeholder="Search products..."
                     />
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <button onClick={() => { setViewMode("grid"); setGridCols(3); }} className={`h-12 w-12 rounded-xl border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 inline-flex items-center justify-center ${viewMode === "grid" && gridCols === 3 ? "bg-gofarm-green text-white" : ""}`} title="3 columns">
                       <Grid3x3Icon className="w-5 h-5" />
@@ -502,28 +535,32 @@ export default function CollectionPage() {
                       <ListIcon className="w-5 h-5" />
                     </button>
                   </div>
-                  
-                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="px-4 py-3 border border-gofarm-light-green/30 rounded-xl bg-gofarm-white text-gofarm-black focus:outline-none focus:border-gofarm-green">
+
+                  <select
+                    value={sortBy}
+                    onChange={(e) => handleSortChange(e.target.value)}
+                    className="px-4 py-3 border border-gofarm-light-green/30 rounded-xl bg-gofarm-white text-gofarm-black focus:outline-none focus:border-gofarm-green"
+                  >
                     <option value="name-asc">Name: A-Z</option>
                     <option value="name-desc">Name: Z-A</option>
                     <option value="price-asc">Price: Low to High</option>
                     <option value="price-desc">Price: High to Low</option>
                     <option value="rating">Highest Rated</option>
+                    <option value="featured">Featured</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* Filter Bar */}
             <div className="rounded-xl border bg-card text-card-foreground mb-8 border-gofarm-light-green/20 shadow-lg bg-white">
               <div className="p-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-sm font-semibold text-gofarm-black">Filter by:</span>
-                  <button onClick={() => setFilterType("all")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "all" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>All Products</button>
-                  <button onClick={() => setFilterType("sale")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "sale" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>On Sale</button>
-                  <button onClick={() => setFilterType("featured")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "featured" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Featured</button>
-                  <button onClick={() => setFilterType("new")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "new" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>New Arrivals</button>
-                  <button onClick={() => setFilterType("hot")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "hot" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Hot Deals</button>
+                  <button onClick={() => handleFilterType("all")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "all" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>All Products</button>
+                  <button onClick={() => handleFilterType("sale")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "sale" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>On Sale</button>
+                  <button onClick={() => handleFilterType("featured")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "featured" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Featured</button>
+                  <button onClick={() => handleFilterType("new")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "new" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>New Arrivals</button>
+                  <button onClick={() => handleFilterType("hot")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "hot" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Hot Deals</button>
                   <button onClick={() => setShowPriceFilter(!showPriceFilter)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${showPriceFilter ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                     Price
@@ -535,43 +572,50 @@ export default function CollectionPage() {
                     <div className="flex items-center gap-6 flex-wrap">
                       <div className="flex-1 min-w-[200px]">
                         <div className="flex justify-between text-sm text-gofarm-gray mb-2"><span>Price Range: ${priceRange.min} - ${priceRange.max}</span></div>
-                        <input type="range" min="0" max="200" value={priceRange.max} onChange={(e) => setPriceRange({ ...priceRange, max: parseInt(e.target.value) })} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gofarm-green" />
+                        <input
+                          type="range"
+                          min="0"
+                          max="200"
+                          value={priceRange.max}
+                          onChange={(e) => handlePriceChange({ ...priceRange, max: parseInt(e.target.value, 10) })}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gofarm-green"
+                        />
                       </div>
-                      <button onClick={() => setPriceRange({ min: 0, max: 200 })} className="text-sm text-gofarm-green hover:underline">Reset</button>
+                      <button onClick={() => handlePriceChange({ min: 0, max: 200 })} className="text-sm text-gofarm-green hover:underline">Reset</button>
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Products Grid/List */}
             <div className={`grid ${getGridColsClass()} gap-4`}>
-              {visibleProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCardComponent key={product.id} product={product} viewMode={viewMode} onShare={handleShare} />
               ))}
             </div>
 
             {hasMore && (
               <div className="mt-14 text-center">
-                <button onClick={() => setDisplayCount(prev => prev + 20)} className="inline-flex items-center justify-center rounded-xl bg-gofarm-green px-12 py-4 text-white font-semibold shadow-lg shadow-gofarm-green/20 hover:bg-gofarm-light-green transition-colors">
-                  Load More Products
-                  <span className="ml-3 text-white/80">({visibleProducts.length} of {filteredProducts.length})</span>
+                <button
+                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={loadingMore}
+                  className="inline-flex items-center justify-center rounded-xl bg-gofarm-green px-12 py-4 text-white font-semibold shadow-lg shadow-gofarm-green/20 hover:bg-gofarm-light-green transition-colors disabled:opacity-50"
+                >
+                  {loadingMore ? "Loading..." : "Load More Products"}
+                  <span className="ml-3 text-white/80">({productCount} of {totalCount})</span>
                 </button>
               </div>
             )}
 
             <p className="mt-8 text-gofarm-gray text-lg text-center">
-              Showing <span className="font-bold text-gofarm-black">{visibleProducts.length}</span> of{" "}
-              <span className="font-bold text-gofarm-black">{filteredProducts.length}</span> products
+              Showing <span className="font-bold text-gofarm-black">{productCount}</span> of{" "}
+              <span className="font-bold text-gofarm-black">{totalCount}</span> products
             </p>
           </div>
         </main>
-
-        {/* Footer */}
         <SiteFooter />
       </div>
 
-      {/* Share Modal */}
       {showShareModal && ShareModalComponent && selectedShareProduct && (
         <ShareModalComponent
           isOpen={showShareModal}

@@ -1,7 +1,6 @@
-// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
-import { loadLocalCatalog } from "@/lib/local-catalog";
 import ShopBrowser from "./shop-browser";
 import SiteFooter from "@/components/site-footer";
+import { loadLocalCatalog } from "@/lib/local-catalog";
 
 export const metadata = {
   title: "Shop | gofarm",
@@ -13,9 +12,11 @@ export default async function ShopPage() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
-      {/* ĐÃ XÓA: <SiteHeader /> */}
       <main>
-        <ShopBrowser products={products} categories={categories} />
+        <ShopBrowser
+          products={products}
+          categories={categories}
+        />
       </main>
       <SiteFooter />
     </div>

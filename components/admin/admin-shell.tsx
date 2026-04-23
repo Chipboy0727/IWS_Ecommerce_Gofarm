@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type AdminNavItem = {
   href: string;
@@ -690,11 +690,16 @@ export function AdminShell({
 export function AdminActionButton({
   children,
   tone = "primary",
+  ...props
 }: {
   children: ReactNode;
   tone?: "primary" | "secondary" | "ghost";
-}) {
-  return <button type="button" className={`btn btn-${tone}`}>{children}</button>;
+} & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button type="button" className={`btn btn-${tone}`} {...props}>
+      {children}
+    </button>
+  );
 }
 
 export function SectionCard({
