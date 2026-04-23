@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
+import { ProductModal } from "@/components/product-modal";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -120,6 +121,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
   const [showCartToast, setShowCartToast] = useState(false);
   const [showWishlistToast, setShowWishlistToast] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(isInWishlist(product.id));
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -160,7 +162,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
     <>
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
-          <Link href={`/shop/${product.slug}`} className="block">
+          <Link href={`/shop/${product.slug}`} className="block" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
             <div className="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
               <img src={product.imageSrc} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110" alt={product.imageAlt} loading="lazy" />
               <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
@@ -199,6 +201,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
       </div>
       {showCartToast && <ToastMessage message="Added to cart!" onClose={() => setShowCartToast(false)} />}
       {showWishlistToast && <ToastMessage message={isWishlisted ? "Added to wishlist!" : "Removed from wishlist!"} onClose={() => setShowWishlistToast(false)} />}
+      <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }

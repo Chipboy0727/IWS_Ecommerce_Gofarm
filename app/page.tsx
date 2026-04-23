@@ -33,7 +33,7 @@ async function readOriginalBody() {
 
   const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = withoutPromoBanner.match(mainContentRegex);
-  const mainContentStart = mainContentMatch ? mainContentMatch.index : -1;
+  const mainContentStart = mainContentMatch?.index ?? -1;
   const headerOnly =
     mainContentStart >= 0 ? withoutPromoBanner.slice(0, mainContentStart) : withoutPromoBanner;
   const restContent =
@@ -292,7 +292,7 @@ export default async function HomePage() {
 
   const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = transformedBody.match(mainContentRegex);
-  const featuredSectionStart = mainContentMatch ? mainContentMatch.index : -1;
+  const featuredSectionStart = mainContentMatch?.index ?? -1;
 
   const skeletonRegex = /<div class="space-y-6 mb-12">/i;
   const skeletonMatch = featuredSectionStart >= 0
@@ -373,11 +373,53 @@ export default async function HomePage() {
     ""
   );
 
+  // Fill in the empty skeleton section with 'Why Choose GoFarm' content
+  const emptySectionRegex = /<section class="py-16 lg:py-20 bg-linear-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">[\s\S]*?<\/section>/i;
+  const featuresSectionHtml = `
+    <section class="py-16 lg:py-20 bg-linear-to-br from-emerald-50 via-white to-green-50 relative overflow-hidden">
+      <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-linear(0deg,white,rgba(255,255,255,0.6))] bg-[size:32px_32px]"></div>
+      <div class="container mx-auto px-4 relative">
+        <div class="text-center mb-12">
+          <div class="inline-flex items-center gap-3 mb-4">
+            <div class="h-1 w-12 bg-linear-to-r from-gofarm-light-green to-gofarm-green rounded-full"></div>
+            <h2 class="text-3xl lg:text-4xl font-bold text-gofarm-black">Why Choose GoFarm?</h2>
+            <div class="h-1 w-12 bg-linear-to-l from-gofarm-light-green to-gofarm-green rounded-full"></div>
+          </div>
+          <p class="text-gofarm-gray text-lg max-w-2xl mx-auto">We provide the best quality products with guarantees that will make you feel confident in your purchases.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 bg-gofarm-light-green/20 rounded-xl flex items-center justify-center mb-6 text-gofarm-green">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><path d="M14 17h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gofarm-black mb-3">Free & Fast Delivery</h3>
+            <p class="text-gofarm-gray leading-relaxed">Enjoy free shipping on all orders over $50. We ensure fast and secure delivery to your doorstep.</p>
+          </div>
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 bg-gofarm-light-orange/20 rounded-xl flex items-center justify-center mb-6 text-gofarm-orange">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M20 13c0 5-3.5 9-8 10-4.5-1-8-5-8-10V5l8-3 8 3v8Z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gofarm-black mb-3">100% Secure Payment</h3>
+            <p class="text-gofarm-gray leading-relaxed">Your transactions are safe with our secure payment gateways. We protect your privacy and data.</p>
+          </div>
+          <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 text-blue-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-headphones"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gofarm-black mb-3">24/7 Dedicated Support</h3>
+            <p class="text-gofarm-gray leading-relaxed">Our friendly customer support team is available around the clock to help you with any inquiries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+  transformedBody = transformedBody.replace(emptySectionRegex, featuresSectionHtml);
+
   return (
     <>
       <div dangerouslySetInnerHTML={{ __html: transformedBody }} />
-      <ProductGridClient products={products} />
-      <ProductShareHandler products={products} />
+      <ProductGridClient products={allProducts} />
+      <ProductShareHandler products={allProducts} />
     </>
   );
 }

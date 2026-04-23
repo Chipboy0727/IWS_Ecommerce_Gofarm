@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
+import { ProductModal } from "@/components/product-modal";
 
 export function ProductGridClient({ products }: { products: any[] }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   useEffect(() => {
     // Hiển thị toast notification
@@ -124,17 +126,47 @@ export function ProductGridClient({ products }: { products: any[] }) {
       }
     };
 
+    // Xử lý Quick View (click vào link sản phẩm)
+    const handleQuickView = (e: Event) => {
+      const target = e.target as HTMLElement;
+      
+      // Bỏ qua nếu click vào nút action
+      if (target.closest('.add-to-cart-btn') || target.closest('.wishlist-btn') || target.closest('.share-btn')) {
+        return;
+      }
+      
+      const link = target.closest('a[href^="/shop/"]') as HTMLAnchorElement;
+      if (link) {
+        const article = link.closest('article');
+        if (article && article.dataset.productId) {
+          e.preventDefault();
+          const product = products.find(p => p.id === article.dataset.productId);
+          if (product) {
+            setSelectedProduct(product);
+          }
+        }
+      }
+    };
+
     // Gắn sự kiện
     document.addEventListener('click', handleAddToCart);
     document.addEventListener('click', handleWishlist);
     document.addEventListener('click', handleShare);
+    document.addEventListener('click', handleQuickView);
 
     return () => {
       document.removeEventListener('click', handleAddToCart);
       document.removeEventListener('click', handleWishlist);
       document.removeEventListener('click', handleShare);
+      document.removeEventListener('click', handleQuickView);
     };
-  }, [addToCart, addToWishlist, removeFromWishlist, isInWishlist]);
+  }, [addToCart, addToWishlist, removeFromWishlist, isInWishlist, products]);
 
-  return null;
+  return (
+    <ProductModal 
+      product={selectedProduct} 
+      isOpen={!!selectedProduct} 
+      onClose={() => setSelectedProduct(null)} 
+    />
+  );
 }

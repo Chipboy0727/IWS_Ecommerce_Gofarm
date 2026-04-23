@@ -6,6 +6,8 @@ import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
 import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM IMPORT
+import { ProductModal } from "@/components/product-modal";
+import SiteFooter from "@/components/site-footer";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -135,6 +137,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setIsWishlisted(isInWishlist(product.id));
@@ -198,7 +201,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             )}
           </div>
           <div className="flex-1">
-            <Link href={`/shop/${product.slug}`}>
+            <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <h3 className="font-semibold text-gofarm-black hover:text-gofarm-green">{product.name}</h3>
             </Link>
             <div className="flex items-center gap-1 mt-1">
@@ -226,6 +229,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
           </div>
         </div>
         {showToast && <ToastMessage />}
+        <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </>
     );
   }
@@ -236,7 +240,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
       <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
           <div className="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
-            <Link href={`/shop/${product.slug}`} className="block h-full">
+            <Link href={`/shop/${product.slug}`} className="block h-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <img
                 src={product.imageSrc}
                 className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
@@ -277,7 +281,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
           </div>
 
           <div className="p-2 space-y-1">
-            <Link href={`/shop/${product.slug}`}>
+            <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <h2 className="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
                 {product.name}
               </h2>
@@ -312,6 +316,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
         </article>
       </div>
       {showToast && <ToastMessage />}
+      <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
@@ -329,49 +334,7 @@ function ToastMessage() {
   );
 }
 
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
-  const categoryRoutes: Record<string, string> = {
-    "Ice and Cold": "/category/ice-and-cold",
-    "Dry Food": "/category/dry-food",
-    "Fast Food": "/category/fast-food",
-    Frozen: "/category/frozen",
-    Meat: "/category/meat",
-    Fish: "/category/fish",
-    Vegetables: "/category/vegetables",
-  };
 
-  return (
-    <div>
-      <h3 className="font-semibold text-gofarm-black mb-4">{title}</h3>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={item}>
-            <Link
-              href={
-                title === "Quick Links"
-                  ? item === "About us"
-                    ? "/about"
-                    : item === "Contact us"
-                      ? "/contact"
-                      : item === "Terms & Conditions"
-                        ? "/terms"
-                        : item === "Privacy Policy"
-                          ? "/privacy"
-                          : item === "FAQs"
-                            ? "/faqs"
-                            : "/help"
-                  : categoryRoutes[item] ?? "/collection"
-              }
-              className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize"
-            >
-              {item}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 export default function CollectionPage() {
   const [products, setProducts] = useState<LocalProduct[]>([]);
@@ -478,8 +441,7 @@ export default function CollectionPage() {
     ? `${window.location.origin}/shop/${selectedShareProduct.slug}` 
     : '';
 
-  const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const footerCategories = ["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"];
+
 
   if (loading) {
     return (
@@ -606,40 +568,7 @@ export default function CollectionPage() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
-          <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-              <div className="lg:col-span-2">
-                <Link href="/" className="inline-block mb-4">
-                  <h2 className="text-2xl font-bold text-gofarm-green">GoFarm</h2>
-                </Link>
-                <p className="text-gofarm-gray text-sm mb-4">
-                  Fresh, organic, and sustainable products delivered to your doorstep. 
-                  We connect local farmers directly to your table.
-                </p>
-                <div className="flex space-x-4">
-                  {/* Social icons placeholder */}
-                  <div className="w-8 h-8 rounded-full bg-gofarm-light-green/20 flex items-center justify-center text-gofarm-green hover:bg-gofarm-green hover:text-white transition-colors cursor-pointer">FB</div>
-                  <div className="w-8 h-8 rounded-full bg-gofarm-light-green/20 flex items-center justify-center text-gofarm-green hover:bg-gofarm-green hover:text-white transition-colors cursor-pointer">IG</div>
-                  <div className="w-8 h-8 rounded-full bg-gofarm-light-green/20 flex items-center justify-center text-gofarm-green hover:bg-gofarm-green hover:text-white transition-colors cursor-pointer">TW</div>
-                </div>
-              </div>
-              <FooterColumn title="Quick Links" items={quickLinks} />
-              <FooterColumn title="Categories" items={footerCategories} />
-              <div>
-                <h3 className="font-semibold text-gofarm-black mb-4">Newsletter</h3>
-                <p className="text-gofarm-gray text-sm mb-3">Subscribe for updates and offers</p>
-                <div className="flex gap-2">
-                  <input type="email" placeholder="Your email" className="flex-1 px-3 py-2 text-sm border border-gofarm-light-green/30 rounded-lg focus:outline-none focus:border-gofarm-green" />
-                  <button className="px-4 py-2 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green text-sm font-medium">Subscribe</button>
-                </div>
-              </div>
-            </div>
-            <div className="border-t border-gofarm-light-gray mt-8 pt-8 text-center">
-              <p className="text-gofarm-gray text-sm">&copy; 2024 GoFarm. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
 
       {/* Share Modal */}

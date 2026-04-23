@@ -149,11 +149,11 @@ export function ProductModal({
 
                   {/* Thumbnails Overlay */}
                   <div className="absolute bottom-4 left-4 right-4 z-20">
-                    <div className="relative bg-white/40 backdrop-blur-md rounded-2xl p-3 flex items-center gap-3 shadow-lg border border-white/50">
+                    <div className="relative bg-white rounded-2xl p-3 flex items-center gap-3 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100">
                       {/* Left Arrow */}
                       <button
                         onClick={() => scroll("left")}
-                        className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+                        className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full bg-white text-gofarm-gray hover:bg-gofarm-green hover:text-white shadow-md border border-gray-200 transition-all hover:scale-105"
                         aria-label="Previous images"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -170,8 +170,8 @@ export function ProductModal({
                             key={idx}
                             onClick={() => setActiveImageIndex(idx)}
                             className={`shrink-0 w-16 h-16 rounded-xl p-1.5 cursor-pointer transition-all snap-center ${activeImageIndex === idx
-                                ? "border-2 border-gofarm-green bg-white shadow-md scale-105"
-                                : "border-2 border-transparent bg-white/60 hover:bg-white"
+                                ? "border-2 border-gofarm-green bg-white shadow-sm scale-105"
+                                : "border-2 border-transparent hover:border-gray-200 hover:bg-gray-50"
                               }`}
                           >
                             <img src={src} alt="Thumbnail" className="w-full h-full object-contain" />
@@ -182,7 +182,7 @@ export function ProductModal({
                       {/* Right Arrow */}
                       <button
                         onClick={() => scroll("right")}
-                        className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors"
+                        className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full bg-white text-gofarm-gray hover:bg-gofarm-green hover:text-white shadow-md border border-gray-200 transition-all hover:scale-105"
                         aria-label="Next images"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
