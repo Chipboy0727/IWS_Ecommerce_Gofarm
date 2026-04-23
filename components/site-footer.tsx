@@ -2,13 +2,22 @@ import Link from "next/link";
 
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
-    "Ice and Cold": "/category/ice-and-cold",
-    "Dry Food": "/category/dry-food",
-    "Fast Food": "/category/fast-food",
-    Frozen: "/category/frozen",
-    Meat: "/category/meat",
-    Fish: "/category/fish",
-    Vegetables: "/category/vegetables",
+    "Ice and Cold": "/collection?category=ice-and-cold",
+    "Dry Food": "/collection?category=dry-food",
+    "Fast Food": "/collection?category=fast-food",
+    Frozen: "/collection?category=frozen",
+    Meat: "/collection?category=meat",
+    Fish: "/collection?category=fish",
+    Vegetables: "/collection?category=vegetables",
+  };
+
+  const quickLinksRoutes: Record<string, string> = {
+    "About us": "/shop",
+    "Contact us": "/contact",
+    "Terms & Conditions": "/help",
+    "Privacy Policy": "/help",
+    FAQs: "/help",
+    Help: "/help",
   };
 
   return (
@@ -20,17 +29,7 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
             <Link
               href={
                 title === "Quick Links"
-                  ? item === "About us"
-                    ? "/about"
-                    : item === "Contact us"
-                      ? "/contact"
-                      : item === "Terms & Conditions"
-                        ? "/terms"
-                        : item === "Privacy Policy"
-                          ? "/privacy"
-                          : item === "FAQs"
-                            ? "/faqs"
-                            : "/help"
+                  ? quickLinksRoutes[item] ?? "/shop"
                   : categoryRoutes[item] ?? "/collection"
               }
               className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize"
@@ -46,7 +45,7 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
 
 export default function SiteFooter() {
   const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"];
+  const categories = ["Fruits", "Vegetables"];
 
   return (
     <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
