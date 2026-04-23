@@ -3,7 +3,7 @@ import Link from "next/link";
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
 import RealCountdown from "./RealCountDown";
 import SubscribeButton from "./SubscribeButton";
-import ProductCard from "./ProductCard";
+import DealList from "./DealList";
 import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM DÒNG NÀY
 
 export const metadata = {
@@ -351,11 +351,7 @@ export default async function DealPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {dealProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <DealList products={dealProducts} />
         </div>
 
         <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
