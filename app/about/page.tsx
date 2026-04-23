@@ -11,12 +11,7 @@ export default function AboutPage() {
     <>
       <main className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
         <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 mb-8 text-sm text-gray-600">
-            <Link href="/" className="hover:text-gofarm-green">Home</Link>
-            <span>/</span>
-            <span className="text-gofarm-green font-semibold">About Us</span>
-          </div>
+         
 
           {/* Header */}
           <div className="mb-16">
