@@ -512,6 +512,6 @@ function Field({
     <label className={className}>
       <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-[#6f7b6d]">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
