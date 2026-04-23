@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteFooter from "@/components/site-footer";
+// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "About Us | GoFarm",
@@ -103,7 +103,7 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      {/* ĐÃ XÓA: <SiteFooter /> */}
     </>
   );
 }
