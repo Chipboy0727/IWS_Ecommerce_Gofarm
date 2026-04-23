@@ -161,6 +161,12 @@ function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setSearchTerm("");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && results.length === 1) {
+      handleProductClick(results[0].slug);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -177,6 +183,7 @@ function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full pl-10 pr-10 py-3 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-gofarm-green"
             />
             <button onClick={onClose} className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -293,6 +300,7 @@ export default function SiteHeader() {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [, forceUpdate] = useState(0); // Force re-render khi có event
 
   // Load user data
@@ -304,6 +312,7 @@ export default function SiteHeader() {
           const userData = JSON.parse(user);
           setIsLoggedIn(true);
           setUserName(userData.name || userData.email?.split("@")[0] || "User");
+          setUserRole(userData.role || "");
         } catch (e) {}
       }
     };
@@ -341,6 +350,11 @@ export default function SiteHeader() {
     setIsLoggedIn(false);
     router.push("/");
   };
+
+  // Ẩn Header nếu đang ở trang Admin
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <>
@@ -447,6 +461,11 @@ export default function SiteHeader() {
                               <Link href="/orders" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50">
                                 <IconOrders /> My Orders
                               </Link>
+                              {userRole === "admin" && (
+                                <Link href="/admin" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-emerald-50 text-emerald-700 font-bold">
+                                  <IconUser /> Admin Panel
+                                </Link>
+                              )}
                               <div className="border-t my-1" />
                               <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full">
                                 <IconLogout /> Sign Out

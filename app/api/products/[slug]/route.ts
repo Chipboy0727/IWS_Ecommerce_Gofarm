@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { readDb, updateDb } from "@/lib/backend/db";
 import { jsonError, readJsonBody } from "@/lib/backend/http";
 import { updateProductPayload } from "@/lib/backend/products";
@@ -37,6 +38,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     products: current.products.map((product) => (product.id === existing.id ? result.product : product)),
   }));
 
+  revalidatePath("/", "layout");
+
   return NextResponse.json({ product: result.product });
 }
 
@@ -53,6 +56,8 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     ...current,
     products: current.products.filter((product) => product.id !== existing.id),
   }));
+
+  revalidatePath("/", "layout");
 
   return NextResponse.json({ ok: true });
 }

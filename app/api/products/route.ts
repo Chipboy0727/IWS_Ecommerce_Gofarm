@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { readDb, updateDb } from "@/lib/backend/db";
 import { jsonError, parsePositiveInt, readJsonBody, sanitizeOptionalString } from "@/lib/backend/http";
 import { createProductPayload, listProducts, normalizeProductCategories, parseProductSortBy } from "@/lib/backend/products";
@@ -51,6 +52,9 @@ export async function POST(request: NextRequest) {
     ...current,
     products: [result.product, ...current.products],
   }));
+
+  // Làm mới cache cho các trang khách hàng
+  revalidatePath("/", "layout");
 
   const nextDb = await readDb();
   return NextResponse.json(
