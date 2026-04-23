@@ -78,7 +78,14 @@ export default function SignInPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      router.push("/");
+      
+      // Redirect based on role
+      if (data.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
+      
       router.refresh();
     } catch (err: any) {
       setError(err.message);

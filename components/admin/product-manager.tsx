@@ -71,6 +71,8 @@ export default function ProductManager() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [form, setForm] = useState<ProductFormState>(emptyForm());
+  const [imageMode, setImageMode] = useState<"url" | "upload">("url");
+  const [uploading, setUploading] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -125,6 +127,33 @@ export default function ProductManager() {
       }
       return next;
     });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        updateField("imageSrc", data.url);
+        setImageMode("url"); // Switch to URL view to show the result
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
+    } catch (err: any) {
+      alert(err.message || "Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -281,75 +310,164 @@ export default function ProductManager() {
       </SectionCard>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[24px] bg-white p-6 shadow-2xl">
-            <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a2619]/60 p-4 backdrop-blur-md">
+          <div className="flex h-full max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_30px_70px_-10px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#edf1e5] bg-white px-8 py-6">
               <div>
-                <h3 className="text-2xl font-bold text-[#243322]">{editingSlug ? "Edit Product" : "Create Product"}</h3>
-                <p className="mt-1 text-sm text-[#6f7b6d]">Use the API-backed form to persist changes.</p>
+                <h3 className="text-2xl font-extrabold tracking-tight text-[#1a2619]">{editingSlug ? "Edit Product" : "Create New Product"}</h3>
+                <p className="text-[14px] text-[#6f7b6d]">{editingSlug ? "Update the product details below." : "Add a fresh new product to your catalog."}</p>
               </div>
-              <button type="button" onClick={closeModal} className="text-sm font-semibold text-[#6f7b6d] hover:text-[#243322]">
-                Close
+              <button
+                type="button"
+                onClick={closeModal}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0f5e4] text-[#4d5d4b] transition-all hover:bg-[#e2efda] hover:text-[#1a2619] active:scale-90"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
-              <Field label="Name">
-                <input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="input" required />
-              </Field>
-              <Field label="Slug">
-                <input value={form.slug} onChange={(e) => updateField("slug", e.target.value)} className="input" />
-              </Field>
-              <Field label="Image URL">
-                <input value={form.imageSrc} onChange={(e) => updateField("imageSrc", e.target.value)} className="input" required />
-              </Field>
-              <Field label="Image Alt">
-                <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" required />
-              </Field>
-              <Field label="Price">
-                <input type="number" min="0" step="0.01" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="input" required />
-              </Field>
-              <Field label="Discount">
-                <input type="number" min="0" step="1" value={form.discount} onChange={(e) => updateField("discount", e.target.value)} className="input" />
-              </Field>
-              <Field label="Brand">
-                <input value={form.brand} onChange={(e) => updateField("brand", e.target.value)} className="input" />
-              </Field>
-              <Field label="Category">
-                <select value={form.categoryId} onChange={(e) => updateField("categoryId", e.target.value)} className="input">
-                  <option value="">Select category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.title}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Rating">
-                <input type="number" min="0" max="5" step="0.1" value={form.rating} onChange={(e) => updateField("rating", e.target.value)} className="input" />
-              </Field>
-              <Field label="Reviews">
-                <input type="number" min="0" step="1" value={form.reviews} onChange={(e) => updateField("reviews", e.target.value)} className="input" />
-              </Field>
-              <Field label="Stock">
-                <input type="number" min="0" step="1" value={form.stock} onChange={(e) => updateField("stock", e.target.value)} className="input" />
-              </Field>
-              <Field label="Status">
-                <input value={form.status} onChange={(e) => updateField("status", e.target.value)} className="input" />
-              </Field>
-              <Field label="Description" className="md:col-span-2">
-                <textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="input min-h-28" />
-              </Field>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto bg-white p-8">
+              <form id="product-form" onSubmit={handleSubmit} className="grid gap-8 md:grid-cols-2">
+                <div className="md:col-span-2 space-y-6 rounded-[24px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
+                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Basic Information</h4>
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Field label="Product Name">
+                      <input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="input" placeholder="e.g. Fresh Organic Apples" required />
+                    </Field>
+                    <Field label="URL Slug">
+                      <input value={form.slug} onChange={(e) => updateField("slug", e.target.value)} className="input" placeholder="fresh-organic-apples" />
+                    </Field>
+                    <Field label="Description" className="md:col-span-2">
+                      <textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="input min-h-[120px] resize-none" placeholder="Describe the product features, origin, and quality..." />
+                    </Field>
+                  </div>
+                </div>
 
-              <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
-                <button type="button" onClick={closeModal} className="rounded-xl border border-[#dce4d1] px-5 py-3 text-sm font-semibold text-[#4d5d4b]">
-                  Cancel
-                </button>
-                <button type="submit" disabled={saving} className="rounded-xl bg-[#0f9716] px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">
-                  {saving ? "Saving..." : editingSlug ? "Update Product" : "Create Product"}
-                </button>
-              </div>
-            </form>
+                <div className="space-y-6 rounded-[24px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between border-b border-[#edf1e5] pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      </div>
+                      <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Media</h4>
+                    </div>
+                    <div className="flex rounded-full bg-[#f0f5e4] p-1 scale-90">
+                      <button type="button" onClick={() => setImageMode("url")} className={`rounded-full px-4 py-1.5 text-[11px] font-bold transition-all ${imageMode === "url" ? "bg-white text-[#16781f] shadow-sm" : "text-[#6f7b6d]"}`}>LINK</button>
+                      <button type="button" onClick={() => setImageMode("upload")} className={`rounded-full px-4 py-1.5 text-[11px] font-bold transition-all ${imageMode === "upload" ? "bg-white text-[#16781f] shadow-sm" : "text-[#6f7b6d]"}`}>UPLOAD</button>
+                    </div>
+                  </div>
+                  <div className="space-y-5">
+                    {imageMode === "url" ? (
+                      <Field label="Image URL">
+                        <input value={form.imageSrc} onChange={(e) => updateField("imageSrc", e.target.value)} className="input" placeholder="https://..." required />
+                      </Field>
+                    ) : (
+                      <div className="relative">
+                        <input type="file" accept="image/*" onChange={handleFileUpload} className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" />
+                        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#dce4d1] bg-[#f8fbf2] p-8 text-center transition-all hover:border-[#16781f]">
+                          {uploading ? (
+                            <svg className="h-8 w-8 animate-spin text-[#16781f]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                          ) : (
+                            <>
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#16781f] mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                              <span className="text-[13px] font-bold text-[#1a2619]">Click to Upload</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <Field label="Alt Text">
+                      <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" placeholder="Image description" required />
+                    </Field>
+                    {form.imageSrc && (
+                      <div className="relative group overflow-hidden rounded-2xl border border-[#dce4d1]">
+                        <img src={form.imageSrc} alt="Preview" className="h-32 w-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="text-white text-xs font-bold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">Image Preview</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-6 rounded-[24px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Pricing</h4>
+                  </div>
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <Field label="Price ($)">
+                      <input type="number" step="0.01" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="input" placeholder="0.00" required />
+                    </Field>
+                    <Field label="Stock">
+                      <input type="number" value={form.stock} onChange={(e) => updateField("stock", e.target.value)} className="input" placeholder="0" />
+                    </Field>
+                    <Field label="Discount">
+                      <input type="number" value={form.discount} onChange={(e) => updateField("discount", e.target.value)} className="input" placeholder="0" />
+                    </Field>
+                    <Field label="Status Tag">
+                      <input value={form.status} onChange={(e) => updateField("status", e.target.value)} className="input" placeholder="e.g. sale" />
+                    </Field>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2 space-y-6 rounded-[24px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
+                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Classification</h4>
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <Field label="Category">
+                      <select value={form.categoryId} onChange={(e) => updateField("categoryId", e.target.value)} className="input appearance-none">
+                        <option value="">Choose...</option>
+                        {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Brand">
+                      <input value={form.brand} onChange={(e) => updateField("brand", e.target.value)} className="input" placeholder="Brand..." />
+                    </Field>
+                    <Field label="Initial Rating">
+                      <input type="number" step="0.1" value={form.rating} onChange={(e) => updateField("rating", e.target.value)} className="input" placeholder="0-5" />
+                    </Field>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-4 border-t border-[#edf1e5] bg-white px-8 py-6">
+              <button
+                type="button"
+                onClick={closeModal}
+                style={{ backgroundColor: "#0f9716", color: "#ffffff" }}
+                className="rounded-xl px-8 py-3 text-[14px] font-bold shadow-lg shadow-green-100 transition-all hover:bg-[#0d8213] active:scale-95"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="product-form"
+                disabled={saving}
+                style={{ backgroundColor: "#0f9716", color: "#ffffff" }}
+                className="flex items-center justify-center rounded-xl px-10 py-3 text-[14px] font-bold shadow-lg shadow-green-100 transition-all hover:bg-[#0d8213] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+              >
+                {saving ? "Saving..." : editingSlug ? "Save Changes" : "Save Product"}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
@@ -357,17 +475,25 @@ export default function ProductManager() {
       <style jsx>{`
         .input {
           width: 100%;
-          border-radius: 14px;
-          border: 1px solid #dce4d1;
+          border-radius: 16px;
+          border: 1.5px solid #dce4d1;
           background: #fff;
-          padding: 12px 14px;
-          font-size: 14px;
+          padding: 14px 18px;
+          font-size: 15px;
           color: #243322;
           outline: none;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .input::placeholder {
+          color: #a4b3a2;
         }
         .input:focus {
           border-color: #0f9716;
-          box-shadow: 0 0 0 3px rgba(15, 151, 22, 0.12);
+          box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.1), 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .input:hover:not(:focus) {
+          border-color: #b5c4a7;
         }
       `}</style>
     </>
@@ -385,7 +511,7 @@ function Field({
 }) {
   return (
     <label className={className}>
-      <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-[#748171]">{label}</span>
+      <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-[#6f7b6d]">{label}</span>
       {children}
     </label>
   );
