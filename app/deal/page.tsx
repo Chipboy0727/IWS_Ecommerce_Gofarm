@@ -4,7 +4,8 @@ import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
 import RealCountdown from "./RealCountDown";
 import SubscribeButton from "./SubscribeButton";
 import DealList from "./DealList";
-import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM DÒNG NÀY
+import ProductShareHandler from "@/components/home/ProductShareHandler";
+import ShareModal from "@/app/share/ShareModal";
 
 export const metadata = {
   title: "Hot Deal | gofarm",
@@ -17,12 +18,6 @@ function formatPrice(price: number) {
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(price);
-}
-
-function salePriceFor(product: LocalProduct) {
-  return product.discount && product.discount > 0
-    ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
-    : product.price;
 }
 
 function Icon({
@@ -110,63 +105,6 @@ function BagIcon({ className }: { className?: string }) {
   );
 }
 
-function ChevronRightIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="m9 18 6-6-6-6" />
-    </Icon>
-  );
-}
-
-function MapPinIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-      <circle cx="12" cy="10" r="3" />
-    </Icon>
-  );
-}
-
-function PhoneIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
-    </Icon>
-  );
-}
-
-function MailIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-    </Icon>
-  );
-}
-
-function ShareIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
-      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
-    </Icon>
-  );
-}
-
-function CompareIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M8 3 4 7l4 4" />
-      <path d="M4 7h16" />
-      <path d="m16 21 4-4-4-4" />
-      <path d="M20 17H4" />
-    </Icon>
-  );
-}
-
 function StatBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
@@ -210,9 +148,6 @@ export default async function DealPage() {
   const dealProducts = dealSlugs
     .map((slug) => products.find((product) => product.slug === slug))
     .filter((product): product is LocalProduct => Boolean(product));
-
-  const quickLinks = ["About Us", "Contact Us", "Terms & Conditions", "Privacy Policy", "Track Order", "Help"];
-  const categories = ["Fruits", "Vegetables"];
 
   return (
     <div className="min-h-screen bg-linear-to-b from-red-50 to-orange-50">
@@ -328,8 +263,10 @@ export default async function DealPage() {
             </div>
           </div>
         </div>
-
       </main>
+
+      {/* Thêm ProductShareHandler và ShareModal */}
+      <ProductShareHandler products={dealProducts} />
     </div>
   );
 }

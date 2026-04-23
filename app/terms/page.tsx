@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteFooter from "@/components/site-footer";
+// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "Terms & Conditions | GoFarm",
@@ -11,12 +11,7 @@ export default function TermsPage() {
     <>
       <main className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
         <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 mb-8 text-sm text-gray-600">
-            <Link href="/" className="hover:text-gofarm-green">Home</Link>
-            <span>/</span>
-            <span className="text-gofarm-green font-semibold">Terms & Conditions</span>
-          </div>
+  
 
           {/* Header */}
           <h1 className="text-4xl md:text-5xl font-bold text-gofarm-black mb-2">Terms & Conditions</h1>
@@ -71,7 +66,7 @@ export default function TermsPage() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      {/* ĐÃ XÓA: <SiteFooter /> */}
     </>
   );
 }
