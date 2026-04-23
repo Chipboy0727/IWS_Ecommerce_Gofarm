@@ -55,8 +55,6 @@ function HeartIcon({ className, filled }: { className?: string; filled?: boolean
   );
 }
 
-// ĐÃ XÓA: CompareIcon function
-
 function ShareIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -144,8 +142,8 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
   };
 
   const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (onQuickView) {
-      e.preventDefault();
       onQuickView(product);
     }
   };

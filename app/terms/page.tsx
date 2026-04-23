@@ -1,5 +1,5 @@
 import Link from "next/link";
-import SiteFooter from "@/components/site-footer";
+// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "Terms & Conditions | GoFarm",
@@ -71,7 +71,7 @@ export default function TermsPage() {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      {/* ĐÃ XÓA: <SiteFooter /> */}
     </>
   );
 }
