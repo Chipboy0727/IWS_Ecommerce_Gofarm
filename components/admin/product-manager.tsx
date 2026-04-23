@@ -59,6 +59,19 @@ function toForm(product: LocalProduct): ProductFormState {
   };
 }
 
+function stockTone(stock: number) {
+  if (stock <= 25) return "red";
+  if (stock <= 100) return "amber";
+  return "green";
+}
+
+function stockWidth(stock: number) {
+  if (stock <= 25) return 14;
+  if (stock <= 100) return 36;
+  if (stock <= 300) return 62;
+  return 86;
+}
+
 export default function ProductManager() {
   const [products, setProducts] = useState<LocalProduct[]>([]);
   const [categories, setCategories] = useState<LocalCategory[]>([]);
@@ -218,14 +231,24 @@ export default function ProductManager() {
   return (
     <>
       <SectionCard
-        title="Catalog Management"
-        subtitle="Create, update, and remove products using the live API."
+        title="Product Management"
+        subtitle="Manage your agricultural catalog and monitor stock levels in real-time."
         right={
           <div className="flex flex-wrap gap-2">
             <AdminActionButton tone="primary" onClick={openCreate}>+ Add New Product</AdminActionButton>
           </div>
         }
       >
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-[18px] border border-[#edf1e5] bg-white px-4 py-4">
+          <div className="flex min-w-[320px] flex-1 items-center gap-3 rounded-[14px] bg-[#e9f0db] px-4 py-3 text-[#6f7b6d]">
+            <IconSearch />
+            <span className="text-[13px]">Search products, SKU or category...</span>
+          </div>
+          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Category</button>
+          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Stock Level</button>
+          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Export</button>
+        </div>
+
         {error ? (
           <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         ) : null}
@@ -238,71 +261,88 @@ export default function ProductManager() {
             Loading products...
           </div>
         ) : (
-          <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5">
-            <table className="min-w-full border-separate border-spacing-0 text-left">
-              <thead className="bg-[#f0f5e4]">
-                <tr className="text-[11px] uppercase tracking-[0.18em] text-[#748171]">
-                  <th className="px-5 py-4">Product</th>
-                  <th className="px-5 py-4">Category</th>
-                  <th className="px-5 py-4">Price</th>
-                  <th className="px-5 py-4">Stock</th>
-                  <th className="px-5 py-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product, index) => (
-                  <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={product.imageSrc || "/images/logo.svg"}
-                          alt={product.name}
-                          className="h-10 w-10 rounded-[10px] object-cover"
-                          onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
-                        />
-                        <div>
-                          <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
-                          <div className="text-[12px] text-[#748171]">{product.slug}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="text-[13px] text-[#4d5d4b]">{product.categoryTitle ?? "Uncategorized"}</div>
-                      {product.status ? (
-                        <div className="mt-2">
-                          <Pill tone="gray">{product.status.toUpperCase()}</Pill>
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-5 py-4 text-[13px] font-semibold text-[#253323]">
-                      ${product.price.toFixed(2)}
-                    </td>
-                    <td className="px-5 py-4 text-[13px] text-[#4d5d4b]">
-                      {product.stock ?? 0}
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEdit(product)}
-                          className="rounded-full bg-[#edf6e8] px-4 py-2 text-[12px] font-semibold text-[#16781f] hover:bg-[#e2efda]"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(product)}
-                          className="rounded-full bg-[#fbe3e0] px-4 py-2 text-[12px] font-semibold text-[#c13d36] hover:bg-[#f7d0cc]"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5">
+              <table className="page-table min-w-full text-left">
+                <thead className="bg-[#f0f5e4]">
+                  <tr className="text-[11px] uppercase tracking-[0.18em] text-[#748171]">
+                    <th className="px-5 py-4">Product</th>
+                    <th className="px-5 py-4">Category</th>
+                    <th className="px-5 py-4">Stock Level</th>
+                    <th className="px-5 py-4">Status</th>
+                    <th className="px-5 py-4">Price</th>
+                    <th className="px-5 py-4">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {products.map((product, index) => {
+                    const stock = typeof product.stock === "number" ? product.stock : 0;
+                    const tone = stockTone(stock);
+                    return (
+                      <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={product.imageSrc || "/images/logo.svg"}
+                              alt={product.name}
+                              className="h-10 w-10 rounded-[10px] object-cover"
+                              onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
+                            />
+                            <div>
+                              <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
+                              <div className="text-[12px] text-[#748171]">SKU: {product.slug.toUpperCase()}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <Pill tone="green">{product.categoryTitle ?? "Uncategorized"}</Pill>
+                        </td>
+                        <td className="px-5 py-4 text-[13px] text-[#4d5d4b]">
+                          <div className="flex items-center gap-3">
+                            <div className="progress">
+                              <span
+                                className={tone === "green" ? "status-green" : tone === "amber" ? "status-amber" : "status-red"}
+                                style={{ width: `${stockWidth(stock)}%` }}
+                              />
+                            </div>
+                            <div className="text-[13px] font-semibold text-[#243322]">{stock}</div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <Pill tone={tone}>{(product.status ?? "ACTIVE").toUpperCase()}</Pill>
+                        </td>
+                        <td className="px-5 py-4 text-[13px] font-semibold text-[#253323]">
+                          ${product.price.toFixed(2)}
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="icon-actions">
+                            <button type="button" onClick={() => openEdit(product)} aria-label={`Edit ${product.name}`}>
+                              <IconPen />
+                            </button>
+                            <button type="button" onClick={() => handleDelete(product)} aria-label={`Delete ${product.name}`}>
+                              <IconTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex items-center justify-between px-2 pt-4 text-[12px] text-[#6f7b6d]">
+              <div>Showing 1-4 of {products.length.toLocaleString("en-US")} products</div>
+              <div className="flex items-center gap-2">
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">‹</button>
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
+                <span className="px-1 text-[#919d90]">…</span>
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">321</button>
+                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">›</button>
+              </div>
+            </div>
+          </>
         )}
       </SectionCard>
 
@@ -470,7 +510,7 @@ export default function ProductManager() {
       ) : null}
 
       <style jsx>{`
-        .input-modern {
+        .input {
           width: 100%;
           border-radius: 16px;
           border: 1.5px solid #dce4d1;
@@ -485,7 +525,7 @@ export default function ProductManager() {
         .input::placeholder {
           color: #a4b3a2;
         }
-        .input-modern:focus {
+        .input:focus {
           border-color: #0f9716;
           box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.1), 0 2px 4px rgba(0,0,0,0.02);
         }
@@ -513,5 +553,31 @@ function Field({
       <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-[#6f7b6d]">{label}</span>
       {children}
     </label>
+  );
+}
+
+function IconSearch() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconPen() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="m13 6 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconTrash() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M5 7h14M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.6a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
   );
 }

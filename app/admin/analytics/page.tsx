@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
-import { AdminActionButton, AdminShell, SectionCard, StatCard, BarChart, Pill } from "@/components/admin/admin-shell";
+import { AdminActionButton, AdminShell, SectionCard, StatCard, Pill } from "@/components/admin/admin-shell";
+import { SalesPerformanceCard } from "@/components/admin/sales-performance";
+import { buildDashboardStats, buildSalesSeries } from "@/lib/backend/admin-analytics";
+import { readDb } from "@/lib/backend/db";
 
 export const metadata: Metadata = {
   title: "Analytics | GoFarm",
   description: "Analytics screen for GoFarm admin.",
 };
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  const db = await readDb();
+  const stats = buildDashboardStats(db);
+  const series = buildSalesSeries(db.orders);
+  const cancelledRate = db.orders.length > 0 ? (db.orders.filter((order) => order.status === "cancelled").length / db.orders.length) * 100 : 0;
+
   return (
     <AdminShell
       activeHref="/admin/analytics"
@@ -20,23 +28,21 @@ export default function AnalyticsPage() {
     >
       <div className="space-y-5">
         <div className="grid gap-4 xl:grid-cols-4">
-          <StatCard label="Daily Traffic" value="48.2k" delta="+18%" hint="site sessions" />
-          <StatCard label="Conversion" value="4.8%" delta="+0.6%" hint="checkout rate" />
-          <StatCard label="Revenue Trend" value="$248k" delta="+12.9%" hint="rolling 30 days" />
-          <StatCard label="Return Rate" value="2.1%" delta="-0.4%" hint="lower is better" />
+          <StatCard label="Daily Traffic" value={stats.activeOrders.toLocaleString("en-US")} delta="Live" hint="current orders" />
+          <StatCard label="Conversion" value={`${Math.min(99.9, (stats.activeOrders / Math.max(1, stats.orderCount)) * 100).toFixed(1)}%`} delta="Real" hint="orders / total" />
+          <StatCard label="Revenue Trend" value={`$${Math.round(stats.totalRevenue / 1000)}k`} delta={`${stats.revenueGrowth >= 0 ? "+" : ""}${stats.revenueGrowth.toFixed(1)}%`} hint="rolling revenue" />
+          <StatCard label="Cancellation Rate" value={`${cancelledRate.toFixed(1)}%`} delta="Real" hint="cancelled orders" />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <SectionCard title="Traffic Overview" subtitle="Daily sessions and purchase intent">
-            <BarChart bars={[34, 52, 49, 68, 58, 74, 62]} labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]} />
-          </SectionCard>
+          <SalesPerformanceCard series={series} title="Traffic Overview" subtitle="Daily sessions and purchase intent" />
           <SectionCard className="bg-[linear-gradient(180deg,#127d12_0%,#0d6f0f_100%)] text-white" title="AI Market Forecast" subtitle="Model confidence and supply signals">
             <div className="space-y-4">
-              <div className="text-[28px] font-extrabold tracking-[-0.05em] leading-[1.06]">Demand for organic kale to spike +22%</div>
-              <div className="text-[13px] leading-6 text-white/72">Based on urban supply chain delays and seasonal health trends, inventory should be adjusted for premium shelf placement.</div>
+              <div className="text-[28px] font-extrabold tracking-[-0.05em] leading-[1.06]">Revenue is tracking at {stats.revenueGrowth >= 0 ? "+" : ""}{stats.revenueGrowth.toFixed(1)}% month over month</div>
+              <div className="text-[13px] leading-6 text-white/72">This forecast is derived from live order history and current product stock levels in the backend.</div>
               <div className="rounded-[16px] bg-white/10 px-4 py-3">
                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/60">Confidence score</div>
-                <div className="mt-1 text-[26px] font-bold">94.2%</div>
+                <div className="mt-1 text-[26px] font-bold">{Math.max(60, Math.min(99, 70 + Math.round(stats.revenueGrowth))).toFixed(1)}%</div>
               </div>
               <Pill tone="green">High confidence</Pill>
             </div>

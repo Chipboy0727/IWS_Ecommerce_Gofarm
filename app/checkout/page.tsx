@@ -111,7 +111,7 @@ export default function CheckoutPage() {
     return `https://img.vietqr.io/image/${bankInfo.bankCode}-${bankInfo.accountNumber}-${template}.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(bankInfo.accountName)}`;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     
@@ -144,20 +144,32 @@ export default function CheckoutPage() {
       paymentMethod: paymentMethodDisplay,
     };
     
-    const existingOrders = localStorage.getItem("orders");
-    const orders = existingOrders ? JSON.parse(existingOrders) : [];
-    orders.unshift(newOrder);
-    localStorage.setItem("orders", JSON.stringify(orders));
-    
-    setTimeout(() => {
-      clearCart();
-      setIsProcessing(false);
-      
-      if (paymentMethod === "qr") {
-        alert(`Please scan QR code and transfer ${finalTotal.toFixed(2)} to account ${bankInfo.accountNumber}\nOrder will be confirmed after payment is received.`);
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        throw new Error(payload.error ?? "Failed to create order");
       }
-      router.push("/order-success");
-    }, 1500);
+
+      setTimeout(() => {
+        clearCart();
+        setIsProcessing(false);
+
+        if (paymentMethod === "qr") {
+          alert(`Please scan QR code and transfer ${finalTotal.toFixed(2)} to account ${bankInfo.accountNumber}\nOrder will be confirmed after payment is received.`);
+        }
+        router.push("/order-success");
+      }, 1500);
+    } catch (error) {
+      setIsProcessing(false);
+      alert(error instanceof Error ? error.message : "Failed to create order");
+    }
   };
 
   if (cartItems.length === 0) {
