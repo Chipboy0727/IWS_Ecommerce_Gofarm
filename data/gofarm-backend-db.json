@@ -1,6 +1,25 @@
 {
   "products": [
     {
+      "id": "dc584fdf-e910-4e93-9acd-008f7542f178",
+      "name": "Tuấn cùi",
+      "slug": "tuancui",
+      "createdAt": "2026-04-23T18:09:25.853Z",
+      "updatedAt": "2026-04-23T18:09:25.853Z",
+      "imageSrc": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
+      "imageAlt": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
+      "price": 0,
+      "discount": null,
+      "brand": null,
+      "categoryId": null,
+      "categoryTitle": null,
+      "description": "tests",
+      "rating": 0,
+      "reviews": 0,
+      "stock": null,
+      "status": "new"
+    },
+    {
       "id": "270ca390-05a1-40d1-a960-5972cd9d082d",
       "name": "Pecan",
       "slug": "pecan",
@@ -933,6 +952,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-21T16:17:06.946Z"
+    "updatedAt": "2026-04-23T18:09:25.854Z"
   }
 }
