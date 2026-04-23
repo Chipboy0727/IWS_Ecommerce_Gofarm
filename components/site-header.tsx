@@ -440,6 +440,11 @@ export default function SiteHeader() {
     router.push("/");
   };
 
+  // Ẩn Header nếu đang ở trang Admin
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">

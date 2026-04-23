@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard } from "@/components/admin/admin-shell";
 
 export const metadata: Metadata = {
@@ -81,7 +80,7 @@ export default function StoresPage() {
             {stores.map((store) => (
               <article key={store.name} className="overflow-hidden rounded-[18px] bg-[#fafcf7] ring-1 ring-black/5">
                 <div className="relative h-[180px] overflow-hidden">
-                  <Image src={store.image} alt={store.name} fill className="object-cover" />
+                  <img src={store.image} alt={store.name} className="h-full w-full object-cover" />
                   <div className="absolute left-3 top-3">
                     <Pill tone={store.tone === "green" ? "green" : "red"}>{store.status}</Pill>
                   </div>
