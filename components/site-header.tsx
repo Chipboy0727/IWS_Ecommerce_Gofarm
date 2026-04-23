@@ -325,6 +325,11 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 export default function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
+
+  // Hide header on admin pages
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -481,6 +486,14 @@ export default function SiteHeader() {
 
               {/* Right icons */}
               <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                {/* Search - Mobile */}
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="md:hidden p-2 hover:bg-gray-100 rounded-lg text-gofarm-gray hover:text-gofarm-green transition-colors"
+                >
+                  <IconSearch />
+                </button>
+
                 {/* Cart */}
                 <Link href="/cart" className="relative hover:text-gofarm-green transition-colors">
                   <IconCart />
