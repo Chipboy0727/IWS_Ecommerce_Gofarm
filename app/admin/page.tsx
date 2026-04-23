@@ -13,7 +13,19 @@ function formatMoney(value: number) {
 }
 
 function safeImage(src?: string | null) {
-  return src && src.trim() ? src : "/images/logo.svg";
+  if (!src) return "/images/logo.svg";
+  const trimmed = src.trim();
+  if (!trimmed) return "/images/logo.svg";
+  if (trimmed.startsWith("/")) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    if (url.origin === "http://localhost:3000" || url.origin === "https://localhost:3000") {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {
+    // fall through to local fallback
+  }
+  return "/images/logo.svg";
 }
 
 export default async function AdminDashboardPage() {

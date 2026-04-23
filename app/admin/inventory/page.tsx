@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { readDb } from "@/lib/backend/db";
 import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconGear, IconBox } from "@/components/admin/admin-shell";
 
@@ -90,7 +89,7 @@ export default async function InventoryPage() {
                     <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <Image src={product.imageSrc ?? "/images/logo.svg"} alt={product.name} width={40} height={40} className="h-10 w-10 rounded-[10px] object-cover" />
+                          <img src={product.imageSrc ?? "/images/logo.svg"} alt={product.name} className="h-10 w-10 rounded-[10px] object-cover" />
                           <div>
                             <div className="max-w-[190px] text-[13px] font-semibold leading-5 text-[#243322]">{product.name}</div>
                             <div className="text-[12px] text-[#748171]">{product.brand ?? "GoFarm Supply"}</div>

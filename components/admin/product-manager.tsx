@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
@@ -262,8 +260,6 @@ export default function ProductManager() {
                         <img
                           src={product.imageSrc || "/images/logo.svg"}
                           alt={product.name}
-                          width={40}
-                          height={40}
                           className="h-10 w-10 rounded-[10px] object-cover"
                           onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                         />
