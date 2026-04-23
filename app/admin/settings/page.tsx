@@ -18,7 +18,7 @@ export default function SettingsPage() {
       userLabel="Admin Console"
       actions={<AdminActionButton tone="primary">Save Changes</AdminActionButton>}
     >
-      <div className="space-y-5">
+      <div className="space-y-6">
         <div className="flex flex-wrap gap-2">
           <Pill tone="green">General Settings</Pill>
           <Pill tone="gray">Payment Gateway</Pill>
@@ -46,8 +46,8 @@ export default function SettingsPage() {
               <div className="mx-auto grid h-24 w-24 place-items-center rounded-2xl bg-[#dfead2] text-[#7b8c78]">
                 <IconUpload />
               </div>
-              <div className="mt-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#839081]">UPLOAD LOGO</div>
-              <div className="mt-2 text-[12px] text-[#768473]">Recommended: 512x512 SVG or PNG with transparent background.</div>
+              <div className="mt-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#839081]">Upload Logo</div>
+              <div className="mt-2 text-[12px] leading-5 text-[#768473]">Recommended: 512x512 SVG or PNG with transparent background.</div>
             </div>
           </SectionCard>
         </div>

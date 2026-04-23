@@ -1,138 +1,100 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 interface Order {
   id: string;
   date: string;
   total: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "awaiting_payment";
   items: number;
-  products?: any[];
+  products?: Array<{ id?: string; name: string; price: number; quantity: number; imageSrc?: string }>;
   shippingAddress?: string;
   customerName?: string;
   customerEmail?: string;
   customerPhone?: string;
 }
 
+async function loadOrder(id: string) {
+  const response = await fetch(`/api/orders/${id}`, { credentials: "include" });
+  if (!response.ok) {
+    throw new Error(response.status === 401 ? "unauthorized" : "not-found");
+  }
+  const data = await response.json();
+  return data.order as Order | null;
+}
+
 export default function OrderDetailPage() {
-  const params = useParams();
-  const router = useRouter();
+  const params = useParams<{ id: string }>();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [notification, setNotification] = useState<{ show: boolean; message: string; type: string }>({
-    show: false,
-    message: "",
-    type: "",
-  });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Lấy id từ params (đảm bảo params.id là string)
-    const orderId = params?.id as string;
-    console.log("Order ID from params:", orderId); // Debug
-    
+    let active = true;
+    const orderId = params?.id;
     if (!orderId) {
       setLoading(false);
       return;
     }
-    
-    const savedOrders = localStorage.getItem("orders");
-    console.log("Saved orders:", savedOrders); // Debug
-    
-    if (savedOrders) {
-      const orders = JSON.parse(savedOrders);
-      const foundOrder = orders.find((o: Order) => o.id === orderId);
-      console.log("Found order:", foundOrder); // Debug
-      setOrder(foundOrder || null);
-    }
-    setLoading(false);
+
+    (async () => {
+      try {
+        const nextOrder = await loadOrder(orderId);
+        if (active) setOrder(nextOrder);
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error && err.message === "unauthorized" ? "Please sign in to view this order." : "Order not found.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
   }, [params?.id]);
 
-  const showNotification = (message: string, type: "success" | "error") => {
-    setNotification({ show: true, message, type });
-    setTimeout(() => {
-      setNotification({ show: false, message: "", type: "" });
-    }, 3000);
-  };
+  const canCancel = () => order && (order.status === "pending" || order.status === "processing" || order.status === "awaiting_payment");
 
-  const getStatusColor = (status: Order["status"]) => {
-    const colors = {
-      pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      processing: "bg-blue-100 text-blue-800 border-blue-200",
-      shipped: "bg-purple-100 text-purple-800 border-purple-200",
-      delivered: "bg-green-100 text-green-800 border-green-200",
-      cancelled: "bg-red-100 text-red-800 border-red-200",
-    };
-    return colors[status];
-  };
-
-  const getStatusText = (status: Order["status"]) => {
-    const texts = {
-      pending: "Pending",
-      processing: "Processing",
-      shipped: "Shipped",
-      delivered: "Delivered",
-      cancelled: "Cancelled",
-    };
-    return texts[status];
-  };
-
-  const canCancel = () => {
-    return order && (order.status === "pending" || order.status === "processing");
-  };
-
-  const handleCancelOrder = () => {
-    setShowCancelConfirm(true);
-  };
-
-  const confirmCancelOrder = () => {
-    if (order) {
-      const updatedOrder = { ...order, status: "cancelled" as const };
-      setOrder(updatedOrder);
-      
-      const savedOrders = localStorage.getItem("orders");
-      if (savedOrders) {
-        const orders = JSON.parse(savedOrders);
-        const updatedOrders = orders.map((o: Order) =>
-          o.id === order.id ? updatedOrder : o
-        );
-        localStorage.setItem("orders", JSON.stringify(updatedOrders));
-      }
-      
-      showNotification(`Order ${order.id} has been cancelled`, "success");
-      setShowCancelConfirm(false);
+  const confirmCancelOrder = async () => {
+    if (!order) return;
+    const response = await fetch(`/api/orders/${order.id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "cancelled" }),
+    });
+    if (!response.ok) {
+      setError("Unable to cancel this order.");
+      return;
     }
-  };
-
-  const cancelCancelOrder = () => {
+    const data = await response.json();
+    setOrder(data.order as Order);
     setShowCancelConfirm(false);
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-gofarm-green" />
       </div>
     );
   }
 
-  if (!order) {
+  if (error || !order) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white via-white to-gray-50/30 py-16">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="bg-white rounded-2xl shadow-xl p-12">
-            <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Order not found</h2>
-            <p className="text-gray-500 mb-6">The order you're looking for doesn't exist.</p>
-            <Link href="/orders" className="inline-block px-6 py-3 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green transition-colors">
-              Back to Orders
+        <div className="mx-auto max-w-4xl px-4 text-center">
+          <div className="rounded-2xl bg-white p-12 shadow-xl">
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">{error === "Please sign in to view this order." ? "Sign in required" : "Order not found"}</h2>
+            <p className="mb-6 text-gray-500">{error ?? "The order you're looking for doesn't exist."}</p>
+            <Link href={error ? "/sign-in" : "/orders"} className="inline-block rounded-lg bg-gofarm-green px-6 py-3 text-white transition-colors hover:bg-gofarm-light-green">
+              {error ? "Sign In" : "Back to Orders"}
             </Link>
           </div>
         </div>
@@ -140,84 +102,45 @@ export default function OrderDetailPage() {
     );
   }
 
-  // Tính toán lại tổng tiền từ products nếu có
   const subtotal = order.total / 1.1;
   const tax = order.total - subtotal;
   const shipping: number = 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 lg:py-12">
-      {/* Notification Toast */}
-      {notification.show && (
-        <div className="fixed top-24 right-4 z-50 animate-slideIn">
-          <div className={`px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 ${
-            notification.type === "success" ? "bg-gofarm-green text-white" : "bg-red-500 text-white"
-          }`}>
-            {notification.type === "success" ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            )}
-            {notification.message}
-          </div>
-        </div>
-      )}
-
-      {/* Confirm Cancel Modal */}
       {showCancelConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl">
-            <div className="text-center">
-              <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Cancel Order?</h3>
-              <p className="text-gray-500 text-sm mb-6">Are you sure you want to cancel this order? This action cannot be undone.</p>
-              <div className="flex gap-3">
-                <button onClick={confirmCancelOrder} className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-                  Yes, Cancel
-                </button>
-                <button onClick={cancelCancelOrder} className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  No, Keep It
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          title="Cancel Order?"
+          description="Are you sure you want to cancel this order? This action cannot be undone."
+          confirmLabel="Yes, Cancel"
+          onConfirm={confirmCancelOrder}
+          onCancel={() => setShowCancelConfirm(false)}
+        />
       )}
 
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="mx-auto max-w-4xl px-4">
         <div className="mb-6">
-          <Link href="/orders" className="inline-flex items-center gap-2 text-gofarm-green hover:text-gofarm-light-green transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <Link href="/orders" className="inline-flex items-center gap-2 text-gofarm-green transition-colors hover:text-gofarm-light-green">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Orders
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
+          <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gofarm-black">Order #{order.id}</h1>
-                <p className="text-gofarm-gray mt-1">Placed on {order.date}</p>
+                <p className="mt-1 text-gofarm-gray">Placed on {order.date}</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold border ${getStatusColor(order.status)}`}>
-                  {getStatusText(order.status)}
-                </span>
+                <StatusPill status={order.status} />
                 {canCancel() && (
                   <button
-                    onClick={handleCancelOrder}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors"
+                    onClick={() => setShowCancelConfirm(true)}
+                    className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600"
                   >
                     Cancel Order
                   </button>
@@ -226,43 +149,26 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {/* Customer Information */}
-          <div className="p-6 border-b border-gray-200 bg-gray-50/50">
-            <h2 className="text-lg font-semibold text-gofarm-black mb-4">Customer Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {order.customerName && (
-                <div>
-                  <p className="text-sm text-gray-500">Full Name</p>
-                  <p className="font-medium text-gray-900">{order.customerName}</p>
-                </div>
-              )}
-              {order.customerEmail && (
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium text-gray-900">{order.customerEmail}</p>
-                </div>
-              )}
-              {order.customerPhone && (
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium text-gray-900">{order.customerPhone}</p>
-                </div>
-              )}
+          <div className="border-b border-gray-200 bg-gray-50/50 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-gofarm-black">Customer Information</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Info label="Full Name" value={order.customerName} />
+              <Info label="Email" value={order.customerEmail} />
+              <Info label="Phone" value={order.customerPhone} />
             </div>
           </div>
 
-          {/* Order Items */}
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gofarm-black mb-4">Order Items</h2>
+          <div className="border-b border-gray-200 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-gofarm-black">Order Items</h2>
             <div className="space-y-4">
               {order.products && order.products.length > 0 ? (
-                order.products.map((item: any, idx: number) => (
-                  <div key={idx} className="flex gap-4 py-3 border-b border-gray-100 last:border-0">
-                    <img src={item.imageSrc} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                order.products.map((item, idx) => (
+                  <div key={item.id ?? idx} className="flex gap-4 border-b border-gray-100 py-3 last:border-0">
+                    <img src={item.imageSrc ?? "/images/logo.svg"} alt={item.name} className="h-20 w-20 rounded-lg object-cover" />
                     <div className="flex-1">
                       <h3 className="font-semibold text-gofarm-black">{item.name}</h3>
                       <p className="text-sm text-gofarm-gray">Quantity: {item.quantity}</p>
-                      <p className="text-sm text-gofarm-green font-semibold mt-1">${item.price.toFixed(2)}</p>
+                      <p className="mt-1 text-sm font-semibold text-gofarm-green">${item.price.toFixed(2)}</p>
                     </div>
                     <p className="font-semibold text-gofarm-black">${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
@@ -273,39 +179,99 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="p-6 border-b border-gray-200 bg-gray-50/30">
-            <h2 className="text-lg font-semibold text-gofarm-black mb-4">Order Summary</h2>
-            <div className="space-y-2 max-w-md">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tax (10%)</span>
-                <span className="font-medium">${tax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-200">
+          <div className="border-b border-gray-200 bg-gray-50/30 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-gofarm-black">Order Summary</h2>
+            <div className="max-w-md space-y-2">
+              <SummaryRow label="Subtotal" value={`$${subtotal.toFixed(2)}`} />
+              <SummaryRow label="Shipping" value={shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`} />
+              <SummaryRow label="Tax (10%)" value={`$${tax.toFixed(2)}`} />
+              <div className="flex justify-between border-t border-gray-200 pt-3 text-lg font-bold">
                 <span>Total</span>
                 <span className="text-gofarm-green">${order.total.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          {/* Shipping Information */}
           <div className="p-6">
-            <h2 className="text-lg font-semibold text-gofarm-black mb-4">Shipping Information</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gofarm-black">Shipping Information</h2>
             {order.shippingAddress ? (
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="rounded-xl bg-gray-50 p-4">
                 <p className="text-gray-700">{order.shippingAddress}</p>
               </div>
             ) : (
               <p className="text-gray-500">Shipping address not available</p>
             )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatusPill({ status }: { status: Order["status"] }) {
+  const styles = {
+    pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    awaiting_payment: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    processing: "bg-blue-100 text-blue-800 border-blue-200",
+    shipped: "bg-purple-100 text-purple-800 border-purple-200",
+    delivered: "bg-green-100 text-green-800 border-green-200",
+    cancelled: "bg-red-100 text-red-800 border-red-200",
+  };
+  const labels = {
+    pending: "Pending",
+    awaiting_payment: "Awaiting Payment",
+    processing: "Processing",
+    shipped: "Shipped",
+    delivered: "Delivered",
+    cancelled: "Cancelled",
+  };
+  return <span className={`rounded-full border px-4 py-2 text-sm font-semibold ${styles[status]}`}>{labels[status]}</span>;
+}
+
+function Info({ label, value }: { label: string; value?: string }) {
+  return (
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="font-medium text-gray-900">{value ?? "Not available"}</p>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-600">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+}
+
+function ConfirmDialog({
+  title,
+  description,
+  confirmLabel,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  onConfirm: () => Promise<void>;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="text-center">
+          <h3 className="mb-2 text-xl font-bold text-gray-900">{title}</h3>
+          <p className="mb-6 text-sm text-gray-500">{description}</p>
+          <div className="flex gap-3">
+            <button onClick={onConfirm} className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600">
+              {confirmLabel}
+            </button>
+            <button onClick={onCancel} className="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200">
+              Cancel
+            </button>
           </div>
         </div>
       </div>
