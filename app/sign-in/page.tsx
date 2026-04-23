@@ -79,7 +79,7 @@ export default function SignInPage() {
 
       localStorage.setItem("user", JSON.stringify(data.user));
       
-      // Chuyển hướng thông minh dựa trên vai trò (role)
+      // Redirect based on role
       if (data.user.role === "admin") {
         router.push("/admin");
       } else {
