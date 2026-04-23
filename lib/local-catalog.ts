@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { BackendDb } from "@/lib/backend/db";
 import { readDb } from "@/lib/backend/db";
 
@@ -35,6 +36,18 @@ export async function loadLocalCatalog(): Promise<{
   products: LocalProduct[];
   categories: LocalCategory[];
 }> {
+  // Chuyển sang đọc trực tiếp từ MySQL Database
+  try {
+    const db = await readDb();
+    return {
+      products: db.products,
+      categories: db.categories,
+    };
+  } catch (error) {
+    console.error("Lỗi khi tải dữ liệu từ MySQL:", error);
+    return { products: [], categories: [] };
+  }
+}
   const db: BackendDb = await readDb();
   return {
     products: db.products,
