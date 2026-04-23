@@ -146,108 +146,6 @@ const faqs = [
   },
 ];
 
-function Footer() {
-  return (
-    <footer className="mt-10 border-t border-gofarm-light-gray bg-gofarm-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 border-b md:grid-cols-2 lg:grid-cols-4">
-          <a
-            href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50 group"
-          >
-            <IconMapPin className="h-6 w-6 text-gray-600 transition-colors group-hover:text-primary" />
-            <div>
-              <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-primary">Visit Us</h3>
-              <p className="mt-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">
-                123 Shopping Street, Commerce District, New York, NY 10001, USA
-              </p>
-            </div>
-          </a>
-          <a href="tel:15551234567" className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50 group">
-            <IconPhone className="h-6 w-6 text-gray-600 transition-colors group-hover:text-primary" />
-            <div>
-              <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-primary">Call Us</h3>
-              <p className="mt-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">+1 (555) 123-4567</p>
-            </div>
-          </a>
-          <div className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50 group">
-            <IconClock className="h-6 w-6 text-gray-600 transition-colors group-hover:text-primary" />
-            <div>
-              <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-primary">Working Hours</h3>
-              <p className="mt-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">Monday - Friday: 9AM - 6PM</p>
-            </div>
-          </div>
-          <a href="mailto:support@gofarm.com" className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-gray-50 group">
-            <IconMail className="h-6 w-6 text-gray-600 transition-colors group-hover:text-primary" />
-            <div>
-              <h3 className="font-semibold text-gray-900 transition-colors group-hover:text-primary">Email Us</h3>
-              <p className="mt-1 text-sm text-gray-600 transition-colors group-hover:text-gray-900">support@gofarm.com</p>
-            </div>
-          </a>
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 py-12 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-4">
-            <div className="mb-2">
-              <Link href="/">
-                <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-              </Link>
-            </div>
-            <p className="text-sm text-gofarm-gray">
-              Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="mb-4 font-semibold text-gofarm-black">Quick Links</h3>
-            <ul className="space-y-3">
-              {["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"].map((item) => (
-                <li key={item} className="text-sm font-medium text-gofarm-gray hover:text-gofarm-green">
-                  <Link href={item === "About us" ? "/about" : item === "Contact us" ? "/contact" : "#"}>
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 font-semibold text-gofarm-black">Categories</h3>
-            <ul className="space-y-3">
-              {["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"].map((item) => (
-                <li key={item} className="text-sm font-medium text-gofarm-gray hover:text-gofarm-green capitalize">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 font-semibold text-gofarm-black">Newsletter</h3>
-            <p className="mb-4 text-sm text-gofarm-gray">Subscribe to our newsletter to receive updates and exclusive offers.</p>
-            <form className="space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-lg border border-gofarm-light-gray px-4 py-2 text-gofarm-black outline-none focus:border-gofarm-light-green focus:ring-2 focus:ring-gofarm-light-green"
-              />
-              <button type="submit" className="w-full rounded-lg bg-gofarm-green px-4 py-2 font-semibold text-white transition-colors hover:bg-gofarm-light-green">
-                Subscribe
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div className="border-t border-gofarm-light-gray py-6 text-center text-sm text-gofarm-gray">
-          <p>© 2026 gofarm. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
@@ -394,8 +292,6 @@ export default function ContactPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }
