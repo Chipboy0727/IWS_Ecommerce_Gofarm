@@ -161,6 +161,12 @@ function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setSearchTerm("");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && results.length === 1) {
+      handleProductClick(results[0].slug);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -177,6 +183,7 @@ function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="w-full pl-10 pr-10 py-3 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-gofarm-green"
             />
             <button onClick={onClose} className="absolute right-3 top-1/2 -translate-y-1/2">

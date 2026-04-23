@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { BackendDb } from "@/lib/backend/db";
 import { readDb } from "@/lib/backend/db";
 
 export type LocalProduct = {
@@ -47,3 +48,10 @@ export async function loadLocalCatalog(): Promise<{
     return { products: [], categories: [] };
   }
 }
+  const db: BackendDb = await readDb();
+  return {
+    products: db.products,
+    categories: db.categories,
+  };
+}
+
