@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
@@ -256,12 +254,11 @@ export default function ProductManager() {
                   <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <Image
+                        <img
                           src={product.imageSrc || "/images/logo.svg"}
                           alt={product.name}
-                          width={40}
-                          height={40}
                           className="h-10 w-10 rounded-[10px] object-cover"
+                          onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                         />
                         <div>
                           <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
@@ -473,7 +470,7 @@ export default function ProductManager() {
       ) : null}
 
       <style jsx>{`
-        .input {
+        .input-modern {
           width: 100%;
           border-radius: 16px;
           border: 1.5px solid #dce4d1;
@@ -488,7 +485,7 @@ export default function ProductManager() {
         .input::placeholder {
           color: #a4b3a2;
         }
-        .input:focus {
+        .input-modern:focus {
           border-color: #0f9716;
           box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.1), 0 2px 4px rgba(0,0,0,0.02);
         }
@@ -502,10 +499,12 @@ export default function ProductManager() {
 
 function Field({
   label,
+  icon,
   children,
   className = "",
 }: {
   label: string;
+  icon?: ReactNode;
   children: ReactNode;
   className?: string;
 }) {
@@ -513,6 +512,6 @@ function Field({
     <label className={className}>
       <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-[#6f7b6d]">{label}</span>
       {children}
-    </label>
+    </div>
   );
 }

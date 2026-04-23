@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
+import { ProductModal } from "@/components/product-modal";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -91,10 +92,16 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setIsWishlisted(isInWishlist(product.id));
   }, [isInWishlist, product.id]);
+
+  const handleProductClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -149,6 +156,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
           <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
             <button type="button" onClick={handleQuickView} className="block h-full w-full">
+            <Link href={`/shop/${product.slug}`} className="block h-full" onClick={handleProductClick}>
               <img
                 src={product.imageSrc}
                 className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
@@ -191,6 +199,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
 
           <div className="p-3 space-y-2">
             <button type="button" onClick={handleQuickView} className="block w-full text-left">
+            <Link href={`/shop/${product.slug}`} onClick={handleProductClick}>
               <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
                 {product.name}
               </h2>
@@ -240,6 +249,11 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
           </div>
         </div>
       )}
+      <ProductModal
+        product={product}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 }
