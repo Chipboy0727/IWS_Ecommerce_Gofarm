@@ -1,6 +1,4 @@
 "use client";
-
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
@@ -227,11 +225,9 @@ export default function ProductManager() {
                   <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <Image
+                        <img
                           src={product.imageSrc || "/images/logo.svg"}
                           alt={product.name}
-                          width={40}
-                          height={40}
                           className="h-10 w-10 rounded-[10px] object-cover"
                         />
                         <div>
