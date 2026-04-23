@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-import { useOrders } from "@/app/context/OrderContext";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -15,6 +14,18 @@ const navItems = [
   { href: "/store-list", label: "Local Stores" },
   { href: "/contact", label: "Contact" },
   { href: "/help", label: "Need Help?" },
+];
+
+// Promo messages for marquee - chỉ text, không link
+const promoMessages = [
+  { icon: "🛍️", text: "Discover fresh and clean produce!" },
+  { icon: "🚚", text: "Free shipping on orders over $50!" },
+  { icon: "🔥", text: "Hot Deals - Up to 30% off!" },
+  { icon: "✨", text: "New customers get 15% off first order!" },
+  { icon: "🎁", text: "Buy 2 Get 1 Free on selected items!" },
+  { icon: "⭐", text: "Join our loyalty program & earn points!" },
+  { icon: "🌿", text: "100% Organic & Fresh Guaranteed!" },
+  { icon: "🎉", text: "Weekend Flash Sale - Extra 10% off!" },
 ];
 
 // Icons
@@ -103,13 +114,35 @@ function IconHelp() {
   );
 }
 
+// Promo Marquee Component - chỉ text chạy, không link, không click
+function PromoMarquee() {
+  const allMessages = [...promoMessages, ...promoMessages];
+
+  return (
+    <div className="bg-linear-to-r from-gofarm-green to-emerald-600 text-white overflow-hidden whitespace-nowrap py-2.5 relative cursor-default">
+      <div className="animate-marquee inline-flex items-center gap-10">
+        {allMessages.map((promo, idx) => (
+          <div key={idx} className="inline-flex items-center gap-3">
+            <span className="text-xl">{promo.icon}</span>
+            <span className="font-medium">{promo.text}</span>
+            <span className="text-white/40 text-lg ml-2">•</span>
+          </div>
+        ))}
+      </div>
+      
+      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gofarm-green to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-emerald-600 to-transparent pointer-events-none" />
+    </div>
+  );
+}
+
 function NavLink({ href, label, active }: { href: string; label: string; active: boolean }) {
   const isHelp = label === "Need Help?";
   return (
     <Link
       href={href}
       className={[
-        "text-sm lg:text-[15px] font-semibold transition-colors duration-200 inline-flex items-center gap-1.5",
+        "text-base lg:text-[17px] font-semibold transition-colors duration-200 inline-flex items-center gap-1.5",
         active ? "text-gofarm-green" : "text-gofarm-gray hover:text-gofarm-green",
       ].join(" ")}
     >
@@ -156,7 +189,7 @@ function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   }, [searchTerm, handleSearch]);
 
   const handleProductClick = (slug: string) => {
-    router.push(`/product/${slug}`);
+    router.push(`/shop/${slug}`);
     onClose();
     setSearchTerm("");
   };
@@ -294,13 +327,14 @@ export default function SiteHeader() {
   const router = useRouter();
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
-  const { totalOrders: orderCount } = useOrders(); // Dùng context cho orders
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
-  const [, forceUpdate] = useState(0); // Force re-render khi có event
+  const [userEmail, setUserEmail] = useState("");
+  const [orderCount, setOrderCount] = useState(0);
+  const [, forceUpdate] = useState(0);
 
   // Load user data
   useEffect(() => {
@@ -311,20 +345,75 @@ export default function SiteHeader() {
           const userData = JSON.parse(user);
           setIsLoggedIn(true);
           setUserName(userData.name || userData.email?.split("@")[0] || "User");
+          setUserEmail(userData.email || "");
         } catch (e) {}
       }
     };
     loadUser();
   }, []);
 
-  // Lắng nghe event orders-updated để force re-render
+  // Listen for auth-changed event (đăng nhập/đăng xuất từ trang khác)
   useEffect(() => {
-    const handleOrdersUpdate = () => {
+    const handleAuthChange = () => {
+      const user = localStorage.getItem("user");
+      if (user) {
+        try {
+          const userData = JSON.parse(user);
+          setIsLoggedIn(true);
+          setUserName(userData.name || userData.email?.split("@")[0] || "User");
+          setUserEmail(userData.email || "");
+        } catch (e) {}
+      } else {
+        setIsLoggedIn(false);
+        setUserName("");
+        setUserEmail("");
+        setOrderCount(0);
+      }
       forceUpdate(prev => prev + 1);
     };
+
+    window.addEventListener("auth-changed", handleAuthChange);
+    return () => window.removeEventListener("auth-changed", handleAuthChange);
+  }, []);
+
+  // Function to get active orders count (not cancelled)
+  const getActiveOrdersCount = useCallback(() => {
+    if (!userEmail) return 0;
+    
+    const storedOrders = localStorage.getItem("orders");
+    if (!storedOrders) return 0;
+    
+    try {
+      const allOrders = JSON.parse(storedOrders);
+      // Chỉ lấy đơn hàng của user hiện tại và chưa bị hủy
+      const activeOrders = allOrders.filter(
+        (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
+      );
+      return activeOrders.length;
+    } catch (e) {
+      return 0;
+    }
+  }, [userEmail]);
+
+  // Load order count when userEmail changes or when orders-updated event fires
+  useEffect(() => {
+    if (userEmail) {
+      setOrderCount(getActiveOrdersCount());
+    }
+  }, [userEmail, getActiveOrdersCount]);
+
+  // Listen for orders-updated event
+  useEffect(() => {
+    const handleOrdersUpdate = () => {
+      if (userEmail) {
+        setOrderCount(getActiveOrdersCount());
+      }
+      forceUpdate(prev => prev + 1);
+    };
+    
     window.addEventListener("orders-updated", handleOrdersUpdate);
     return () => window.removeEventListener("orders-updated", handleOrdersUpdate);
-  }, []);
+  }, [userEmail, getActiveOrdersCount]);
 
   // Keyboard shortcut Ctrl+K
   useEffect(() => {
@@ -346,24 +435,16 @@ export default function SiteHeader() {
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
     setIsLoggedIn(false);
+    setUserEmail("");
+    setOrderCount(0);
     router.push("/");
   };
 
   return (
     <>
       <header className="sticky top-0 z-40 bg-gofarm-white/95 backdrop-blur-md border-b border-gofarm-light-gray shadow-sm">
-        {/* Top promo bar - Shopping CTA */}
-        <div className="bg-linear-to-r from-gofarm-green to-emerald-600 text-white text-center py-2.5 px-4">
-          <div className="flex items-center justify-center gap-3 text-sm">
-            <span className="font-semibold">🛍️ Discover fresh and clean produce.</span>
-            <Link href="/shop" className="inline-flex items-center gap-2 font-semibold hover:text-yellow-200 transition-colors underline">
-              Buy now
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-          </div>
-        </div>
+        {/* Promo Marquee */}
+        <PromoMarquee />
 
         {/* Main header */}
         <div className="border-b border-gofarm-light-gray">
@@ -415,7 +496,7 @@ export default function SiteHeader() {
                   )}
                 </Link>
 
-                {/* Orders - Hiển thị số lượng đơn hàng */}
+                {/* Orders - Hiển thị số đơn chưa hủy */}
                 <Link href="/orders" className="relative hover:text-gofarm-green transition-colors">
                   <IconOrders />
                   {orderCount > 0 && (
@@ -451,9 +532,7 @@ export default function SiteHeader() {
                               <Link href="/account" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50">
                                 <IconUser /> My Account
                               </Link>
-                              <Link href="/orders" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50">
-                                <IconOrders /> My Orders
-                              </Link>
+                            
                               <div className="border-t my-1" />
                               <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full">
                                 <IconLogout /> Sign Out
@@ -464,11 +543,11 @@ export default function SiteHeader() {
                       )}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <Link href="/sign-in" className="px-3 py-1.5 text-sm font-semibold text-gofarm-green hover:bg-gofarm-green/10 rounded-lg transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Link href="/sign-in" className="px-4 py-2 text-[15px] font-semibold text-gofarm-green hover:bg-gofarm-green/10 rounded-lg transition-colors">
                         Sign In
                       </Link>
-                      <Link href="/sign-up" className="px-3 py-1.5 text-sm font-semibold bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green transition-colors">
+                      <Link href="/sign-up" className="px-4 py-2 text-[15px] font-semibold bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green transition-colors">
                         Sign Up
                       </Link>
                     </div>
@@ -487,7 +566,7 @@ export default function SiteHeader() {
         {/* Navigation bar */}
         <div className="hidden md:block bg-gofarm-white">
           <div className="max-w-(--breakpoint-xl) mx-auto px-4">
-            <nav className="flex items-center justify-center gap-6 lg:gap-8 py-3">
+            <nav className="flex items-center justify-center gap-8 lg:gap-10 py-3">
               {navItems.map((item) => (
                 <NavLink
                   key={item.href}

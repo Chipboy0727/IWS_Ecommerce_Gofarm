@@ -1,5 +1,4 @@
 import ShopBrowser from "./shop-browser";
-import SiteFooter from "@/components/site-footer";
 import { loadLocalCatalog } from "@/lib/local-catalog";
 
 export const metadata = {
@@ -18,7 +17,6 @@ export default async function ShopPage() {
           categories={categories}
         />
       </main>
-      <SiteFooter />
     </div>
   );
 }

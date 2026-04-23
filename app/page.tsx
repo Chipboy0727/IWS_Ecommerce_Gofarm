@@ -44,7 +44,10 @@ async function readOriginalBody() {
 
   const combinedBody = strippedHeader + restContent;
 
-  return combinedBody.replace(
+  // Remove footer since layout.tsx has SiteFooter component
+  const withoutFooter = combinedBody.replace(/<footer[^>]*>[\s\S]*?<\/footer>/i, "");
+
+  return withoutFooter.replace(
     /<link rel="preload" as="script" fetchpriority="low" href="\/_next\/static\/chunks\/([^"?]+)(?:\?[^"]*)?">/g,
     '<link rel="preload" as="script" fetchpriority="low" href="/js/$1">'
   );
@@ -361,9 +364,17 @@ export default async function HomePage() {
   transformedBody = transformedBody.replace(/href="\/category\/vegetables"/g, 'href="/shop"');
   transformedBody = transformedBody.replace(/href="\/collection"/g, 'href="/shop"');
 
+  // SỬA: Thay vì xóa floating button, chuyển link thành /shop
   transformedBody = transformedBody.replace(
     /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/i,
-    ""
+    `<a href="/shop" class="fixed bottom-6 right-6 z-50 bg-gofarm-green text-white p-4 rounded-full shadow-lg hover:bg-gofarm-light-green transition-all hover:scale-110 duration-300 group">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+      </svg>
+      <span class="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+        Shop Now
+      </span>
+    </a>`
   );
 
   // Remove Latest Blog Posts section
