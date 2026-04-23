@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
+import { SearchModal as ProductSearchModal } from "@/components/search-modal";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -153,111 +154,6 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
 }
 
 // Search Modal
-function SearchModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [isOpen]);
-
-  const handleSearch = useCallback(async () => {
-    if (!searchTerm.trim() || searchTerm.length < 2) {
-      setResults([]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/products?search=${encodeURIComponent(searchTerm)}&limit=10`);
-      const data = await res.json();
-      setResults(data.products || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => handleSearch(), 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm, handleSearch]);
-
-  const handleProductClick = (slug: string) => {
-    router.push(`/shop/${slug}`);
-    onClose();
-    setSearchTerm("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && results.length === 1) {
-      handleProductClick(results[0].slug);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-      <div className="fixed inset-x-0 top-0 bg-white shadow-lg">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <IconSearch />
-            </span>
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-10 py-3 text-lg border border-gray-200 rounded-xl focus:outline-none focus:border-gofarm-green"
-            />
-            <button onClick={onClose} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <IconX />
-            </button>
-          </div>
-
-          {searchTerm.length > 0 && (
-            <div className="mt-4 max-h-[60vh] overflow-y-auto">
-              {loading ? (
-                <div className="text-center py-8 text-gray-500">Searching...</div>
-              ) : results.length > 0 ? (
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Found {results.length} results</p>
-                  <div className="space-y-2">
-                    {results.map((product) => (
-                      <button
-                        key={product.id}
-                        onClick={() => handleProductClick(product.slug)}
-                        className="w-full text-left p-3 hover:bg-gray-50 rounded-lg flex items-center gap-3"
-                      >
-                        <img src={product.imageSrc} alt={product.name} className="w-12 h-12 object-cover rounded" />
-                        <div>
-                          <h4 className="font-medium">{product.name}</h4>
-                          <p className="text-sm text-gofarm-green">${product.price}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">No products found</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Mobile Menu
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -598,7 +494,7 @@ export default function SiteHeader() {
         </div>
       </header>
 
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <ProductSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
     </>
   );
