@@ -152,11 +152,11 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
     <>
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
-          <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
             <button type="button" onClick={handleQuickView} className="block h-full w-full">
               <img
                 src={product.imageSrc}
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
                 alt={product.imageAlt}
                 loading="lazy"
               />

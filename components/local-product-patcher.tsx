@@ -30,11 +30,11 @@ function renderProductCard(product: LocalProduct) {
 
   return `
     <article class="group overflow-hidden rounded-2xl border border-gofarm-light-green/15 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div class="relative aspect-square overflow-hidden bg-gofarm-light-gray/20">
+      <div class="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
         <img
           src="${escapeHtml(product.imageSrc)}"
           alt="${escapeHtml(product.imageAlt)}"
-          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
         <div class="absolute left-4 top-4 rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">

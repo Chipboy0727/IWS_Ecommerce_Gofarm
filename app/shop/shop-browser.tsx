@@ -99,7 +99,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
     <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl" data-product-id={product.id}>
       <div className="relative">
         <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-white">
+          <div className="relative h-52 overflow-hidden rounded-t-2xl bg-white flex items-center justify-center p-4">
             <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
               <span className="inline-flex items-center rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">
                 {status}
@@ -114,7 +114,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
             <img
               src={product.imageSrc}
               alt={product.imageAlt}
-              className="h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-105"
+              className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
             />
           </div>
