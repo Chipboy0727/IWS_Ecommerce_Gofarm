@@ -1,25 +1,6 @@
 {
   "products": [
     {
-      "id": "dc584fdf-e910-4e93-9acd-008f7542f178",
-      "name": "Tuấn cùi",
-      "slug": "tuancui",
-      "createdAt": "2026-04-23T18:09:25.853Z",
-      "updatedAt": "2026-04-23T18:09:25.853Z",
-      "imageSrc": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "imageAlt": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "price": 0,
-      "discount": null,
-      "brand": null,
-      "categoryId": null,
-      "categoryTitle": null,
-      "description": "tests",
-      "rating": 0,
-      "reviews": 0,
-      "stock": null,
-      "status": "new"
-    },
-    {
       "id": "270ca390-05a1-40d1-a960-5972cd9d082d",
       "name": "Pecan",
       "slug": "pecan",
@@ -950,8 +931,65 @@
       "updatedAt": "2026-04-21T16:17:06.839Z"
     }
   ],
+  "orders": [],
+  "stores": [
+    {
+      "id": "downtown-store",
+      "name": "Old Oak Valley Market",
+      "address": "1242 Harvest Lane, Portland, OR",
+      "phone": "(503) 555-0129",
+      "email": "downtown@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Friday: 9AM - 6PM",
+      "city": "Portland",
+      "pinX": 32,
+      "pinY": 54,
+      "manager": "Sarah Jenkins",
+      "contact": "(503) 555-0129",
+      "imageSrc": "/images/image_5.jpg",
+      "status": "Active",
+      "createdAt": "2026-04-23T19:17:10.906Z",
+      "updatedAt": "2026-04-23T19:17:10.906Z"
+    },
+    {
+      "id": "north-ridge-logistics",
+      "name": "North Ridge Logistics",
+      "address": "88 Industrial Way, Salem, OR",
+      "phone": "(503) 555-0882",
+      "email": "chicago@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Saturday: 8AM - 7PM",
+      "city": "Salem",
+      "pinX": 22,
+      "pinY": 58,
+      "manager": "Robert Chen",
+      "contact": "(503) 555-0882",
+      "imageSrc": "/images/image_7.jpg",
+      "status": "Maintenance",
+      "createdAt": "2026-04-23T19:17:10.906Z",
+      "updatedAt": "2026-04-23T19:17:10.906Z"
+    },
+    {
+      "id": "bend-boutique",
+      "name": "GoFarm Boutique - Bend",
+      "address": "44 High Desert Dr, Bend, OR",
+      "phone": "(541) 555-0442",
+      "email": "boston@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Friday: 9AM - 6PM",
+      "city": "Bend",
+      "pinX": 28,
+      "pinY": 46,
+      "manager": "Elena Rossi",
+      "contact": "(541) 555-0442",
+      "imageSrc": "/images/image_3.jpg",
+      "status": "Active",
+      "createdAt": "2026-04-23T19:17:10.906Z",
+      "updatedAt": "2026-04-23T19:17:10.906Z"
+    }
+  ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-23T18:09:25.854Z"
+    "updatedAt": "2026-04-23T19:19:58.528Z"
   }
 }
