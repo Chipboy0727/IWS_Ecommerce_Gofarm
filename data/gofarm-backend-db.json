@@ -950,8 +950,130 @@
       "updatedAt": "2026-04-21T16:17:06.839Z"
     }
   ],
+  "orders": [
+    {
+      "id": "ORD-1776996740900",
+      "date": "2026-04-24",
+      "total": 121,
+      "status": "pending",
+      "items": 6,
+      "products": [
+        {
+          "id": "7240688b-393f-40d2-9990-1ad21f572296",
+          "name": "Orange",
+          "price": 8,
+          "quantity": 1,
+          "imageSrc": "/images/d23af3456cee2df6ecb5336e5cecff456e6f8b0b-750x750.webp",
+          "slug": "orange"
+        },
+        {
+          "id": "2d44f53f-faa9-475f-92ec-bd36f4c40815",
+          "name": "Mango fruit",
+          "price": 15,
+          "quantity": 1,
+          "imageSrc": "/images/c2c672d7a8ba6d442e2784f6df1917b700a1e883-750x750.webp",
+          "slug": "mango-fruit"
+        },
+        {
+          "id": "fa724aec-fa9e-472c-8d11-7216d2928f47",
+          "name": "Green avocado",
+          "price": 47,
+          "quantity": 1,
+          "imageSrc": "/images/f071e4d3e73ddc84ffae37ca0d68a7ec9a8c27d3-1024x1024.jpg",
+          "slug": "green-avocado"
+        },
+        {
+          "id": "0853ec67-46fc-4d80-a34f-9d52a9756cef",
+          "name": "3-Color Pepper",
+          "price": 4,
+          "quantity": 1,
+          "imageSrc": "/images/82cfd7313f9f1acfc29ef86e9bf8668d51a57dd8-1024x1024.png",
+          "slug": "3-color-pepper"
+        },
+        {
+          "id": "ecf4db4c-24fd-412b-9f99-66888331150c",
+          "name": "Banana",
+          "price": 11,
+          "quantity": 1,
+          "imageSrc": "/images/fa3fdc15a4a0247590fbf66004017e65d58af7d5-535x535.webp",
+          "slug": "banana"
+        },
+        {
+          "id": "89232bd6-2db4-419b-b63a-c0c6a989b313",
+          "name": "Bread mix",
+          "price": 25,
+          "quantity": 1,
+          "imageSrc": "/images/0f93abeb2b1ccb5a5635105c3961e8b405f09288-1024x1024.jpg",
+          "slug": "bread-mix"
+        }
+      ],
+      "shippingAddress": "undefined, undefined, undefined undefined",
+      "customerName": "thủy",
+      "customerEmail": "thuthuy205.hanu@gmail.com",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-24T02:12:22.273Z",
+      "updatedAt": "2026-04-24T02:12:22.273Z"
+    }
+  ],
+  "stores": [
+    {
+      "id": "downtown-store",
+      "name": "Old Oak Valley Market",
+      "address": "1242 Harvest Lane, Portland, OR",
+      "phone": "(503) 555-0129",
+      "email": "downtown@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Friday: 9AM - 6PM",
+      "city": "Portland",
+      "pinX": 32,
+      "pinY": 54,
+      "manager": "Sarah Jenkins",
+      "contact": "(503) 555-0129",
+      "imageSrc": "/images/image_5.jpg",
+      "status": "Active",
+      "createdAt": "2026-04-24T02:11:34.856Z",
+      "updatedAt": "2026-04-24T02:11:34.856Z"
+    },
+    {
+      "id": "north-ridge-logistics",
+      "name": "North Ridge Logistics",
+      "address": "88 Industrial Way, Salem, OR",
+      "phone": "(503) 555-0882",
+      "email": "chicago@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Saturday: 8AM - 7PM",
+      "city": "Salem",
+      "pinX": 22,
+      "pinY": 58,
+      "manager": "Robert Chen",
+      "contact": "(503) 555-0882",
+      "imageSrc": "/images/image_7.jpg",
+      "status": "Maintenance",
+      "createdAt": "2026-04-24T02:11:34.856Z",
+      "updatedAt": "2026-04-24T02:11:34.856Z"
+    },
+    {
+      "id": "bend-boutique",
+      "name": "GoFarm Boutique - Bend",
+      "address": "44 High Desert Dr, Bend, OR",
+      "phone": "(541) 555-0442",
+      "email": "boston@gofarm.com",
+      "country": "USA",
+      "hours": "Monday - Friday: 9AM - 6PM",
+      "city": "Bend",
+      "pinX": 28,
+      "pinY": 46,
+      "manager": "Elena Rossi",
+      "contact": "(541) 555-0442",
+      "imageSrc": "/images/image_3.jpg",
+      "status": "Active",
+      "createdAt": "2026-04-24T02:11:34.856Z",
+      "updatedAt": "2026-04-24T02:11:34.856Z"
+    }
+  ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-23T18:09:25.854Z"
+    "updatedAt": "2026-04-24T02:12:22.276Z"
   }
 }
