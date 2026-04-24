@@ -10,8 +10,9 @@ import { loadLocalCatalog } from "@/lib/local-catalog";
 async function readOriginalBody() {
   const filePath = path.join(process.cwd(), "index.html");
   const html = await fs.readFile(filePath, "utf8");
-  const match = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  const body = match?.[1] ?? html;
+  const normalizedHtml = html.replace(/\r\n/g, "\n");
+  const match = normalizedHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  const body = match?.[1] ?? normalizedHtml;
   
   // Remove header since layout.tsx has SiteHeader component
   const withoutHeader = body.replace(/<header[^>]*>[\s\S]*?<\/header>/i, "");
@@ -152,16 +153,60 @@ function enhancedProductCardHtml(product: any) {
 export default async function HomePage() {
   const bodyHtml = await readOriginalBody();
   const { products: allProducts } = await loadLocalCatalog();
-  const products = allProducts.slice(0, 13);
+  const usedSlugs = new Set<string>();
+  const takeSectionProducts = (matches: typeof allProducts, limit = 10) => {
+    const items: typeof allProducts = [];
+    for (const product of matches) {
+      if (!product.slug || usedSlugs.has(product.slug)) continue;
+      items.push(product);
+      usedSlugs.add(product.slug);
+      if (items.length >= limit) return items;
+    }
+    for (const product of allProducts) {
+      if (!product.slug || usedSlugs.has(product.slug)) continue;
+      items.push(product);
+      usedSlugs.add(product.slug);
+      if (items.length >= limit) return items;
+    }
+    return items;
+  };
+
+  const vegetableProducts = takeSectionProducts(
+    allProducts.filter(
+      (p) => p.categoryTitle?.toLowerCase() === "vegetables" || 
+      /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce/i.test(p.name)
+    )
+  );
+
+  const fruitsProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) =>
+        product.categoryTitle?.toLowerCase() === "fruits" ||
+        /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
+    )
+  );
+  const juicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "juices" ||
+        /juice|juices|smoothie/i.test(product.name)
+    )
+  );
+  const spicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
+        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
+    )
+  );
+
+  const products = allProducts.filter(p => !usedSlugs.has(p.slug)).slice(0, 15);
   
-  // Sử dụng hàm enhancedProductCardHtml thay vì productCardHtmlServer
   const productGridMarkup = `
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       ${products.map(enhancedProductCardHtml).join("")}
     </div>
   `;
-  
-  const vegetableProducts = products.slice(0, 10);
   
   // Hàm tạo carousel với enhanced product cards
   const enhancedSectionCarouselHtml = ({ title, href, products, productCount }: { title: string; href: string; products: any[]; productCount: number }) => {
@@ -236,49 +281,6 @@ export default async function HomePage() {
     productCount: vegetableProducts.length,
   });
 
-  const usedSlugs = new Set<string>();
-  for (const product of vegetableProducts) {
-    if (product.slug) usedSlugs.add(product.slug);
-  }
-  const takeSectionProducts = (matches: typeof allProducts, limit = 10) => {
-    const items: typeof allProducts = [];
-    for (const product of matches) {
-      if (!product.slug || usedSlugs.has(product.slug)) continue;
-      items.push(product);
-      usedSlugs.add(product.slug);
-      if (items.length >= limit) return items;
-    }
-    for (const product of allProducts) {
-      if (!product.slug || usedSlugs.has(product.slug)) continue;
-      items.push(product);
-      usedSlugs.add(product.slug);
-      if (items.length >= limit) return items;
-    }
-    return items;
-  };
-
-  const fruitsProducts = takeSectionProducts(
-    allProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "fruits" ||
-        /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
-    )
-  );
-  const juicesProducts = takeSectionProducts(
-    allProducts.filter(
-      (product) => 
-        product.categoryTitle?.toLowerCase() === "juices" ||
-        /juice|juices|smoothie/i.test(product.name)
-    )
-  );
-  const spicesProducts = takeSectionProducts(
-    allProducts.filter(
-      (product) => 
-        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
-        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
-    )
-  );
-
   const fruitsMarkup = enhancedSectionCarouselHtml({
     title: "Fruits",
     href: "/shop",
@@ -300,7 +302,7 @@ export default async function HomePage() {
 
   let transformedBody = bodyHtml.replace(/0(?:<!-- -->)? products/g, `${products.length} products`);
 
-  const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
+  const mainContentRegex = /<div\s+class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = transformedBody.match(mainContentRegex);
   const featuredSectionStart = mainContentMatch?.index ?? -1;
 
@@ -316,7 +318,7 @@ export default async function HomePage() {
     : null;
   const filtersStart = filtersMatch ? featuredSectionStart + filtersMatch.index! : -1;
 
-  const emptyStateRegex = /<div class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50\/50 to-white rounded-xl border border-gray-200\/50 w-full">/i;
+  const emptyStateRegex = /<div\s+class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50\/50 to-white rounded-xl border border-gray-200\/50 w-full">/i;
   const emptyStateMatch = filtersStart >= 0
     ? transformedBody.slice(filtersStart).match(emptyStateRegex)
     : null;
@@ -387,7 +389,7 @@ export default async function HomePage() {
           <span class="absolute inset-0 bg-gofarm-orange -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
           <div class="relative z-10 flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
             <span class="font-semibold group-hover:text-yellow-200 transition-colors duration-300"></span>
           </div>
@@ -452,7 +454,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: transformedBody }} />
+      <div dangerouslySetInnerHTML={{ __html: transformedBody }} suppressHydrationWarning />
       <ProductGridClient products={allProducts} />
       <ProductShareHandler products={allProducts} />
     </>

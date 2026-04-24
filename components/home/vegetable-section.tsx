@@ -93,5 +93,5 @@ export function vegetableSectionHtml(products: LocalProduct[], productCount: num
 }
 
 export function VegetableSection({ products, productCount }: { products: LocalProduct[]; productCount: number }) {
-  return <div dangerouslySetInnerHTML={{ __html: vegetableSectionHtml(products, productCount) }} />;
+  return <div dangerouslySetInnerHTML={{ __html: vegetableSectionHtml(products, productCount) }} suppressHydrationWarning />;
 }

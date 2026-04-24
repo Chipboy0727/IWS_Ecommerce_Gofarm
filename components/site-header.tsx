@@ -357,8 +357,8 @@ export default function SiteHeader() {
           <div className="max-w-(--breakpoint-xl) mx-auto px-4">
             <div className="flex items-center justify-between py-3 lg:py-4 gap-4">
               {/* Logo */}
-              <Link href="/" className="shrink-0">
-                <img alt="logo" className="w-auto h-8" src="/images/logo.svg" />
+              <Link href="/" className="shrink-0 -ml-4">
+                <img alt="logo" className="w-auto h-16" src="/images/gofarmnamelogo.png" />
               </Link>
 
               {/* Search bar - Desktop */}

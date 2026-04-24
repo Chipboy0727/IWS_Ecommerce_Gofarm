@@ -101,7 +101,7 @@ export default function SiteFooter() {
           <div className="space-y-4">
             <div className="mb-2">
               <Link href="/">
-                <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
+                <img alt="logo" loading="lazy" width="200" height="60" className="h-16 w-auto" src="/images/gofarmnamelogo.png" />
               </Link>
             </div>
             <p className="text-gofarm-gray text-sm">Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.</p>

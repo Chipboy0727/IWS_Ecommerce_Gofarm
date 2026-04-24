@@ -9,6 +9,9 @@ import SiteShell from "@/components/site-shell";
 export const metadata: Metadata = {
   title: "gofarm - Your Trusted Online Shopping Destination",
   description: "gofarm storefront migrated to Next.js without changing the original UI.",
+  icons: {
+    icon: "/images/gfsmallerlogo.png",
+  },
 };
 
 export default function RootLayout({
