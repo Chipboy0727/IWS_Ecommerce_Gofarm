@@ -1,16 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [redirectTo, setRedirectTo] = useState("/");
+
+  // Lấy redirect URL từ query parameter hoặc sessionStorage
+  useEffect(() => {
+    // Ưu tiên lấy từ URL param ?redirect=/cart
+    const redirectParam = searchParams.get("redirect");
+    if (redirectParam) {
+      setRedirectTo(decodeURIComponent(redirectParam));
+      console.log("📌 Redirect from URL param:", redirectParam);
+    } else {
+      // Nếu không có trong URL, lấy từ sessionStorage
+      const savedRedirect = sessionStorage.getItem("redirectAfterLogin");
+      if (savedRedirect) {
+        setRedirectTo(savedRedirect);
+        sessionStorage.removeItem("redirectAfterLogin");
+        console.log("📌 Redirect from sessionStorage:", savedRedirect);
+      }
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +55,8 @@ export default function SignInPage() {
       // Dispatch event để header cập nhật ngay lập tức
       window.dispatchEvent(new Event("auth-changed"));
       
-      router.push("/");
+      console.log("✅ Login success, redirecting to:", redirectTo);
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -218,8 +239,6 @@ export default function SignInPage() {
           </div>
         </div>
       </div>
-
-      {/* ĐÃ XÓA FOOTER - vì layout.tsx đã có SiteFooter */}
     </div>
   );
 }

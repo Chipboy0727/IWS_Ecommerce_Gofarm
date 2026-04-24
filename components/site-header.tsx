@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
@@ -17,7 +17,7 @@ const navItems = [
   { href: "/help", label: "Need Help?" },
 ];
 
-// Promo messages for marquee - chỉ text, không link
+// Promo messages for marquee
 const promoMessages = [
   { icon: "🛍️", text: "Discover fresh and clean produce!" },
   { icon: "🚚", text: "Free shipping on orders over $50!" },
@@ -115,7 +115,7 @@ function IconHelp() {
   );
 }
 
-// Promo Marquee Component - chỉ text chạy, không link, không click
+// Promo Marquee Component
 function PromoMarquee() {
   const allMessages = [...promoMessages, ...promoMessages];
 
@@ -153,7 +153,6 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
   );
 }
 
-// Search Modal
 // Mobile Menu
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const pathname = usePathname();
@@ -191,7 +190,6 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             {isLoggedIn ? (
               <>
                 <Link href="/account" onClick={onClose} className="block py-2 text-gofarm-gray">My Account</Link>
-                <Link href="/orders" onClick={onClose} className="block py-2 text-gofarm-gray">My Orders</Link>
                 <button
                   onClick={() => {
                     localStorage.removeItem("user");
@@ -222,10 +220,11 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Hide header on admin pages
-  if (pathname.startsWith("/admin")) {
+  // Hide header on admin pages, checkout, cart
+  if (pathname.startsWith("/admin") || pathname === "/checkout" || pathname === "/cart") {
     return null;
   }
+  
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -235,25 +234,126 @@ export default function SiteHeader() {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [orderCount, setOrderCount] = useState(0);
-  const [, forceUpdate] = useState(0);
+  
+  // Dùng ref để tránh re-render không cần thiết
+  const isRefreshingRef = useRef(false);
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const initialLoadRef = useRef(true);
 
-  // Load user data
+  // Load user data - chỉ chạy 1 lần
   useEffect(() => {
-    const loadUser = () => {
-      const user = localStorage.getItem("user");
-      if (user) {
-        try {
-          const userData = JSON.parse(user);
-          setIsLoggedIn(true);
-          setUserName(userData.name || userData.email?.split("@")[0] || "User");
-          setUserEmail(userData.email || "");
-        } catch (e) {}
-      }
-    };
-    loadUser();
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        setIsLoggedIn(true);
+        setUserName(userData.name || userData.email?.split("@")[0] || "User");
+        setUserEmail(userData.email || "");
+      } catch (e) {}
+    }
   }, []);
 
-  // Listen for auth-changed event (đăng nhập/đăng xuất từ trang khác)
+  // Load order count từ localStorage - chỉ chạy 1 lần khi có userEmail
+  useEffect(() => {
+    if (userEmail && initialLoadRef.current) {
+      initialLoadRef.current = false;
+      const storedOrders = localStorage.getItem("orders");
+      if (storedOrders) {
+        try {
+          const allOrders = JSON.parse(storedOrders);
+          const activeOrders = allOrders.filter(
+            (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
+          );
+          setOrderCount(activeOrders.length);
+        } catch (e) {}
+      }
+      
+      // Fetch từ API lần đầu
+      const fetchInitialOrders = async () => {
+        try {
+          const response = await fetch("/api/orders", { credentials: "include" });
+          if (response.ok) {
+            const data = await response.json();
+            const orders = data.orders ?? [];
+            const activeOrders = orders.filter(
+              (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
+            );
+            setOrderCount(activeOrders.length);
+          }
+        } catch (error) {
+          console.error("Failed to fetch orders:", error);
+        }
+      };
+      fetchInitialOrders();
+    }
+  }, [userEmail]);
+
+  // Hàm fetch orders chung
+  const fetchOrdersCount = useCallback(async () => {
+    if (!userEmail || isRefreshingRef.current) return;
+    
+    isRefreshingRef.current = true;
+    
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+    }
+    
+    try {
+      const response = await fetch("/api/orders", { credentials: "include" });
+      if (response.ok) {
+        const data = await response.json();
+        const orders = data.orders ?? [];
+        const activeOrders = orders.filter(
+          (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
+        );
+        setOrderCount(activeOrders.length);
+      }
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      refreshTimerRef.current = setTimeout(() => {
+        isRefreshingRef.current = false;
+      }, 1000);
+    }
+  }, [userEmail]);
+
+  // Lắng nghe sự kiện orders-updated
+  useEffect(() => {
+    const handleOrdersUpdate = () => {
+      fetchOrdersCount();
+    };
+    
+    window.addEventListener("orders-updated", handleOrdersUpdate);
+    return () => {
+      window.removeEventListener("orders-updated", handleOrdersUpdate);
+    };
+  }, [fetchOrdersCount]);
+
+  // Lắng nghe sự kiện order-cancelled - giảm 1 đơn
+  useEffect(() => {
+    const handleOrderCancelled = () => {
+      if (userEmail) {
+        setOrderCount(prev => Math.max(0, prev - 1));
+      }
+    };
+    
+    window.addEventListener("order-cancelled", handleOrderCancelled);
+    return () => window.removeEventListener("order-cancelled", handleOrderCancelled);
+  }, [userEmail]);
+
+  // Lắng nghe sự kiện orders-cleared - xóa tất cả đơn
+  useEffect(() => {
+    const handleOrdersCleared = () => {
+      if (userEmail) {
+        setOrderCount(0);
+      }
+    };
+    
+    window.addEventListener("orders-cleared", handleOrdersCleared);
+    return () => window.removeEventListener("orders-cleared", handleOrdersCleared);
+  }, [userEmail]);
+
+  // Lắng nghe sự kiện auth-changed
   useEffect(() => {
     const handleAuthChange = () => {
       const user = localStorage.getItem("user");
@@ -263,58 +363,21 @@ export default function SiteHeader() {
           setIsLoggedIn(true);
           setUserName(userData.name || userData.email?.split("@")[0] || "User");
           setUserEmail(userData.email || "");
+          initialLoadRef.current = true;
+          setTimeout(() => fetchOrdersCount(), 500);
         } catch (e) {}
       } else {
         setIsLoggedIn(false);
         setUserName("");
         setUserEmail("");
         setOrderCount(0);
+        initialLoadRef.current = true;
       }
-      forceUpdate(prev => prev + 1);
     };
 
     window.addEventListener("auth-changed", handleAuthChange);
     return () => window.removeEventListener("auth-changed", handleAuthChange);
-  }, []);
-
-  // Function to get active orders count (not cancelled)
-  const getActiveOrdersCount = useCallback(() => {
-    if (!userEmail) return 0;
-    
-    const storedOrders = localStorage.getItem("orders");
-    if (!storedOrders) return 0;
-    
-    try {
-      const allOrders = JSON.parse(storedOrders);
-      // Chỉ lấy đơn hàng của user hiện tại và chưa bị hủy
-      const activeOrders = allOrders.filter(
-        (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
-      );
-      return activeOrders.length;
-    } catch (e) {
-      return 0;
-    }
-  }, [userEmail]);
-
-  // Load order count when userEmail changes or when orders-updated event fires
-  useEffect(() => {
-    if (userEmail) {
-      setOrderCount(getActiveOrdersCount());
-    }
-  }, [userEmail, getActiveOrdersCount]);
-
-  // Listen for orders-updated event
-  useEffect(() => {
-    const handleOrdersUpdate = () => {
-      if (userEmail) {
-        setOrderCount(getActiveOrdersCount());
-      }
-      forceUpdate(prev => prev + 1);
-    };
-    
-    window.addEventListener("orders-updated", handleOrdersUpdate);
-    return () => window.removeEventListener("orders-updated", handleOrdersUpdate);
-  }, [userEmail, getActiveOrdersCount]);
+  }, [fetchOrdersCount]);
 
   // Keyboard shortcut Ctrl+K
   useEffect(() => {
@@ -338,13 +401,9 @@ export default function SiteHeader() {
     setIsLoggedIn(false);
     setUserEmail("");
     setOrderCount(0);
+    window.dispatchEvent(new Event("auth-changed"));
     router.push("/");
   };
-
-  // Ẩn Header nếu đang ở trang Admin
-  if (pathname.startsWith("/admin")) {
-    return null;
-  }
 
   return (
     <>
@@ -357,8 +416,8 @@ export default function SiteHeader() {
           <div className="max-w-(--breakpoint-xl) mx-auto px-4">
             <div className="flex items-center justify-between py-3 lg:py-4 gap-4">
               {/* Logo */}
-              <Link href="/" className="shrink-0">
-                <img alt="logo" className="w-auto h-8" src="/images/logo.svg" />
+              <Link href="/" className="shrink-0 -ml-4">
+                <img alt="logo" className="w-auto h-16" src="/images/gofarmnamelogo.png" />
               </Link>
 
               {/* Search bar - Desktop */}
@@ -441,12 +500,12 @@ export default function SiteHeader() {
                           <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border z-50 overflow-hidden">
                             <div className="p-3 border-b">
                               <p className="font-semibold text-gofarm-black">{userName}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">{userEmail}</p>
                             </div>
                             <div className="py-2">
                               <Link href="/account" onClick={() => setIsUserDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-50">
-                                <IconUser /> My Account
+                                <IconUser /> My Profile
                               </Link>
-                            
                               <div className="border-t my-1" />
                               <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full">
                                 <IconLogout /> Sign Out

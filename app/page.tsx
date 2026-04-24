@@ -10,8 +10,9 @@ import { loadLocalCatalog } from "@/lib/local-catalog";
 async function readOriginalBody() {
   const filePath = path.join(process.cwd(), "index.html");
   const html = await fs.readFile(filePath, "utf8");
-  const match = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  const body = match?.[1] ?? html;
+  const normalizedHtml = html.replace(/\r\n/g, "\n");
+  const match = normalizedHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+  const body = match?.[1] ?? normalizedHtml;
   
   // Remove header since layout.tsx has SiteHeader component
   const withoutHeader = body.replace(/<header[^>]*>[\s\S]*?<\/header>/i, "");
@@ -152,16 +153,60 @@ function enhancedProductCardHtml(product: any) {
 export default async function HomePage() {
   const bodyHtml = await readOriginalBody();
   const { products: allProducts } = await loadLocalCatalog();
-  const products = allProducts.slice(0, 13);
+  const usedSlugs = new Set<string>();
+  const takeSectionProducts = (matches: typeof allProducts, limit = 10) => {
+    const items: typeof allProducts = [];
+    for (const product of matches) {
+      if (!product.slug || usedSlugs.has(product.slug)) continue;
+      items.push(product);
+      usedSlugs.add(product.slug);
+      if (items.length >= limit) return items;
+    }
+    for (const product of allProducts) {
+      if (!product.slug || usedSlugs.has(product.slug)) continue;
+      items.push(product);
+      usedSlugs.add(product.slug);
+      if (items.length >= limit) return items;
+    }
+    return items;
+  };
+
+  const vegetableProducts = takeSectionProducts(
+    allProducts.filter(
+      (p) => p.categoryTitle?.toLowerCase() === "vegetables" || 
+      /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce/i.test(p.name)
+    )
+  );
+
+  const fruitsProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) =>
+        product.categoryTitle?.toLowerCase() === "fruits" ||
+        /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
+    )
+  );
+  const juicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "juices" ||
+        /juice|juices|smoothie/i.test(product.name)
+    )
+  );
+  const spicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
+        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
+    )
+  );
+
+  const products = allProducts.filter(p => !usedSlugs.has(p.slug)).slice(0, 15);
   
-  // Sử dụng hàm enhancedProductCardHtml thay vì productCardHtmlServer
   const productGridMarkup = `
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       ${products.map(enhancedProductCardHtml).join("")}
     </div>
   `;
-  
-  const vegetableProducts = products.slice(0, 10);
   
   // Hàm tạo carousel với enhanced product cards
   const enhancedSectionCarouselHtml = ({ title, href, products, productCount }: { title: string; href: string; products: any[]; productCount: number }) => {
@@ -236,41 +281,6 @@ export default async function HomePage() {
     productCount: vegetableProducts.length,
   });
 
-  const usedSlugs = new Set<string>();
-  for (const product of vegetableProducts) {
-    if (product.slug) usedSlugs.add(product.slug);
-  }
-  const takeSectionProducts = (matches: typeof allProducts, limit = 10) => {
-    const items: typeof allProducts = [];
-    for (const product of matches) {
-      if (!product.slug || usedSlugs.has(product.slug)) continue;
-      items.push(product);
-      usedSlugs.add(product.slug);
-      if (items.length >= limit) return items;
-    }
-    for (const product of allProducts) {
-      if (!product.slug || usedSlugs.has(product.slug)) continue;
-      items.push(product);
-      usedSlugs.add(product.slug);
-      if (items.length >= limit) return items;
-    }
-    return items;
-  };
-
-  const fruitsProducts = takeSectionProducts(
-    allProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "fruit" ||
-        /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
-    )
-  );
-  const juicesProducts = takeSectionProducts(
-    allProducts.filter((product) => /juice|juices|smoothie/i.test(product.name))
-  );
-  const drinksProducts = takeSectionProducts(
-    allProducts.filter((product) => /drink|drinks|water|tea|milk|coffee|cola/i.test(product.name))
-  );
-
   const fruitsMarkup = enhancedSectionCarouselHtml({
     title: "Fruits",
     href: "/shop",
@@ -283,16 +293,16 @@ export default async function HomePage() {
     products: juicesProducts,
     productCount: juicesProducts.length,
   });
-  const drinksMarkup = enhancedSectionCarouselHtml({
-    title: "Drinks",
+  const spicesMarkup = enhancedSectionCarouselHtml({
+    title: "Spices & Herbs",
     href: "/shop",
-    products: drinksProducts,
-    productCount: drinksProducts.length,
+    products: spicesProducts,
+    productCount: spicesProducts.length,
   });
 
   let transformedBody = bodyHtml.replace(/0(?:<!-- -->)? products/g, `${products.length} products`);
 
-  const mainContentRegex = /<div>\s*<div class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
+  const mainContentRegex = /<div\s+class="max-w-\(--breakpoint-xl\) mx-auto px-4 flex flex-col lg:px-0 mt-16 lg:mt-24">/i;
   const mainContentMatch = transformedBody.match(mainContentRegex);
   const featuredSectionStart = mainContentMatch?.index ?? -1;
 
@@ -308,7 +318,7 @@ export default async function HomePage() {
     : null;
   const filtersStart = filtersMatch ? featuredSectionStart + filtersMatch.index! : -1;
 
-  const emptyStateRegex = /<div class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50\/50 to-white rounded-xl border border-gray-200\/50 w-full">/i;
+  const emptyStateRegex = /<div\s+class="flex flex-col items-center justify-center py-16 min-h-80 space-y-8 text-center bg-linear-to-br from-gray-50\/50 to-white rounded-xl border border-gray-200\/50 w-full">/i;
   const emptyStateMatch = filtersStart >= 0
     ? transformedBody.slice(filtersStart).match(emptyStateRegex)
     : null;
@@ -336,7 +346,7 @@ export default async function HomePage() {
       vegetableMarkup +
       fruitsMarkup +
       juicesMarkup +
-      drinksMarkup +
+      spicesMarkup +
       `<div class="pt-8">${productGridMarkup}</div>` +
       transformedBody.slice(nextSectionStart);
   }
@@ -364,18 +374,35 @@ export default async function HomePage() {
   transformedBody = transformedBody.replace(/href="\/category\/vegetables"/g, 'href="/shop"');
   transformedBody = transformedBody.replace(/href="\/collection"/g, 'href="/shop"');
 
-  // SỬA: Thay vì xóa floating button, chuyển link thành /shop
+  // XÓA TẤT CẢ floating button cũ (có class chứa bottom-6)
   transformedBody = transformedBody.replace(
-    /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/i,
-    `<a href="/shop" class="fixed bottom-6 right-6 z-50 bg-gofarm-green text-white p-4 rounded-full shadow-lg hover:bg-gofarm-light-green transition-all hover:scale-110 duration-300 group">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-      </svg>
-      <span class="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-        Shop Now
-      </span>
-    </a>`
+    /<a[^>]*class="[^"]*bottom-6[^"]*"[^>]*>[\s\S]*?<\/a>/gi,
+    ""
   );
+
+  // THÊM floating button mới (giữ hiệu ứng hover từ xanh sang vàng)
+  transformedBody += `
+    <a href="/shop" class="fixed bottom-6 right-6 z-50 group">
+      <div class="relative">
+        <div class="absolute inset-0 bg-linear-to-r from-gofarm-green to-emerald-500 rounded-full animate-pulse opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="relative flex items-center gap-2.5 bg-linear-to-r from-gofarm-green to-emerald-600 text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 overflow-hidden">
+          <span class="absolute inset-0 bg-gofarm-orange -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
+          <div class="relative z-10 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span class="font-semibold group-hover:text-yellow-200 transition-colors duration-300"></span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles w-3 h-3 absolute -top-1 -right-1 animate-pulse text-yellow-300" aria-hidden="true">
+            <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+            <path d="M20 2v4"></path>
+            <path d="M22 4h-4"></path>
+            <circle cx="4" cy="20" r="2"></circle>
+          </svg>
+        </div>
+      </div>
+    </a>
+  `;
 
   // Remove Latest Blog Posts section
   transformedBody = transformedBody.replace(
@@ -427,7 +454,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: transformedBody }} />
+      <div dangerouslySetInnerHTML={{ __html: transformedBody }} suppressHydrationWarning />
       <ProductGridClient products={allProducts} />
       <ProductShareHandler products={allProducts} />
     </>

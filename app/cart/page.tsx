@@ -188,7 +188,8 @@ export default function CartPage() {
     }
 
     if (!isLoggedIn) {
-      localStorage.setItem("redirectAfterLogin", "/cart");
+      // FIX: Đổi từ localStorage thành sessionStorage
+      sessionStorage.setItem("redirectAfterLogin", "/cart");
       router.push("/sign-in");
     } else {
       setShowReviewOrder(true);
@@ -196,6 +197,14 @@ export default function CartPage() {
   };
 
   const confirmOrder = () => {
+    // FIX: Kiểm tra lại đăng nhập trước khi chuyển sang checkout
+    const user = localStorage.getItem("user");
+    if (!user) {
+      sessionStorage.setItem("redirectAfterLogin", "/checkout");
+      router.push("/sign-in");
+      return;
+    }
+    
     localStorage.setItem("checkoutItems", JSON.stringify(getSelectedItems()));
     setShowReviewOrder(false);
     router.push("/checkout");
@@ -613,8 +622,6 @@ export default function CartPage() {
           )}
         </div>
       </div>
-
-      {/* ĐÃ XÓA FOOTER - vì layout.tsx đã có */}
     </div>
   );
 }
