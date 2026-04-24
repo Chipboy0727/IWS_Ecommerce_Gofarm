@@ -260,15 +260,23 @@ export default async function HomePage() {
   const fruitsProducts = takeSectionProducts(
     allProducts.filter(
       (product) =>
-        product.categoryTitle?.toLowerCase() === "fruit" ||
+        product.categoryTitle?.toLowerCase() === "fruits" ||
         /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
     )
   );
   const juicesProducts = takeSectionProducts(
-    allProducts.filter((product) => /juice|juices|smoothie/i.test(product.name))
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "juices" ||
+        /juice|juices|smoothie/i.test(product.name)
+    )
   );
-  const drinksProducts = takeSectionProducts(
-    allProducts.filter((product) => /drink|drinks|water|tea|milk|coffee|cola/i.test(product.name))
+  const spicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
+        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
+    )
   );
 
   const fruitsMarkup = enhancedSectionCarouselHtml({
@@ -283,11 +291,11 @@ export default async function HomePage() {
     products: juicesProducts,
     productCount: juicesProducts.length,
   });
-  const drinksMarkup = enhancedSectionCarouselHtml({
-    title: "Drinks",
+  const spicesMarkup = enhancedSectionCarouselHtml({
+    title: "Spices & Herbs",
     href: "/shop",
-    products: drinksProducts,
-    productCount: drinksProducts.length,
+    products: spicesProducts,
+    productCount: spicesProducts.length,
   });
 
   let transformedBody = bodyHtml.replace(/0(?:<!-- -->)? products/g, `${products.length} products`);
@@ -336,7 +344,7 @@ export default async function HomePage() {
       vegetableMarkup +
       fruitsMarkup +
       juicesMarkup +
-      drinksMarkup +
+      spicesMarkup +
       `<div class="pt-8">${productGridMarkup}</div>` +
       transformedBody.slice(nextSectionStart);
   }

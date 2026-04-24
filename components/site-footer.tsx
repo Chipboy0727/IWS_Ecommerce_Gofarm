@@ -4,6 +4,8 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
     Fruits: "/collection?category=fruits",
     Vegetables: "/collection?category=vegetables",
+    Juices: "/collection?category=juices",
+    "Spices & Herbs": "/collection?category=spices-herbs",
   };
 
   const quickLinksRoutes: Record<string, string> = {
@@ -40,7 +42,7 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
 
 export default function SiteFooter() {
   const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const categories = ["Fruits", "Vegetables"];
+  const categories = ["Fruits", "Vegetables", "Juices", "Spices & Herbs"];
 
   return (
     <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
