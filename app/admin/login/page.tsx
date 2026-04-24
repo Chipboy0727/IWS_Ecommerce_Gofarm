@@ -36,26 +36,26 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#081108] text-white">
-      <div className="absolute inset-0 bg-[url('/images/image_3.jpg')] bg-cover bg-center" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(8,30,8,0.18),rgba(0,0,0,0.72)_72%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,2,0.25),rgba(3,10,2,0.74))]" />
+    <div className="relative min-h-screen overflow-hidden bg-[#061006] text-white">
+      <div className="absolute inset-0 bg-[url('/images/image_3.jpg')] bg-cover bg-center scale-105" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(12,34,10,0.18),rgba(0,0,0,0.72)_72%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,2,0.22),rgba(3,10,2,0.76))]" />
 
       <div className="relative flex min-h-screen flex-col">
         <main className="flex flex-1 items-center justify-center px-4 py-10">
-          <div className="w-full max-w-[360px] rounded-[10px] bg-white px-6 py-8 text-[#263225] shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+          <div className="w-full max-w-[432px] rounded-[10px] bg-[#f7f8f5] px-7 py-8 text-[#263225] shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
             <div className="text-center">
               <div className="text-[17px] font-extrabold tracking-[-0.04em] text-[#0d8711]">Digital Cultivator</div>
-              <h1 className="mt-1 text-[24px] font-bold tracking-[-0.05em] text-[#273229]">Admin Access</h1>
-              <p className="mx-auto mt-3 max-w-[250px] text-[12px] leading-5 text-[#6b7569]">
+              <h1 className="mt-1 text-[26px] font-bold tracking-[-0.05em] text-[#273229]">Admin Access</h1>
+              <p className="mx-auto mt-3 max-w-[270px] text-[12px] leading-5 text-[#6b7569]">
                 Enter your credentials to manage your agricultural ecosystem.
               </p>
             </div>
 
-            <form className="mt-7 space-y-4" onSubmit={handleSubmit}>
+            <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
               <label className="block">
                 <span className="mb-2 block text-[12px] font-medium text-[#6e756d]">Work Email</span>
-                <div className="flex items-center rounded-[3px] border border-[#e4eadb] bg-[#eef4e6] px-3 py-2.5">
+                <div className="flex items-center rounded-[4px] border border-[#e4eadb] bg-[#eef4e6] px-3 py-2.5">
                   <span className="mr-3 text-[#899689]">
                     <IconMail />
                   </span>
@@ -76,7 +76,7 @@ export default function AdminLoginPage() {
                     Forgot Password?
                   </button>
                 </div>
-                <div className="flex items-center rounded-[3px] border border-[#e4eadb] bg-[#eef4e6] px-3 py-2.5">
+                <div className="flex items-center rounded-[4px] border border-[#e4eadb] bg-[#eef4e6] px-3 py-2.5">
                   <span className="mr-3 text-[#899689]">
                     <IconLock />
                   </span>
@@ -103,25 +103,26 @@ export default function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-11 w-full items-center justify-center rounded-[4px] bg-[linear-gradient(180deg,#15b316,#079908)] text-[15px] font-semibold text-white shadow-[0_12px_26px_rgba(10,146,12,0.34)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex h-14 w-full items-center justify-center rounded-[4px] bg-[linear-gradient(180deg,#15b316,#079908)] text-[15px] font-semibold text-white shadow-[0_12px_26px_rgba(10,146,12,0.34)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? "Signing in..." : "Enter Control Center"}
                 <span className="ml-2 text-[17px]">→</span>
               </button>
             </form>
 
-            <div className="mt-7 rounded-[10px] bg-[#eff8ea] px-4 py-4">
-              <div className="flex items-start gap-3">
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-[#dff2d8] text-[#0f9716]">
-                  <IconHeadset />
-                </div>
-                <div>
-                  <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#667165]">Need Assistance?</div>
-                  <div className="mt-1 text-[12px] leading-5 text-[#798477]">Contact IT support for access recovery.</div>
+            <div className="mt-8 border-t border-[#e8ecdf] pt-6">
+              <div className="rounded-[10px] bg-[#eff8ea] px-4 py-4">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-9 w-9 place-items-center rounded-full bg-[#dff2d8] text-[#0f9716]">
+                    <IconHeadset />
+                  </div>
+                  <div>
+                    <div className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#667165]">Need Assistance?</div>
+                    <div className="mt-1 text-[12px] leading-5 text-[#798477]">Contact IT support for access recovery.</div>
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
         </main>
 

@@ -2,21 +2,18 @@ import Link from "next/link";
 
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
-    "Ice and Cold": "/collection?category=ice-and-cold",
-    "Dry Food": "/collection?category=dry-food",
-    "Fast Food": "/collection?category=fast-food",
-    Frozen: "/collection?category=frozen",
-    Meat: "/collection?category=meat",
-    Fish: "/collection?category=fish",
+    Fruits: "/collection?category=fruits",
     Vegetables: "/collection?category=vegetables",
+    Juices: "/collection?category=juices",
+    "Spices & Herbs": "/collection?category=spices-herbs",
   };
 
   const quickLinksRoutes: Record<string, string> = {
-    "About us": "/shop",
+    "About us": "/about",
     "Contact us": "/contact",
-    "Terms & Conditions": "/help",
-    "Privacy Policy": "/help",
-    FAQs: "/help",
+    "Terms & Conditions": "/terms",
+    "Privacy Policy": "/privacy",
+    FAQs: "/faqs",
     Help: "/help",
   };
 
@@ -45,7 +42,7 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
 
 export default function SiteFooter() {
   const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const categories = ["Fruits", "Vegetables"];
+  const categories = ["Fruits", "Vegetables", "Juices", "Spices & Herbs"];
 
   return (
     <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
@@ -108,11 +105,6 @@ export default function SiteFooter() {
               </Link>
             </div>
             <p className="text-gofarm-gray text-sm">Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.</p>
-            <div className="flex items-center gap-3.5 text-gofarm-black/60">
-              <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">YouTube</span></a>
-              <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Social</span></a>
-              <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Social</span></a>
-            </div>
           </div>
 
           <FooterColumn title="Quick Links" items={quickLinks} />

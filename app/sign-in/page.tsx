@@ -4,50 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
-  const categoryRoutes: Record<string, string> = {
-    "Ice and Cold": "/category/ice-and-cold",
-    "Dry Food": "/category/dry-food",
-    "Fast Food": "/category/fast-food",
-    Frozen: "/category/frozen",
-    Meat: "/category/meat",
-    Fish: "/category/fish",
-    Vegetables: "/category/vegetables",
-  };
-
-  return (
-    <div>
-      <h3 className="font-semibold text-gofarm-black mb-4">{title}</h3>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={item}>
-            <Link
-              href={
-                title === "Quick Links"
-                  ? item === "About us"
-                    ? "/about"
-                    : item === "Contact us"
-                      ? "/contact"
-                      : item === "Terms & Conditions"
-                        ? "/terms"
-                        : item === "Privacy Policy"
-                          ? "/privacy"
-                          : item === "FAQs"
-                            ? "/faqs"
-                            : "/help"
-                  : categoryRoutes[item] ?? "/collection"
-              }
-              className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize"
-            >
-              {item}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -55,9 +11,6 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +31,11 @@ export default function SignInPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      // Dispatch event để header cập nhật ngay lập tức
+      window.dispatchEvent(new Event("auth-changed"));
+      
       router.push("/");
-      router.refresh();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -263,71 +219,7 @@ export default function SignInPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-gofarm-white border-t border-gofarm-light-gray">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b py-8">
-            <a href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer rounded-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-gofarm-green transition-colors"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg>
-              <div><h3 className="font-semibold text-gray-900 group-hover:text-gofarm-green transition-colors">Visit Us</h3><p className="text-gray-600 text-sm mt-1">123 Shopping Street, New York, NY 10001</p></div>
-            </a>
-            <a href="tel:15551234567" className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer rounded-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-gofarm-green transition-colors"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" /></svg>
-              <div><h3 className="font-semibold text-gray-900 group-hover:text-gofarm-green transition-colors">Call Us</h3><p className="text-gray-600 text-sm mt-1">+1 (555) 123-4567</p></div>
-            </a>
-            <div className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer rounded-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-gofarm-green transition-colors"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-              <div><h3 className="font-semibold text-gray-900 group-hover:text-gofarm-green transition-colors">Working Hours</h3><p className="text-gray-600 text-sm mt-1">Monday - Friday: 9AM - 6PM</p></div>
-            </div>
-            <a href="mailto:support@gofarm.com" className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer rounded-xl">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-gofarm-green transition-colors"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /><rect x="2" y="4" width="20" height="16" rx="2" /></svg>
-              <div><h3 className="font-semibold text-gray-900 group-hover:text-gofarm-green transition-colors">Email Us</h3><p className="text-gray-600 text-sm mt-1">support@gofarm.com</p></div>
-            </a>
-          </div>
-          <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="mb-2">
-                <Link href="/">
-                  <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-                </Link>
-              </div>
-              <p className="text-gofarm-gray text-sm">Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.</p>
-              <div className="flex items-center gap-3.5">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">YouTube</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.376.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.376-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">Facebook</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
-                </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green">
-                  <span className="sr-only">Instagram</span>
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85 0 3.205-.012 3.585-.069 4.85-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.85-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85 0-3.204.012-3.584.07-4.85.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069z"/></svg>
-                </a>
-              </div>
-            </div>
-            <FooterColumn title="Quick Links" items={quickLinks} />
-            <FooterColumn title="Categories" items={categories} />
-            <div>
-              <h3 className="font-semibold text-gofarm-black mb-4">Newsletter</h3>
-              <p className="text-gofarm-gray text-sm mb-4">Subscribe to our newsletter to receive updates and exclusive offers.</p>
-              <form className="space-y-3">
-                <input type="email" placeholder="Enter your email" className="w-full px-4 py-2 border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green transition-all text-gofarm-black placeholder:text-gofarm-gray" />
-                <button type="submit" className="w-full bg-gofarm-green text-gofarm-white px-4 py-2 rounded-lg hover:bg-gofarm-light-green transition-colors flex items-center justify-center gap-2 font-semibold">
-                  Subscribe
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </button>
-              </form>
-            </div>
-          </div>
-          <div className="py-6 border-t border-gofarm-light-gray text-center text-sm text-gofarm-gray">
-            <p>© 2026 <span className="text-gofarm-black font-black tracking-wider uppercase hover:text-gofarm-green hoverEffect group font-sans">Gofar<span className="text-gofarm-green group-hover:text-gofarm-black hoverEffect">m</span></span>. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      {/* ĐÃ XÓA FOOTER - vì layout.tsx đã có SiteFooter */}
     </div>
   );
 }

@@ -1,14 +1,13 @@
+import mysql from "mysql2/promise";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { hashPassword } from "@/lib/backend/auth";
-import { loadSeedCatalog, type BackendUser, type SeedCatalog } from "@/lib/backend/catalog-seed";
+import { loadSeedCatalog, type BackendOrder, type BackendStore, type BackendUser, type SeedCatalog } from "@/lib/backend/catalog-seed";
 import { normalizeProductCategories } from "@/lib/backend/products";
 import { getMysqlPool } from "@/lib/backend/mysql";
 
 export type { BackendUser };
-
 export type BackendDb = SeedCatalog;
 
 const LEGACY_JSON_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");
@@ -21,26 +20,11 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-function createSeedAdmin(): BackendUser {
-  const timestamp = nowIso();
-  return {
-    id: randomUUID(),
-    name: "Admin",
-    email: "admin@gofarm.local",
-    passwordHash: hashPassword("admin123"),
-    role: "admin",
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-}
-
-function normalizeProduct(product: LocalProduct, index: number): LocalProduct {
+function normalizeProduct(product: LocalProduct): LocalProduct {
   return {
     ...product,
-    createdAt: product.createdAt ?? nowIso(),
-    updatedAt: product.updatedAt ?? nowIso(),
     id: product.id || product.slug || randomUUID(),
-    slug: product.slug || `product-${index + 1}`,
+    slug: product.slug || `product-${randomUUID().slice(0, 8)}`,
     name: product.name || "Unnamed product",
     imageSrc: product.imageSrc || "/images/logo.svg",
     imageAlt: product.imageAlt || product.name || "Product image",
@@ -54,14 +38,16 @@ function normalizeProduct(product: LocalProduct, index: number): LocalProduct {
     reviews: typeof product.reviews === "number" ? product.reviews : 0,
     stock: typeof product.stock === "number" ? product.stock : null,
     status: product.status ?? null,
+    createdAt: product.createdAt ?? nowIso(),
+    updatedAt: product.updatedAt ?? nowIso(),
   };
 }
 
-function normalizeCategory(category: LocalCategory, index: number): LocalCategory {
+function normalizeCategory(category: LocalCategory): LocalCategory {
   return {
     ...category,
     id: category.id || category.slug || randomUUID(),
-    slug: category.slug || `category-${index + 1}`,
+    slug: category.slug || `category-${randomUUID().slice(0, 8)}`,
     title: category.title || "Category",
     imageSrc: category.imageSrc ?? null,
     count: typeof category.count === "number" ? category.count : 0,
@@ -114,12 +100,70 @@ function rowToUser(row: Record<string, unknown>): BackendUser {
     createdAt: String(row.createdAt ?? nowIso()),
     updatedAt: String(row.updatedAt ?? nowIso()),
     resetTokenHash: row.resetTokenHash === null || row.resetTokenHash === undefined ? null : String(row.resetTokenHash),
-    resetTokenExpiresAt: row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined ? null : String(row.resetTokenExpiresAt),
+    resetTokenExpiresAt:
+      row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined
+        ? null
+        : String(row.resetTokenExpiresAt),
   };
 }
 
+function rowToOrder(row: Record<string, unknown>): BackendOrder {
+  let products: BackendOrder["products"] = [];
+  try {
+    const raw = row.products;
+    if (typeof raw === "string" && raw.trim()) {
+      products = JSON.parse(raw) as BackendOrder["products"];
+    } else if (Array.isArray(raw)) {
+      products = raw as BackendOrder["products"];
+    }
+  } catch {
+    products = [];
+  }
+
+  return {
+    id: String(row.id ?? ""),
+    date: String(row.date ?? nowIso()),
+    total: Number(row.total ?? 0),
+    status: String(row.status ?? "pending") as BackendOrder["status"],
+    items: Number(row.items ?? 0),
+    products,
+    shippingAddress: String(row.shippingAddress ?? ""),
+    customerName: String(row.customerName ?? "Guest"),
+    customerEmail: String(row.customerEmail ?? ""),
+    customerPhone: String(row.customerPhone ?? ""),
+    paymentMethod: String(row.paymentMethod ?? "Cash on Delivery"),
+    createdAt: String(row.createdAt ?? nowIso()),
+    updatedAt: String(row.updatedAt ?? nowIso()),
+  };
+}
+
+function rowToStore(row: Record<string, unknown>): BackendStore {
+  return {
+    id: String(row.id ?? ""),
+    name: String(row.name ?? ""),
+    address: String(row.address ?? ""),
+    phone: String(row.phone ?? ""),
+    email: String(row.email ?? ""),
+    country: String(row.country ?? ""),
+    hours: String(row.hours ?? ""),
+    city: String(row.city ?? ""),
+    pinX: Number(row.pinX ?? 0),
+    pinY: Number(row.pinY ?? 0),
+    manager: String(row.manager ?? ""),
+    contact: String(row.contact ?? ""),
+    imageSrc: String(row.imageSrc ?? "/images/logo.svg"),
+    status: String(row.status ?? "Active") as BackendStore["status"],
+    createdAt: String(row.createdAt ?? nowIso()),
+    updatedAt: String(row.updatedAt ?? nowIso()),
+  };
+}
+
+function getPool() {
+  return getMysqlPool();
+}
+
 async function ensureMysqlSchema() {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   await pool.execute(`
@@ -171,6 +215,45 @@ async function ensureMysqlSchema() {
   `);
 
   await pool.execute(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id VARCHAR(64) PRIMARY KEY,
+      date VARCHAR(32) NOT NULL,
+      total DECIMAL(12,2) NOT NULL DEFAULT 0,
+      status VARCHAR(32) NOT NULL,
+      items INT NOT NULL DEFAULT 0,
+      products LONGTEXT NOT NULL,
+      shippingAddress TEXT NOT NULL,
+      customerName VARCHAR(255) NOT NULL,
+      customerEmail VARCHAR(255) NOT NULL,
+      customerPhone VARCHAR(64) NOT NULL,
+      paymentMethod VARCHAR(255) NOT NULL,
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL
+    )
+  `);
+
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS stores (
+      id VARCHAR(64) PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      address TEXT NOT NULL,
+      phone VARCHAR(64) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      country VARCHAR(64) NOT NULL,
+      hours VARCHAR(255) NOT NULL,
+      city VARCHAR(255) NOT NULL,
+      pinX INT NOT NULL DEFAULT 0,
+      pinY INT NOT NULL DEFAULT 0,
+      manager VARCHAR(255) NOT NULL,
+      contact VARCHAR(255) NOT NULL,
+      imageSrc TEXT NOT NULL,
+      status VARCHAR(32) NOT NULL,
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL
+    )
+  `);
+
+  await pool.execute(`
     CREATE TABLE IF NOT EXISTS meta (
       \`key\` VARCHAR(64) PRIMARY KEY,
       value LONGTEXT NOT NULL
@@ -181,18 +264,22 @@ async function ensureMysqlSchema() {
 }
 
 async function ensureMysqlSeedData() {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   const [productRows] = await pool.query("SELECT COUNT(*) AS count FROM products");
   const [categoryRows] = await pool.query("SELECT COUNT(*) AS count FROM categories");
   const [userRows] = await pool.query("SELECT COUNT(*) AS count FROM users");
+  const [orderRows] = await pool.query("SELECT COUNT(*) AS count FROM orders");
+  const [storeRows] = await pool.query("SELECT COUNT(*) AS count FROM stores");
 
   const productCount = Number((productRows as Array<{ count: number }>)[0]?.count ?? 0);
   const categoryCount = Number((categoryRows as Array<{ count: number }>)[0]?.count ?? 0);
   const userCount = Number((userRows as Array<{ count: number }>)[0]?.count ?? 0);
+  const orderCount = Number((orderRows as Array<{ count: number }>)[0]?.count ?? 0);
+  const storeCount = Number((storeRows as Array<{ count: number }>)[0]?.count ?? 0);
 
-  if (productCount > 0 || categoryCount > 0 || userCount > 0) {
+  if (productCount > 0 || categoryCount > 0 || userCount > 0 || orderCount > 0 || storeCount > 0) {
     return true;
   }
 
@@ -231,33 +318,37 @@ async function readMysqlState(): Promise<BackendDb | null> {
   const ready = await initializeMysql();
   if (!ready) return null;
 
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return null;
 
   const [productsResult] = await pool.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
   const [categoriesResult] = await pool.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
   const [usersResult] = await pool.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
+  const [ordersResult] = await pool.query("SELECT * FROM orders ORDER BY updatedAt DESC, createdAt DESC");
+  const [storesResult] = await pool.query("SELECT * FROM stores ORDER BY updatedAt DESC, createdAt DESC");
 
   const products = (productsResult as Array<Record<string, unknown>>).map(rowToProduct);
   const categories = (categoriesResult as Array<Record<string, unknown>>).map(rowToCategory);
   const users = (usersResult as Array<Record<string, unknown>>).map(rowToUser);
+  const orders = (ordersResult as Array<Record<string, unknown>>).map(rowToOrder);
+  const stores = (storesResult as Array<Record<string, unknown>>).map(rowToStore);
 
   const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
   const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
-  const meta = metaValue
-    ? (JSON.parse(metaValue) as BackendDb["meta"])
-    : { version: 1, updatedAt: nowIso() };
+  const meta = metaValue ? (JSON.parse(metaValue) as BackendDb["meta"]) : { version: 1, updatedAt: nowIso() };
 
   return {
     products,
     categories: normalizeProductCategories(products, categories),
     users,
+    orders,
+    stores,
     meta,
   };
 }
 
 async function persistMysqlState(state: BackendDb) {
-  const pool = getMysqlPool();
+  const pool = getPool();
   if (!pool) return false;
 
   const connection = await pool.getConnection();
@@ -266,6 +357,8 @@ async function persistMysqlState(state: BackendDb) {
     await connection.query("DELETE FROM products");
     await connection.query("DELETE FROM categories");
     await connection.query("DELETE FROM users");
+    await connection.query("DELETE FROM orders");
+    await connection.query("DELETE FROM stores");
     await connection.query("DELETE FROM meta");
 
     const usedProductSlugs = new Set<string>();
@@ -277,6 +370,7 @@ async function persistMysqlState(state: BackendDb) {
         slug = `${baseSlug}-${suffix++}`;
       }
       usedProductSlugs.add(slug);
+
       await connection.execute(
         `
           INSERT INTO products (
@@ -315,6 +409,7 @@ async function persistMysqlState(state: BackendDb) {
         slug = `${baseSlug}-${suffix++}`;
       }
       usedCategorySlugs.add(slug);
+
       await connection.execute(
         `
           INSERT INTO categories (
@@ -346,10 +441,65 @@ async function persistMysqlState(state: BackendDb) {
           user.email,
           user.passwordHash,
           user.role,
-          user.createdAt,
-          user.updatedAt,
+          user.createdAt ?? nowIso(),
+          user.updatedAt ?? nowIso(),
           user.resetTokenHash ?? null,
           user.resetTokenExpiresAt ?? null,
+        ]
+      );
+    }
+
+    for (const order of state.orders) {
+      await connection.execute(
+        `
+          INSERT INTO orders (
+            id, date, total, status, items, products, shippingAddress,
+            customerName, customerEmail, customerPhone, paymentMethod, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          order.id,
+          order.date,
+          order.total,
+          order.status,
+          order.items,
+          JSON.stringify(order.products ?? []),
+          order.shippingAddress,
+          order.customerName,
+          order.customerEmail,
+          order.customerPhone,
+          order.paymentMethod,
+          order.createdAt,
+          order.updatedAt,
+        ]
+      );
+    }
+
+    for (const store of state.stores) {
+      await connection.execute(
+        `
+          INSERT INTO stores (
+            id, name, address, phone, email, country, hours, city, pinX, pinY,
+            manager, contact, imageSrc, status, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          store.id,
+          store.name,
+          store.address,
+          store.phone,
+          store.email,
+          store.country,
+          store.hours,
+          store.city,
+          store.pinX,
+          store.pinY,
+          store.manager,
+          store.contact,
+          store.imageSrc,
+          store.status,
+          store.createdAt,
+          store.updatedAt,
         ]
       );
     }
@@ -374,7 +524,7 @@ async function persistFallbackState(state: BackendDb) {
   await fs.writeFile(LEGACY_JSON_PATH, JSON.stringify(state, null, 2), "utf8");
 }
 
-export async function readDb() {
+export async function readDb(): Promise<BackendDb> {
   const mysqlState = await readMysqlState();
   if (mysqlState) return mysqlState;
   return loadSeedCatalog();
@@ -382,7 +532,7 @@ export async function readDb() {
 
 export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
   writeQueue = writeQueue.then(async () => {
-    const current = (await readMysqlState()) ?? (await loadSeedCatalog());
+    const current = await readDb();
     const next = await mutator(current);
     next.meta = {
       version: next.meta?.version ?? 1,
@@ -412,4 +562,3 @@ export async function updateDb(mutator: (db: BackendDb) => BackendDb | Promise<B
 export function cloneDb<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
-

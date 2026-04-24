@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 export type AdminNavItem = {
   href: string;
@@ -41,200 +43,334 @@ export function AdminShell({
   userRole = "Super Admin",
   userLabel = "GOFARM CENTRAL",
 }: AdminShellProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   const css = `
     .admin-root {
       min-height: 100vh;
-      background: #edf5de;
+      --sidebar-width: 254px;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.72), transparent 30%),
+        linear-gradient(180deg, #edf5de 0%, #eef5df 100%);
       color: #223021;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: var(--font-jost), Arial, Helvetica, sans-serif;
+    }
+    .admin-root[data-sidebar-collapsed="true"] {
+      --sidebar-width: 0px;
     }
     .admin-layout {
       display: grid;
       min-height: 100vh;
-      max-width: 1600px;
-      margin: 0 auto;
-      grid-template-columns: 238px minmax(0, 1fr);
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      transition: grid-template-columns 0.24s ease;
+    }
+    .admin-layout.is-collapsed {
+      grid-template-columns: 1fr;
+    }
+    .admin-layout.is-collapsed .admin-sidebar {
+      display: none;
+    }
+    .admin-layout.is-collapsed .admin-main {
+      padding-left: 28px;
+      padding-right: 24px;
     }
     .admin-sidebar {
-      border-right: 1px solid rgba(0,0,0,.05);
-      background: #dbe6cb;
-      padding: 16px 0 16px 16px;
+      position: relative;
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
+      background: linear-gradient(180deg, #e4ecd7 0%, #dee8cc 100%);
+      padding: 14px 0 14px 14px;
     }
     .sidebar-inner {
-      height: 100%;
       display: flex;
+      height: 100%;
       flex-direction: column;
       border-radius: 28px;
-      padding: 8px 12px 8px 12px;
+      padding: 0 12px 0 0;
+      transition: padding 0.24s ease;
     }
     .brand {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      justify-content: space-between;
       gap: 12px;
-      margin: 2px 0 22px 0;
-      padding-left: 12px;
+      padding: 10px 14px 16px 12px;
+      transition: padding 0.24s ease;
+    }
+    .brand-copy {
+      min-width: 0;
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
     .brand-logo {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: #0b8f15;
+      background: linear-gradient(180deg, #108916 0%, #0b7312 100%);
       color: #fff;
-      box-shadow: 0 10px 30px rgba(10,120,24,.28);
+      box-shadow: 0 10px 24px rgba(10, 120, 24, 0.26);
+      flex: 0 0 auto;
+    }
+    .sidebar-toggle {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      color: #4f5c4c;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .sidebar-toggle:hover {
+      background: rgba(255, 255, 255, 0.82);
     }
     .brand-title {
       font-size: 18px;
       line-height: 1;
       font-weight: 800;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.05em;
       color: #156f1c;
     }
     .brand-subtitle {
       margin-top: 3px;
       font-size: 10px;
-      letter-spacing: .26em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #415442;
+      color: #5b6658;
     }
     .nav-list {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      padding-right: 4px;
+      gap: 8px;
+      padding: 8px 0 0;
     }
     .nav-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      border-radius: 8px;
-      padding: 12px 12px;
+      border-radius: 6px;
+      padding: 13px 14px;
       text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-      color: #546453;
-      transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+      font-size: 15px;
+      font-weight: 500;
+      color: #5d655d;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
     .nav-item:hover {
-      background: rgba(255,255,255,.6);
-      color: #16781f;
+      background: rgba(255, 255, 255, 0.54);
+      color: #0b7312;
     }
     .nav-item.active {
       background: #fff;
-      color: #16781f;
-      box-shadow: 0 8px 20px rgba(35,70,28,.08);
+      color: #0b7312;
+      box-shadow: 0 8px 20px rgba(34, 56, 29, 0.07);
     }
     .nav-icon {
-      color: #667865;
+      color: #616961;
       display: inline-flex;
+      flex: 0 0 auto;
     }
-    .nav-item.active .nav-icon { color: #16781f; }
+    .nav-label {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
+    }
+    .nav-item.active .nav-icon {
+      color: #0b7312;
+    }
     .sidebar-footer {
       margin-top: auto;
-      padding-top: 16px;
-      padding-left: 4px;
-      display: grid;
-      gap: 10px;
+      padding: 18px 0 4px;
+    }
+    .sidebar-divider {
+      height: 1px;
+      margin: 0 4px 14px 0;
+      background: rgba(0, 0, 0, 0.06);
     }
     .cta {
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       border-radius: 8px;
-      background: #0f9716;
+      background: linear-gradient(180deg, #16b516 0%, #089809 100%);
       color: #fff;
-      padding: 12px 16px;
+      padding: 13px 16px;
       text-decoration: none;
       font-size: 14px;
       font-weight: 700;
-      box-shadow: 0 12px 24px rgba(15,151,22,.28);
+      box-shadow: 0 12px 22px rgba(10, 146, 12, 0.28);
+      margin-right: 8px;
+    }
+    .cta-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      transition: margin 0.18s ease;
+    }
+    .cta-text {
+      transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
+    }
+    .cta:hover {
+      filter: brightness(0.98);
     }
     .sidebar-links {
       display: grid;
-      gap: 4px;
-      color: #5d6a5d;
+      gap: 6px;
+      margin-top: 14px;
+      color: #5d665d;
       font-size: 13px;
+      padding-right: 8px;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 8px;
+      padding: 9px 8px;
       border-radius: 8px;
       text-decoration: none;
       color: inherit;
     }
-    .sidebar-link:hover { background: rgba(255,255,255,.6); }
+    .sidebar-link:hover {
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .sidebar-link-text {
+      transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
+    }
     .admin-main {
       min-width: 0;
-      padding: 16px;
+      padding: 14px 16px 16px 0;
     }
     .main-shell {
       min-height: 100%;
-      border-radius: 28px;
-      background: #eef5de;
-      display: flex;
-      flex-direction: column;
+    }
+    .page-shell {
+      width: 100%;
+      max-width: 1136px;
+      margin: 0 auto;
+    }
+    .admin-layout.is-collapsed .page-shell {
+      max-width: 1136px;
+      margin: 0 auto;
+    }
+    .sidebar-open-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 40;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #4f5c4c;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(34, 56, 29, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+    }
+    .sidebar-open-btn:hover {
+      background: rgba(255, 255, 255, 0.92);
     }
     .topbar {
-      border-bottom: 1px solid rgba(0,0,0,.05);
-      padding: 0 28px 18px;
+      padding: 0 0 10px;
     }
     .topbar-row {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      min-height: 48px;
     }
     .searchbox {
-      width: 300px;
+      width: min(500px, 100%);
       display: flex;
       align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.45);
-      padding: 8px 16px;
-      color: #6f7d6e;
-      box-shadow: 0 1px 2px rgba(0,0,0,.05);
-      border: 1px solid rgba(0,0,0,.05);
-      min-height: 40px;
+      gap: 10px;
+      border-radius: 14px;
+      background: rgba(236, 243, 224, 0.88);
+      padding: 9px 15px;
+      color: #6e7d6d;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+      min-height: 36px;
     }
-    .searchbox span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .spacer { flex: 1; }
+    .searchbox span {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .spacer {
+      flex: 1;
+    }
     .icon-btn {
       width: 32px;
       height: 32px;
       display: grid;
       place-items: center;
       border-radius: 999px;
-      color: #667664;
+      color: #616f5f;
       border: 0;
       background: transparent;
+      flex: 0 0 auto;
     }
-    .icon-btn:hover { background: rgba(255,255,255,.6); }
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
     .userchip {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-left: 4px;
+      padding-left: 16px;
+      margin-left: 2px;
+      border-left: 1px solid rgba(0, 0, 0, 0.07);
     }
-    .user-text { text-align: right; display: none; }
-    .user-name { font-size: 12px; font-weight: 700; color: #233021; line-height: 1; }
-    .user-label { margin-top: 4px; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: #718271; }
-    .user-role { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #5f6d5d; display: none; }
+    .user-text {
+      text-align: right;
+      line-height: 1.1;
+    }
+    .user-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #263224;
+    }
+    .user-role {
+      margin-top: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #687366;
+    }
+    .user-label {
+      margin-top: 3px;
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #7d8a7b;
+    }
     .avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
       display: grid;
       place-items: center;
-      background: #0f9716;
+      background: linear-gradient(180deg, #105d13 0%, #0f9716 100%);
       color: #fff;
-      box-shadow: 0 10px 20px rgba(15,151,22,.25);
+      box-shadow: 0 10px 20px rgba(15, 151, 22, 0.22);
       overflow: hidden;
+      border: 2px solid rgba(16, 145, 25, 0.35);
     }
     .heading-row {
-      margin-top: 24px;
+      margin-top: 12px;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
@@ -242,58 +378,68 @@ export function AdminShell({
     }
     .page-title {
       margin: 0;
-      font-size: 42px;
-      line-height: 1.05;
+      font-size: 50px;
+      line-height: 0.98;
       font-weight: 800;
-      letter-spacing: -0.05em;
-      color: #1f2e1d;
+      letter-spacing: -0.06em;
+      color: #1f2d1d;
     }
     .page-subtitle {
-      margin-top: 6px;
+      margin-top: 8px;
       max-width: 56rem;
       font-size: 15px;
-      line-height: 1.5;
-      color: #5d6a5d;
+      line-height: 1.45;
+      color: #576357;
     }
     .actions {
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
-      align-items: center;
+      gap: 12px;
+      padding-top: 8px;
     }
     .content {
-      padding: 24px 28px 28px;
+      padding: 12px 0 20px;
     }
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
+      border-radius: 10px;
       border: 0;
-      padding: 10px 16px;
-      font-size: 13px;
+      padding: 11px 18px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: filter .15s ease, background .15s ease, color .15s ease;
+      transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease, color 0.15s ease;
       text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
     }
     .btn-primary {
-      background: #0f9716;
+      background: linear-gradient(180deg, #17b516 0%, #0b9a0a 100%);
       color: #fff;
-      box-shadow: 0 12px 22px rgba(15,151,22,.28);
+      box-shadow: 0 12px 22px rgba(11, 154, 10, 0.28);
     }
-    .btn-primary:hover { background: #0d8412; }
+    .btn-primary:hover {
+      filter: brightness(0.98);
+    }
     .btn-secondary {
-      background: #fff;
-      color: #1e301f;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+      background: #f3f7ea;
+      color: #1f391f;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
     }
-    .btn-secondary:hover { background: #f9fbf5; }
+    .btn-secondary:hover {
+      background: #edf4e0;
+    }
     .btn-ghost {
-      background: #eff6e8;
-      color: #2d5f30;
+      background: #eef5e2;
+      color: #0b7312;
     }
-    .btn-ghost:hover { background: #e2efda; }
+    .btn-ghost:hover {
+      background: #e4efd5;
+    }
     .grid-stats {
       display: grid;
       gap: 16px;
@@ -309,40 +455,47 @@ export function AdminShell({
     .card {
       border-radius: 20px;
       background: #fff;
-      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
       overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
-    .card-body { padding: 20px; }
+    .card-body {
+      padding: 22px;
+    }
     .card-header {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      padding: 20px 20px 0;
+      padding: 22px 22px 0;
     }
     .card-title {
       margin: 0;
       font-size: 22px;
       line-height: 1.1;
       font-weight: 800;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.05em;
       color: #253324;
     }
     .card-subtitle {
       margin-top: 6px;
       font-size: 13px;
-      color: #6e7b6d;
+      line-height: 1.45;
+      color: #6f7b6d;
     }
     .stat-card {
+      position: relative;
+      min-height: 150px;
       border-radius: 20px;
       background: #fff;
-      padding: 16px;
-      box-shadow: 0 1px 2px rgba(0,0,0,.04);
-      border: 1px solid rgba(0,0,0,.05);
+      padding: 18px 20px 20px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      overflow: hidden;
     }
     .stat-card.active {
-      background: #10890f;
+      background: linear-gradient(180deg, #0e8b11 0%, #0a7610 100%);
       color: #fff;
     }
     .stat-top {
@@ -355,25 +508,47 @@ export function AdminShell({
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .18em;
-      color: #7b8779;
+      letter-spacing: 0.16em;
+      color: #687466;
     }
-    .stat-card.active .stat-label { color: rgba(255,255,255,.7); }
+    .stat-card.active .stat-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .stat-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #e3eed9;
+      color: #118116;
+      opacity: 0.95;
+    }
+    .stat-card.active .stat-icon {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
     .stat-value {
-      margin-top: 8px;
-      font-size: 42px;
-      line-height: 1;
+      margin-top: 10px;
+      font-size: 44px;
+      line-height: 0.98;
       font-weight: 800;
-      letter-spacing: -0.05em;
+      letter-spacing: -0.06em;
       color: #1f2f1d;
     }
-    .stat-card.active .stat-value { color: #fff; }
+    .stat-card.active .stat-value {
+      color: #fff;
+    }
     .stat-meta {
-      margin-top: 8px;
+      margin-top: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 12px;
+      color: #51604f;
+    }
+    .stat-card.active .stat-meta {
+      color: rgba(255, 255, 255, 0.76);
     }
     .pill {
       display: inline-flex;
@@ -382,6 +557,8 @@ export function AdminShell({
       padding: 4px 12px;
       font-size: 11px;
       font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
     }
     .pill.green { background: #dff4d4; color: #18851f; }
     .pill.emerald { background: #dbf7de; color: #0f7c16; }
@@ -402,13 +579,13 @@ export function AdminShell({
     .mini-icon.amber { background: #fff0c8; color: #c68f00; }
     .chart-wrap {
       display: flex;
-      height: 250px;
+      height: 304px;
       align-items: flex-end;
       gap: 8px;
       border-radius: 18px;
       background: #fbfdf8;
-      padding: 40px 16px 16px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+      padding: 36px 16px 12px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
     .chart-bar {
       flex: 1;
@@ -421,8 +598,8 @@ export function AdminShell({
     .chart-track {
       position: relative;
       display: flex;
-      width: 72%;
-      height: 175px;
+      width: 100%;
+      height: 210px;
       align-items: flex-end;
       justify-content: center;
     }
@@ -431,7 +608,7 @@ export function AdminShell({
       bottom: 0;
       width: 100%;
       border-radius: 8px 8px 0 0;
-      background: #d7e4cd;
+      background: #d9e4ce;
     }
     .chart-front {
       position: relative;
@@ -439,13 +616,13 @@ export function AdminShell({
       width: 72%;
       border-radius: 8px 8px 0 0;
       background: linear-gradient(to top, #038f0b, #0ca011, #17b11d);
-      box-shadow: 0 10px 20px rgba(5,120,15,.25);
+      box-shadow: 0 10px 20px rgba(5, 120, 15, 0.25);
     }
     .chart-label {
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .18em;
+      letter-spacing: 0.18em;
       color: #6b7869;
     }
     .page-table {
@@ -456,19 +633,21 @@ export function AdminShell({
       background: #f0f5e4;
     }
     .page-table th {
-      padding: 16px 20px;
+      padding: 16px 22px;
       text-align: left;
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: .18em;
+      letter-spacing: 0.18em;
       color: #748171;
     }
     .page-table td {
-      padding: 18px 20px;
+      padding: 18px 22px;
       vertical-align: middle;
       border-bottom: 1px solid #edf1e5;
     }
-    .page-table tr:last-child td { border-bottom: 0; }
+    .page-table tr:last-child td {
+      border-bottom: 0;
+    }
     .product-row {
       display: flex;
       align-items: center;
@@ -495,8 +674,15 @@ export function AdminShell({
     .status-green { background: #0f7c16; }
     .status-amber { background: #d59b00; }
     .status-red { background: #d6403b; }
-    .table-amount { font-size: 13px; font-weight: 700; color: #253323; }
-    .table-muted { font-size: 13px; color: #637162; }
+    .table-amount {
+      font-size: 13px;
+      font-weight: 700;
+      color: #253323;
+    }
+    .table-muted {
+      font-size: 13px;
+      color: #637162;
+    }
     .icon-actions {
       display: flex;
       align-items: center;
@@ -514,7 +700,7 @@ export function AdminShell({
       padding: 14px 20px;
       border-radius: 18px;
       background: #eaf5db;
-      border: 1px solid rgba(0,0,0,.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       font-size: 13px;
       color: #60705f;
     }
@@ -528,9 +714,11 @@ export function AdminShell({
       border-radius: 18px;
       background: #fafcf7;
       overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
-    .panel-card-body { padding: 16px; }
+    .panel-card-body {
+      padding: 16px;
+    }
     .field-slab {
       border-radius: 10px;
       background: #eef4e7;
@@ -543,7 +731,7 @@ export function AdminShell({
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .16em;
+      letter-spacing: 0.16em;
       color: #82907f;
     }
     .field-multiline {
@@ -557,16 +745,20 @@ export function AdminShell({
       padding: 2px;
       background: #d6ddcd;
     }
-    .switch.on { background: #0f9716; }
+    .switch.on {
+      background: #0f9716;
+    }
     .switch span {
       display: block;
       width: 16px;
       height: 16px;
       border-radius: 999px;
       background: #fff;
-      transition: transform .15s ease;
+      transition: transform 0.15s ease;
     }
-    .switch.on span { transform: translateX(16px); }
+    .switch.on span {
+      transform: translateX(16px);
+    }
     .warning {
       border-radius: 18px;
       border: 1px solid #f1c4c4;
@@ -575,114 +767,174 @@ export function AdminShell({
       font-size: 13px;
       color: #8b4f4d;
     }
-    .warning strong { display: block; margin-bottom: 4px; }
-    .hidden-md { display: none; }
+    .warning strong {
+      display: block;
+      margin-bottom: 4px;
+    }
     @media (max-width: 1200px) {
-      .admin-layout { grid-template-columns: 1fr; }
-      .admin-sidebar { padding-right: 16px; border-right: 0; border-bottom: 1px solid rgba(0,0,0,.05); }
-      .sidebar-inner { padding: 8px 0 0; }
-      .admin-main { padding: 0 16px 16px; }
-      .topbar { padding-left: 18px; padding-right: 18px; }
-      .content { padding-left: 18px; padding-right: 18px; }
-      .grid-two { grid-template-columns: 1fr; }
-      .grid-stats.cols-4, .grid-stats.cols-3, .grid-stats.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .searchbox { width: 100%; }
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+      .admin-root {
+        --sidebar-width: 1fr;
+      }
+      .sidebar-toggle {
+        display: none;
+      }
+      .admin-sidebar {
+        padding-right: 14px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .sidebar-inner {
+        padding: 0;
+      }
+      .admin-main {
+        padding: 0 14px 14px;
+      }
+      .page-shell {
+        width: 100%;
+      }
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+      .grid-stats.cols-4,
+      .grid-stats.cols-3,
+      .grid-stats.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .searchbox {
+        width: 100%;
+      }
     }
     @media (max-width: 760px) {
-      .grid-stats.cols-4, .grid-stats.cols-3, .grid-stats.cols-2 { grid-template-columns: 1fr; }
-      .page-title { font-size: 28px; }
-      .topbar-row { flex-wrap: wrap; }
-      .user-text, .user-role { display: none !important; }
-      .hidden-md { display: inline-flex; }
+      .grid-stats.cols-4,
+      .grid-stats.cols-3,
+      .grid-stats.cols-2 {
+        grid-template-columns: 1fr;
+      }
+      .page-title {
+        font-size: 32px;
+      }
+      .topbar-row {
+        flex-wrap: wrap;
+      }
+      .heading-row {
+        flex-direction: column;
+      }
     }
   `;
 
   return (
-    <div className="admin-root">
+    <div className="admin-root" data-sidebar-collapsed={sidebarCollapsed ? "true" : "false"}>
       <style>{css}</style>
-      <div className="admin-layout">
-        <aside className="admin-sidebar">
-          <div className="sidebar-inner">
-            <div className="brand">
-              <div className="brand-logo">
-                <IconLeaf className="h-5 w-5" />
+      <div className={`admin-layout${sidebarCollapsed ? " is-collapsed" : ""}`}>
+        {!sidebarCollapsed ? (
+          <aside className="admin-sidebar">
+            <div className="sidebar-inner">
+              <div className="brand">
+                <div className="brand-logo">
+                  <IconLeaf className="h-5 w-5" />
+                </div>
+                <div className="brand-copy">
+                  <div className="brand-title">GoFarm</div>
+                  <div className="brand-subtitle">Agricultural Admin</div>
+                </div>
+                <button
+                  type="button"
+                  className="sidebar-toggle"
+                  onClick={() => setSidebarCollapsed(true)}
+                  aria-label="Hide sidebar"
+                  aria-pressed={sidebarCollapsed}
+                >
+                  <IconSidebarCollapse className="h-4 w-4" />
+                </button>
               </div>
-              <div>
-                <div className="brand-title">GoFarm</div>
-                <div className="brand-subtitle">Agricultural Admin</div>
-              </div>
-            </div>
 
-            <nav className="nav-list">
-              {navItems.map((item) => {
-                const active = activeHref === item.href;
-                return (
-                  <Link key={item.href} href={item.href} className={`nav-item${active ? " active" : ""}`}>
-                    <span className="nav-icon">{item.icon}</span>
-                    <span>{item.label}</span>
+              <nav className="nav-list">
+                {navItems.map((item) => {
+                  const active = activeHref === item.href;
+                  return (
+                    <Link key={item.href} href={item.href} className={`nav-item${active ? " active" : ""}`}>
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="sidebar-footer">
+                <div className="sidebar-divider" />
+                <Link href="/admin/products" className="cta">
+                  <span className="cta-text">+ Add New Product</span>
+                </Link>
+                <div className="sidebar-links">
+                  <Link href="/contact" className="sidebar-link">
+                    <IconHelp className="h-4 w-4" />
+                    <span className="sidebar-link-text">Support</span>
                   </Link>
-                );
-              })}
-            </nav>
-
-            <div className="sidebar-footer">
-              <Link href="/admin/products" className="cta">
-                + Add New Product
-              </Link>
-              <div className="sidebar-links">
-                <Link href="/contact" className="sidebar-link">
-                  <IconHelp className="h-4 w-4" />
-                  <span>Support</span>
-                </Link>
-                <Link href="/admin/login" className="sidebar-link">
-                  <IconLogout className="h-4 w-4" />
-                  <span>Log Out</span>
-                </Link>
+                  <Link href="/admin/login" className="sidebar-link">
+                    <IconLogout className="h-4 w-4" />
+                    <span className="sidebar-link-text">Log Out</span>
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        ) : null}
 
         <main className="admin-main">
           <div className="main-shell">
-            <header className="topbar">
-              <div className="topbar-row">
-                <div className="searchbox">
-                  <IconSearch className="h-4 w-4" />
-                  <span>{searchPlaceholder}</span>
-                </div>
-                <div className="spacer" />
-                <button className="icon-btn" type="button">
-                  <IconBell className="h-4 w-4" />
-                </button>
-                <button className="icon-btn" type="button">
-                  <IconGridDots className="h-4 w-4" />
-                </button>
-                <div className="userchip">
-                  <div className="user-text hidden-md">
-                    <div className="user-name">{userName}</div>
-                    <div className="user-label">{userLabel}</div>
+            <div className="page-shell">
+              <header className="topbar">
+                <div className="topbar-row">
+                  <div className="searchbox">
+                    <IconSearch className="h-4 w-4" />
+                    <span>{searchPlaceholder}</span>
                   </div>
-                  <div className="avatar">
-                    <IconAvatar className="h-5 w-5" />
+                  <div className="spacer" />
+                  <button className="icon-btn" type="button" aria-label="Notifications">
+                    <IconBell className="h-4 w-4" />
+                  </button>
+                  <button className="icon-btn" type="button" aria-label="Apps">
+                    <IconGridDots className="h-4 w-4" />
+                  </button>
+                  <div className="userchip">
+                    <div className="user-text">
+                      <div className="user-name">{userName}</div>
+                      <div className="user-role">{userRole}</div>
+                      {userLabel ? <div className="user-label">{userLabel}</div> : null}
+                    </div>
+                    <div className="avatar">
+                      <IconAvatar className="h-5 w-5" />
+                    </div>
                   </div>
-                  <div className="user-role hidden-md">{userRole}</div>
                 </div>
-              </div>
 
-              <div className="heading-row">
-                <div>
-                  <h1 className="page-title">{title}</h1>
-                  <p className="page-subtitle">{subtitle}</p>
+                <div className="heading-row">
+                  <div>
+                    <h1 className="page-title">{title}</h1>
+                    <p className="page-subtitle">{subtitle}</p>
+                  </div>
+                  {actions ? <div className="actions">{actions}</div> : null}
                 </div>
-                {actions ? <div className="actions">{actions}</div> : null}
-              </div>
-            </header>
+              </header>
 
-            <div className="content">{children}</div>
+              <div className="content">{children}</div>
+            </div>
           </div>
         </main>
       </div>
+      {sidebarCollapsed ? (
+        <button
+          type="button"
+          className="sidebar-open-btn"
+          onClick={() => setSidebarCollapsed(false)}
+          aria-label="Show sidebar"
+        >
+          <IconSidebarExpand className="h-4 w-4" />
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -717,7 +969,7 @@ export function SectionCard({
 }) {
   return (
     <section className={`card ${className}`.trim()}>
-      {(title || subtitle || right) ? (
+      {title || subtitle || right ? (
         <div className="card-header">
           <div>
             {title ? <h2 className="card-title">{title}</h2> : null}
@@ -736,6 +988,7 @@ export function StatCard({
   value,
   hint,
   delta,
+  deltaTone = "green",
   icon,
   active = false,
 }: {
@@ -743,6 +996,7 @@ export function StatCard({
   value: string;
   hint?: string;
   delta?: string;
+  deltaTone?: "green" | "red" | "amber" | "gray" | "pink" | "emerald";
   icon?: ReactNode;
   active?: boolean;
 }) {
@@ -750,11 +1004,11 @@ export function StatCard({
     <div className={`stat-card${active ? " active" : ""}`}>
       <div className="stat-top">
         <div className="stat-label">{label}</div>
-        {icon ? <div>{icon}</div> : null}
+        {icon ? <div className="stat-icon">{icon}</div> : null}
       </div>
       <div className="stat-value">{value}</div>
       <div className="stat-meta">
-        {delta ? <span className="pill green">{delta}</span> : null}
+        {delta ? <span className={`pill ${deltaTone}`}>{delta}</span> : null}
         {hint ? <span>{hint}</span> : null}
       </div>
     </div>
@@ -793,7 +1047,7 @@ export function BarChart({
       {bars.map((height, index) => (
         <div key={`${labels[index]}-${index}`} className="chart-bar">
           <div className="chart-track">
-            <div className="chart-back" style={{ height: `${Math.min(100, height + 28)}%` }} />
+            <div className="chart-back" style={{ height: `${Math.min(100, height + 22)}%` }} />
             <div className="chart-front" style={{ height: `${height}%` }} />
           </div>
           <div className="chart-label">{labels[index]}</div>
@@ -942,3 +1196,20 @@ export function IconLogout({ className = "h-4.5 w-4.5" }: { className?: string }
   );
 }
 
+export function IconSidebarCollapse({ className = "h-4.5 w-4.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M15 5 9 12l6 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconSidebarExpand({ className = "h-4.5 w-4.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M9 5 15 12l-6 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19 5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}

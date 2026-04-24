@@ -3,8 +3,9 @@ import Link from "next/link";
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
 import RealCountdown from "./RealCountDown";
 import SubscribeButton from "./SubscribeButton";
-import ProductCard from "./ProductCard";
-import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM DÒNG NÀY
+import DealList from "./DealList";
+import ProductShareHandler from "@/components/home/ProductShareHandler";
+import ShareModal from "@/app/share/ShareModal";
 
 export const metadata = {
   title: "Hot Deal | gofarm",
@@ -17,12 +18,6 @@ function formatPrice(price: number) {
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(price);
-}
-
-function salePriceFor(product: LocalProduct) {
-  return product.discount && product.discount > 0
-    ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
-    : product.price;
 }
 
 function Icon({
@@ -110,63 +105,6 @@ function BagIcon({ className }: { className?: string }) {
   );
 }
 
-function ChevronRightIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="m9 18 6-6-6-6" />
-    </Icon>
-  );
-}
-
-function MapPinIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-      <circle cx="12" cy="10" r="3" />
-    </Icon>
-  );
-}
-
-function PhoneIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
-    </Icon>
-  );
-}
-
-function MailIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-      <rect x="2" y="4" width="20" height="16" rx="2" />
-    </Icon>
-  );
-}
-
-function ShareIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
-      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
-    </Icon>
-  );
-}
-
-function CompareIcon({ className }: { className?: string }) {
-  return (
-    <Icon className={className}>
-      <path d="M8 3 4 7l4 4" />
-      <path d="M4 7h16" />
-      <path d="m16 21 4-4-4-4" />
-      <path d="M20 17H4" />
-    </Icon>
-  );
-}
-
 function StatBox({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4">
@@ -203,52 +141,6 @@ function FeatureCard({
   );
 }
 
-function FooterContactCard({
-  href,
-  icon,
-  title,
-  description,
-  target = "_self",
-}: {
-  href: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  target?: string;
-}) {
-  return (
-    <a
-      href={href}
-      target={target}
-      rel={target === "_blank" ? "noopener noreferrer" : undefined}
-      className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer"
-    >
-      <div className="text-gray-600 group-hover:text-primary transition-colors">{icon}</div>
-      <div>
-        <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">{title}</h3>
-        <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">{description}</p>
-      </div>
-    </a>
-  );
-}
-
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div>
-      <h3 className="font-semibold text-gofarm-black mb-4">{title}</h3>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={item}>
-            <a className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize" href="#">
-              {item}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 export default async function DealPage() {
   const { products } = await loadLocalCatalog();
 
@@ -256,9 +148,6 @@ export default async function DealPage() {
   const dealProducts = dealSlugs
     .map((slug) => products.find((product) => product.slug === slug))
     .filter((product): product is LocalProduct => Boolean(product));
-
-  const quickLinks = ["About Us", "Contact Us", "Terms & Conditions", "Privacy Policy", "Track Order", "Help"];
-  const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Fruits", "Fish", "Vegetables"];
 
   return (
     <div className="min-h-screen bg-linear-to-b from-red-50 to-orange-50">
@@ -351,11 +240,7 @@ export default async function DealPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {dealProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <DealList products={dealProducts} />
         </div>
 
         <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 sm:py-12">
@@ -378,93 +263,9 @@ export default async function DealPage() {
             </div>
           </div>
         </div>
-
-        <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b">
-              <FooterContactCard
-                href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
-                target="_blank"
-                icon={<MapPinIcon className="h-6 w-6" />}
-                title="Visit Us"
-                description="123 Shopping Street, Commerce District, New York, NY 10001, USA"
-              />
-              <FooterContactCard
-                href="tel:15551234567"
-                icon={<PhoneIcon className="h-6 w-6" />}
-                title="Call Us"
-                description="+1 (555) 123-4567"
-              />
-              <div className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer">
-                <div className="text-gray-600 group-hover:text-primary transition-colors">
-                  <ClockIcon className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Working Hours</h3>
-                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">Monday - Friday: 9AM - 6PM</p>
-                </div>
-              </div>
-              <FooterContactCard
-                href="mailto:support@gofarm.com"
-                icon={<MailIcon className="h-6 w-6" />}
-                title="Email Us"
-                description="support@gofarm.com"
-              />
-            </div>
-
-            <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="space-y-4">
-                <div className="mb-2">
-                  <Link href="/">
-                    <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-                  </Link>
-                </div>
-                <p className="text-gofarm-gray text-sm">
-                  Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.
-                </p>
-                <div className="flex items-center gap-3.5 text-gofarm-black/60">
-                </div>
-              </div>
-
-              <FooterColumn title="Quick Links" items={quickLinks} />
-              <FooterColumn title="Categories" items={categories} />
-
-              <div>
-                <h3 className="font-semibold text-gofarm-black mb-4">Newsletter</h3>
-                <p className="text-gofarm-gray text-sm mb-4">Subscribe to our newsletter to receive updates and exclusive offers.</p>
-                <form className="space-y-3">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-2 border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green disabled:bg-gofarm-light-gray/50 disabled:cursor-not-allowed transition-all text-gofarm-black placeholder:text-gofarm-gray"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full bg-gofarm-green text-gofarm-white px-4 py-2 rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
-                  >
-                    Subscribe
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            <div className="py-6 border-t border-gofarm-light-gray text-center text-sm text-gofarm-gray">
-              <p>
-                © 2026{" "}
-                <span className="text-gofarm-black font-black tracking-wider uppercase hover:text-gofarm-green hoverEffect group font-sans">
-                  Gofar<span className="text-gofarm-green group-hover:text-gofarm-black hoverEffect">m</span>
-                </span>
-                . All rights reserved.
-              </p>
-            </div>
-          </div>
-        </footer>
       </main>
-      
-      {/* THÊM ProductShareHandler VÀO ĐÂY */}
+
+      {/* Thêm ProductShareHandler và ShareModal */}
       <ProductShareHandler products={dealProducts} />
     </div>
   );

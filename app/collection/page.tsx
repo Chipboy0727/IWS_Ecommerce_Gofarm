@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
-import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM IMPORT
+import ProductShareHandler from "@/components/home/ProductShareHandler";
 import { ProductModal } from "@/components/product-modal";
-import SiteFooter from "@/components/site-footer";
+// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -334,8 +334,6 @@ function ToastMessage() {
   );
 }
 
-
-
 function collectionSortToApi(sortBy: string) {
   switch (sortBy) {
     case "name-desc":
@@ -613,7 +611,7 @@ export default function CollectionPage() {
             </p>
           </div>
         </main>
-        <SiteFooter />
+        {/* ĐÃ XÓA: <SiteFooter /> */}
       </div>
 
       {showShareModal && ShareModalComponent && selectedShareProduct && (

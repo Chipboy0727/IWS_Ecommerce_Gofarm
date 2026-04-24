@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 // ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 import StoreListBrowser from "./store-list-browser";
 import { storeItems } from "@/lib/store-list-data";
-import SiteFooter from "@/components/site-footer";
+// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "Local Stores | gofarm",
@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 export default function StoreListPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-gofarm-light-green/5 via-white to-gofarm-light-orange/10">
-      {/* ĐÃ XÓA: <SiteHeader /> */}
+      {/* ĐÃ XÓA: <SiteHeader /> - header đã có trong layout.tsx */}
       <main>
         <div className="mx-auto max-w-(--breakpoint-xl) px-4 py-8 lg:py-12">
           <StoreListBrowser stores={storeItems} />
         </div>
       </main>
-      <SiteFooter />
+      {/* ĐÃ XÓA: <SiteFooter /> - footer đã có trong layout.tsx */}
     </div>
   );
 }

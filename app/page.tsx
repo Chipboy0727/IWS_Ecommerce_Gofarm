@@ -44,7 +44,10 @@ async function readOriginalBody() {
 
   const combinedBody = strippedHeader + restContent;
 
-  return combinedBody.replace(
+  // Remove footer since layout.tsx has SiteFooter component
+  const withoutFooter = combinedBody.replace(/<footer[^>]*>[\s\S]*?<\/footer>/i, "");
+
+  return withoutFooter.replace(
     /<link rel="preload" as="script" fetchpriority="low" href="\/_next\/static\/chunks\/([^"?]+)(?:\?[^"]*)?">/g,
     '<link rel="preload" as="script" fetchpriority="low" href="/js/$1">'
   );
@@ -257,15 +260,23 @@ export default async function HomePage() {
   const fruitsProducts = takeSectionProducts(
     allProducts.filter(
       (product) =>
-        product.categoryTitle?.toLowerCase() === "fruit" ||
+        product.categoryTitle?.toLowerCase() === "fruits" ||
         /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
     )
   );
   const juicesProducts = takeSectionProducts(
-    allProducts.filter((product) => /juice|juices|smoothie/i.test(product.name))
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "juices" ||
+        /juice|juices|smoothie/i.test(product.name)
+    )
   );
-  const drinksProducts = takeSectionProducts(
-    allProducts.filter((product) => /drink|drinks|water|tea|milk|coffee|cola/i.test(product.name))
+  const spicesProducts = takeSectionProducts(
+    allProducts.filter(
+      (product) => 
+        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
+        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
+    )
   );
 
   const fruitsMarkup = enhancedSectionCarouselHtml({
@@ -280,11 +291,11 @@ export default async function HomePage() {
     products: juicesProducts,
     productCount: juicesProducts.length,
   });
-  const drinksMarkup = enhancedSectionCarouselHtml({
-    title: "Drinks",
+  const spicesMarkup = enhancedSectionCarouselHtml({
+    title: "Spices & Herbs",
     href: "/shop",
-    products: drinksProducts,
-    productCount: drinksProducts.length,
+    products: spicesProducts,
+    productCount: spicesProducts.length,
   });
 
   let transformedBody = bodyHtml.replace(/0(?:<!-- -->)? products/g, `${products.length} products`);
@@ -333,7 +344,7 @@ export default async function HomePage() {
       vegetableMarkup +
       fruitsMarkup +
       juicesMarkup +
-      drinksMarkup +
+      spicesMarkup +
       `<div class="pt-8">${productGridMarkup}</div>` +
       transformedBody.slice(nextSectionStart);
   }
@@ -361,10 +372,35 @@ export default async function HomePage() {
   transformedBody = transformedBody.replace(/href="\/category\/vegetables"/g, 'href="/shop"');
   transformedBody = transformedBody.replace(/href="\/collection"/g, 'href="/shop"');
 
+  // XÓA TẤT CẢ floating button cũ (có class chứa bottom-6)
   transformedBody = transformedBody.replace(
-    /<a target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-20 z-50 group" href="https:\/\/buymeacoffee\.com\/reactbd\/e\/484104">[\s\S]*?<\/a>(?=<section aria-label="Notifications alt\+T")/i,
+    /<a[^>]*class="[^"]*bottom-6[^"]*"[^>]*>[\s\S]*?<\/a>/gi,
     ""
   );
+
+  // THÊM floating button mới (giữ hiệu ứng hover từ xanh sang vàng)
+  transformedBody += `
+    <a href="/shop" class="fixed bottom-6 right-6 z-50 group">
+      <div class="relative">
+        <div class="absolute inset-0 bg-linear-to-r from-gofarm-green to-emerald-500 rounded-full animate-pulse opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="relative flex items-center gap-2.5 bg-linear-to-r from-gofarm-green to-emerald-600 text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 overflow-hidden">
+          <span class="absolute inset-0 bg-gofarm-orange -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
+          <div class="relative z-10 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span class="font-semibold group-hover:text-yellow-200 transition-colors duration-300"></span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles w-3 h-3 absolute -top-1 -right-1 animate-pulse text-yellow-300" aria-hidden="true">
+            <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+            <path d="M20 2v4"></path>
+            <path d="M22 4h-4"></path>
+            <circle cx="4" cy="20" r="2"></circle>
+          </svg>
+        </div>
+      </div>
+    </a>
+  `;
 
   // Remove Latest Blog Posts section
   transformedBody = transformedBody.replace(

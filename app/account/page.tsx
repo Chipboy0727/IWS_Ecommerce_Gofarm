@@ -3,59 +3,356 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import SiteHeader from "@/components/site-header";
 
-function FooterColumn({ title, items }: { title: string; items: string[] }) {
-  const categoryRoutes: Record<string, string> = {
-    "Ice and Cold": "/category/ice-and-cold",
-    "Dry Food": "/category/dry-food",
-    "Fast Food": "/category/fast-food",
-    Frozen: "/category/frozen",
-    Meat: "/category/meat",
-    Fish: "/category/fish",
-    Vegetables: "/category/vegetables",
+interface Order {
+  id: string;
+  date: string;
+  total: number;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  items: number;
+  products: any[];
+  shippingAddress: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  paymentMethod: string;
+}
+
+interface UserData {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  avatar?: string;
+  registeredAt?: string;
+}
+
+// Settings Modal Component
+function SettingsModal({ isOpen, onClose, userData, onUpdate }: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  userData: UserData | null;
+  onUpdate: (updatedUser: UserData) => void;
+}) {
+  const [formData, setFormData] = useState<UserData>({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        name: userData.name || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        address: userData.address || "",
+        city: userData.city || "",
+        state: userData.state || "",
+        zipCode: userData.zipCode || "",
+      });
+    }
+  }, [userData]);
+
+  if (!isOpen) return null;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError("");
+    setSuccess("");
+  };
+
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError("Full name is required");
+      return false;
+    }
+    
+    const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
+    if (!formData.email.trim()) {
+      setError("Email address is required");
+      return false;
+    }
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+    
+    const phoneRegex = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+    if (!formData.phone.trim()) {
+      setError("Phone number is required");
+      return false;
+    }
+    if (!phoneRegex.test(formData.phone)) {
+      setError("Please enter a valid phone number");
+      return false;
+    }
+    
+    if (!formData.address.trim()) {
+      setError("Street address is required");
+      return false;
+    }
+    if (!formData.city.trim()) {
+      setError("City is required");
+      return false;
+    }
+    if (!formData.state.trim()) {
+      setError("State is required");
+      return false;
+    }
+    if (!formData.zipCode.trim()) {
+      setError("ZIP code is required");
+      return false;
+    }
+    
+    const zipRegex = /^\d{5}(-\d{4})?$/;
+    if (!zipRegex.test(formData.zipCode)) {
+      setError("Please enter a valid ZIP code (5 digits)");
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setSaving(true);
+    setError("");
+    setSuccess("");
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const updatedUser = {
+        ...formData,
+        registeredAt: userData?.registeredAt || new Date().toISOString(),
+      };
+      
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      onUpdate(updatedUser);
+      
+      setSuccess("Profile updated successfully!");
+      
+      setTimeout(() => {
+        onClose();
+      }, 1000);
+    } catch (err) {
+      setError("Failed to update profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div>
-      <h3 className="font-semibold text-gofarm-black mb-4">{title}</h3>
-      <ul className="space-y-3">
-        {items.map((item) => (
-          <li key={item}>
-            <Link
-              href={
-                title === "Quick Links"
-                  ? item === "About us"
-                    ? "/about"
-                    : item === "Contact us"
-                      ? "/contact"
-                      : item === "Terms & Conditions"
-                        ? "/terms"
-                        : item === "Privacy Policy"
-                          ? "/privacy"
-                          : item === "FAQs"
-                            ? "/faqs"
-                            : "/help"
-                  : categoryRoutes[item] ?? "/collection"
-              }
-              className="text-gofarm-gray hover:text-gofarm-green text-sm font-medium hoverEffect capitalize"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-5 duration-300">
+        {/* Modal Header */}
+        <div className="sticky top-0 bg-gradient-to-r from-gofarm-green to-gofarm-light-green p-5 text-white rounded-t-2xl">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold">Edit Profile</h2>
+              <p className="text-white/80 text-sm mt-1">Update your personal information</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             >
-              {item}
-            </Link>
-          </li>
-        ))}
-      </ul>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Modal Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {success && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {success}
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
+            </div>
+          )}
+
+          {/* Personal Information */}
+          <div>
+            <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <svg className="w-4 h-4 text-gofarm-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Personal Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                  placeholder="hello@gofarm.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                  placeholder="(123) 456-7890"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Address Information */}
+          <div className="pt-2">
+            <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              <svg className="w-4 h-4 text-gofarm-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Address Information
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Street Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                  placeholder="123 Main Street"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                    placeholder="New York"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                    placeholder="NY"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code *</label>
+                  <input
+                    type="text"
+                    name="zipCode"
+                    value={formData.zipCode}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
+                    placeholder="10001"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 px-4 py-2.5 bg-gofarm-green text-white font-semibold rounded-lg hover:bg-gofarm-light-green transition-all disabled:opacity-50"
+            >
+              {saving ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Saving...
+                </span>
+              ) : (
+                "Save Changes"
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2.5 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
 
 export default function AccountPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
-  const categories = ["Ice and Cold", "Dry Food", "Fast Food", "Frozen", "Meat", "Fish", "Vegetables"];
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -63,173 +360,302 @@ export default function AccountPage() {
       router.push("/sign-in");
       return;
     }
-    setUser(JSON.parse(userData));
+    
+    const parsedUser = JSON.parse(userData);
+    setUser(parsedUser);
+    
+    const storedOrders = localStorage.getItem("orders");
+    if (storedOrders) {
+      const allOrders = JSON.parse(storedOrders);
+      const userOrders = allOrders.filter((order: Order) => 
+        order.customerEmail === parsedUser.email
+      );
+      setOrders(userOrders);
+    }
+    
     setLoading(false);
   }, [router]);
 
+  const handleUpdateUser = (updatedUser: UserData) => {
+    setUser(updatedUser);
+  };
+
+  const totalOrders = orders.length;
+  const deliveredOrders = orders.filter(o => o.status === "delivered").length;
+  const cancelledOrders = orders.filter(o => o.status === "cancelled").length;
+  const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "processing" || o.status === "shipped").length;
+
+  const handleLogout = () => {
+    if (confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem("user");
+      router.push("/");
+      router.refresh();
+    }
+  };
+
   if (loading) {
     return (
-      <>
-        <SiteHeader />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green"></div>
+      </div>
     );
   }
 
   if (!user) return null;
 
   return (
-    <>
-      <SiteHeader />
-      <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green p-8 text-white">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold">
-                  {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
-                  <p className="text-white/80">{user.email}</p>
-                  <p className="text-sm text-white/60 mt-1">Member since {new Date().getFullYear()}</p>
-                </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
+      <div className="max-w-6xl mx-auto px-4">
+        {/* User Profile Header */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
+          <div className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green p-6 text-white">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold">
+                {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
+              </div>
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
+                <p className="text-white/80">{user.email}</p>
+                <p className="text-sm text-white/60 mt-1">Member since {new Date().getFullYear()}</p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-sm font-medium"
+                >
+                  Edit Profile
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
+                >
+                  Logout
+                </button>
               </div>
             </div>
+          </div>
 
-            <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gofarm-black mb-2">Order History</h3>
-                  <p className="text-gofarm-gray text-sm mb-4">View all your past orders</p>
-                  <Link href="/orders" className="text-gofarm-green font-semibold hover:underline">
-                    View Orders →
-                  </Link>
+          {/* User Information */}
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <div>
+                  <p className="text-sm text-gray-500">Full Name</p>
+                  <p className="font-medium text-gray-900">{user.name || "Not provided"}</p>
                 </div>
-
-                <div className="p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gofarm-black mb-2">Wishlist</h3>
-                  <p className="text-gofarm-gray text-sm mb-4">Your favorite products</p>
-                  <Link href="/wishlist" className="text-gofarm-green font-semibold hover:underline">
-                    View Wishlist →
-                  </Link>
+              </div>
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <div>
+                  <p className="text-sm text-gray-500">Email Address</p>
+                  <p className="font-medium text-gray-900">{user.email}</p>
                 </div>
-
-                <div className="p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gofarm-black mb-2">Address Book</h3>
-                  <p className="text-gofarm-gray text-sm mb-4">Manage your shipping addresses</p>
-                  <Link href="/addresses" className="text-gofarm-green font-semibold hover:underline">
-                    Manage Addresses →
-                  </Link>
+              </div>
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+                <div>
+                  <p className="text-sm text-gray-500">Phone Number</p>
+                  <p className="font-medium text-gray-900">{user.phone || "Not provided"}</p>
                 </div>
-
-                <div className="p-6 border border-gray-100 rounded-xl hover:shadow-md transition-shadow">
-                  <h3 className="text-lg font-semibold text-gofarm-black mb-2">Settings</h3>
-                  <p className="text-gofarm-gray text-sm mb-4">Update your profile and preferences</p>
-                  <Link href="/settings" className="text-gofarm-green font-semibold hover:underline">
-                    Edit Settings →
-                  </Link>
+              </div>
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <div>
+                  <p className="text-sm text-gray-500">Address</p>
+                  <p className="font-medium text-gray-900">
+                    {user.address && user.city && user.state && user.zipCode 
+                      ? `${user.address}, ${user.city}, ${user.state} ${user.zipCode}`
+                      : "Not provided"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b">
-              <a
-                href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors">
-                  <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Visit Us</h3>
-                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">123 Shopping Street, Commerce District, New York, NY 10001, USA</p>
-                </div>
-              </a>
-
-              <a href="tel:15551234567" className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors">
-                  <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
-                </svg>
-                <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Call Us</h3>
-                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">+1 (555) 123-4567</p>
-                </div>
-              </a>
-
-              <div className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
-                <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Working Hours</h3>
-                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">Monday - Friday: 9AM - 6PM</p>
-                </div>
-              </div>
-
-              <a href="mailto:support@gofarm.com" className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6 text-gray-600 group-hover:text-primary transition-colors">
-                  <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                </svg>
-                <div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition-colors">Email Us</h3>
-                  <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 transition-colors">support@gofarm.com</p>
-                </div>
-              </a>
-            </div>
-
-            <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="space-y-4">
-                <div className="mb-2">
-                  <Link href="/">
-                    <img alt="logo" loading="lazy" width="150" height="150" className="h-8 w-32" src="/images/logo.svg" />
-                  </Link>
-                </div>
-                <p className="text-gofarm-gray text-sm">Discover fresh, organic farm products at GoFarm, your trusted online destination for quality agricultural products and exceptional customer service.</p>
-                <div className="flex items-center gap-3.5 text-gofarm-black/60">
-                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">YouTube</span></a>
-                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Social</span></a>
-                  <a href="https://www.youtube.com/@reactjsBD" target="_blank" rel="noopener noreferrer" className="p-2 border rounded-full hoverEffect border-gofarm-black/60 hover:border-gofarm-green hover:text-gofarm-green"><span className="sr-only">Social</span></a>
-                </div>
-              </div>
-
-              <FooterColumn title="Quick Links" items={quickLinks} />
-              <FooterColumn title="Categories" items={categories} />
-
+        {/* Order Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-gofarm-black mb-4">Newsletter</h3>
-                <p className="text-gofarm-gray text-sm mb-4">Subscribe to our newsletter to receive updates and exclusive offers.</p>
-                <form className="space-y-3">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full px-4 py-2 border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green disabled:bg-gofarm-light-gray/50 disabled:cursor-not-allowed transition-all text-gofarm-black placeholder:text-gofarm-gray"
-                  />
-                  <button type="submit" className="w-full bg-gofarm-green text-gofarm-white px-4 py-2 rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold">
-                    Subscribe
-                  </button>
-                </form>
+                <p className="text-sm text-gray-500">Total Orders</p>
+                <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
               </div>
-            </div>
-
-            <div className="py-6 border-t border-gofarm-light-gray text-center text-sm text-gofarm-gray">
-              <p>© 2026 <span className="text-gofarm-black font-black tracking-wider uppercase hover:text-gofarm-green hoverEffect group font-sans">Gofar<span className="text-gofarm-green group-hover:text-gofarm-black hoverEffect">m</span></span>. All rights reserved.</p>
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
             </div>
           </div>
-        </footer>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Delivered</p>
+                <p className="text-2xl font-bold text-green-600">{deliveredOrders}</p>
+              </div>
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Processing</p>
+                <p className="text-2xl font-bold text-yellow-600">{pendingOrders}</p>
+              </div>
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">Cancelled</p>
+                <p className="text-2xl font-bold text-red-600">{cancelledOrders}</p>
+              </div>
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Link href="/orders" className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gofarm-green/10 rounded-full flex items-center justify-center group-hover:bg-gofarm-green transition-colors">
+                <svg className="w-6 h-6 text-gofarm-green group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">My Orders</h3>
+                <p className="text-sm text-gray-500">View order history and tracking</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 ml-auto group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Link>
+
+          <Link href="/wishlist" className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center group-hover:bg-pink-500 transition-colors">
+                <svg className="w-6 h-6 text-pink-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">My Wishlist</h3>
+                <p className="text-sm text-gray-500">Products you've saved</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 ml-auto group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Link>
+
+          <button 
+            onClick={() => setIsSettingsOpen(true)}
+            className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group w-full text-left"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-600 transition-colors">
+                <svg className="w-6 h-6 text-gray-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Settings</h3>
+                <p className="text-sm text-gray-500">Manage your profile</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 ml-auto group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        {/* Recent Orders */}
+        {orders.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+              <Link href="/orders" className="text-sm text-gofarm-green hover:underline">View all →</Link>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {orders.slice(0, 3).map((order) => (
+                <div key={order.id} className="px-6 py-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-gray-900">{order.id}</p>
+                    <p className="text-sm text-gray-500">{order.date}</p>
+                    <p className="text-xs text-gray-400 mt-1">{order.items} items</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-gofarm-green">${order.total.toFixed(2)}</p>
+                    <span className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${
+                      order.status === "delivered" ? "bg-green-100 text-green-700" :
+                      order.status === "cancelled" ? "bg-red-100 text-red-700" :
+                      "bg-yellow-100 text-yellow-700"
+                    }`}>
+                      {order.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* No Orders Message */}
+        {orders.length === 0 && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
+            <p className="text-gray-500 mb-4">Start shopping to see your orders here</p>
+            <Link href="/shop" className="inline-block px-6 py-2 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green transition-colors">
+              Start Shopping
+            </Link>
+          </div>
+        )}
       </div>
-    </>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        userData={user}
+        onUpdate={handleUpdateUser}
+      />
+    </div>
   );
 }

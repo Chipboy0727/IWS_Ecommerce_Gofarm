@@ -6,7 +6,7 @@ import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { ProductModal } from "@/components/product-modal";
-import ProductShareHandler from "@/components/home/ProductShareHandler"; // THÊM DÒNG NÀY
+import ProductShareHandler from "@/components/home/ProductShareHandler";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -82,7 +82,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    onQuickView(product);
+    onAddToCart(product);
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -522,7 +522,6 @@ export default function ShopBrowser({
         onClose={() => setSelectedProduct(null)}
       />
 
-      {/* THÊM ProductShareHandler VÀO ĐÂY */}
       <ProductShareHandler products={products} />
     </>
   );

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import type { LocalProduct } from "@/lib/local-catalog";
+import { ProductModal } from "@/components/product-modal";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -54,8 +55,6 @@ function HeartIcon({ className, filled }: { className?: string; filled?: boolean
   );
 }
 
-// ĐÃ XÓA: CompareIcon function
-
 function ShareIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -80,9 +79,10 @@ function ShareIcon({ className }: { className?: string }) {
 interface ProductCardProps {
   product: LocalProduct;
   onShare?: (product: LocalProduct) => void;
+  onQuickView?: (product: LocalProduct) => void;
 }
 
-export default function ProductCard({ product, onShare }: ProductCardProps) {
+export default function ProductCard({ product, onShare, onQuickView }: ProductCardProps) {
   const salePrice = salePriceFor(product);
   const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Hot";
   const { addToCart } = useCart();
@@ -90,10 +90,16 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setIsWishlisted(isInWishlist(product.id));
   }, [isInWishlist, product.id]);
+
+  const handleProductClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -135,19 +141,26 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
     }
   };
 
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onQuickView) {
+      onQuickView(product);
+    }
+  };
+
   return (
     <>
-      <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
-        <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
+      <div className="transform hover:scale-105 transition-transform duration-300">
+        <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
           <div className="relative h-60 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
-            <Link href={`/shop/${product.slug}`} className="block h-full">
+            <button type="button" onClick={handleQuickView} className="block h-full w-full">
               <img
                 src={product.imageSrc}
                 className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                 alt={product.imageAlt}
                 loading="lazy"
               />
-            </Link>
+            </button>
 
             <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
               <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
@@ -169,7 +182,6 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
               >
                 <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
               </button>
-              {/* ĐÃ XÓA: Compare button */}
               <button
                 type="button"
                 onClick={handleShare}
@@ -183,7 +195,7 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
           </div>
 
           <div className="p-3 space-y-2">
-            <Link href={`/shop/${product.slug}`}>
+            <Link href={`/shop/${product.slug}`} onClick={handleProductClick} className="block w-full text-left">
               <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
                 {product.name}
               </h2>
@@ -192,7 +204,7 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
             <div className="flex items-center gap-1.5">
               <div className="flex items-center">
                 {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className="w-3 h-3 text-gray-300" />
+                  <StarIcon key={index} className={`w-3 h-3 ${index < Math.round(product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
               <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
@@ -233,6 +245,11 @@ export default function ProductCard({ product, onShare }: ProductCardProps) {
           </div>
         </div>
       )}
+      <ProductModal
+        product={product}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 }

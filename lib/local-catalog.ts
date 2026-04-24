@@ -1,4 +1,3 @@
-import type { BackendDb } from "@/lib/backend/db";
 import { readDb } from "@/lib/backend/db";
 
 export type LocalProduct = {
@@ -35,10 +34,14 @@ export async function loadLocalCatalog(): Promise<{
   products: LocalProduct[];
   categories: LocalCategory[];
 }> {
-  const db: BackendDb = await readDb();
-  return {
-    products: db.products,
-    categories: db.categories,
-  };
+  try {
+    const db = await readDb();
+    return {
+      products: db.products,
+      categories: db.categories,
+    };
+  } catch (error) {
+    console.error("Loi khi tai du lieu tu MySQL:", error);
+    return { products: [], categories: [] };
+  }
 }
-

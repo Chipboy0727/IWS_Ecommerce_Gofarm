@@ -4,7 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/app/context/CartContext";
 import { WishlistProvider } from "@/app/context/WishlistContext";
 import { OrderProvider } from "@/app/context/OrderContext";
-import SiteHeader from "@/components/site-header";
+import SiteShell from "@/components/site-shell";
 
 export const metadata: Metadata = {
   title: "gofarm - Your Trusted Online Shopping Destination",
@@ -29,8 +29,7 @@ export default function RootLayout({
         <CartProvider>
           <WishlistProvider>
             <OrderProvider>
-              <SiteHeader />
-              {children}
+              <SiteShell>{children}</SiteShell>
             </OrderProvider>
           </WishlistProvider>
         </CartProvider>

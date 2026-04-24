@@ -53,14 +53,15 @@ export function ProductModal({
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && product) {
       document.body.style.overflow = "hidden";
       setQuantity(1);
       setActiveTab("description");
-      setSelectedWeight("1 kg");
+      const juice = product.categoryTitle === "Juices" || product.categoryId === "b94b8866-d978-40cc-8641-1e138cfced28";
+      setSelectedWeight(juice ? "1 Bottle" : "1 kg");
       setActiveImageIndex(0);
       setIsSuccess(false);
-    } else {
+    } else if (!isOpen) {
       document.body.style.overflow = "unset";
     }
     return () => {
@@ -78,9 +79,9 @@ export function ProductModal({
     try {
       for (let i = 0; i < quantity; i++) {
         await addToCart({
-          id: product.id,
-          name: product.name,
-          price: salePrice,
+          id: `${product.id}-${selectedWeight}`, // Unique ID for different weights
+          name: `${product.name} (${selectedWeight})`,
+          price: currentUnitSalePrice,
           imageSrc: product.imageSrc,
           slug: product.slug,
         });
@@ -97,7 +98,29 @@ export function ProductModal({
     }
   };
 
-  const weights = ["500g", "1 kg", "2 kg", "5 kg"];
+  const isJuice = product.categoryTitle === "Juices" || product.categoryId === "b94b8866-d978-40cc-8641-1e138cfced28";
+  const unitLabel = isJuice ? "Select Pack Size" : "Select Weight";
+  const units = isJuice ? ["1 Bottle", "2 Bottles", "6 Bottles (Pack)", "12 Bottles (Case)"] : ["500g", "1 kg", "2 kg", "5 kg"];
+
+  const getWeightMultiplier = (value: string) => {
+    if (isJuice) {
+      const numMatch = value.match(/(\d+)/);
+      return numMatch ? parseInt(numMatch[1]) : 1;
+    }
+    if (value === "500g") return 0.5;
+    if (value.includes("kg")) {
+      const val = parseFloat(value.replace(" kg", ""));
+      return isNaN(val) ? 1 : val;
+    }
+    return 1;
+  };
+
+  const weightMultiplier = getWeightMultiplier(selectedWeight);
+  const currentUnitSalePrice = salePrice * weightMultiplier;
+  const currentUnitOriginalPrice = product.price * weightMultiplier;
+  const totalPrice = currentUnitSalePrice * quantity;
+  const totalOriginalPrice = currentUnitOriginalPrice * quantity;
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-12">
@@ -208,26 +231,26 @@ export function ProductModal({
                 </div>
 
                 <div className="flex items-end gap-3 mb-8">
-                  <span className="text-4xl font-extrabold text-gofarm-green">{formatPrice(salePrice)}</span>
+                  <span className="text-4xl font-extrabold text-gofarm-green">{formatPrice(totalPrice)}</span>
                   {product.discount ? (
-                    <span className="text-xl font-bold text-gray-400 line-through mb-1">{formatPrice(product.price)}</span>
+                    <span className="text-xl font-bold text-gray-400 line-through mb-1">{formatPrice(totalOriginalPrice)}</span>
                   ) : null}
                 </div>
 
                 {/* Weight Selection */}
                 <div className="mb-8">
-                  <h3 className="text-sm font-bold text-gofarm-black mb-3 uppercase tracking-wider">Select Weight</h3>
+                  <h3 className="text-sm font-bold text-gofarm-black mb-3 uppercase tracking-wider">{unitLabel}</h3>
                   <div className="flex flex-wrap gap-3">
-                    {weights.map(weight => (
+                    {units.map(unit => (
                       <button
-                        key={weight}
-                        onClick={() => setSelectedWeight(weight)}
-                        className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${selectedWeight === weight
+                        key={unit}
+                        onClick={() => setSelectedWeight(unit)}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${selectedWeight === unit
                             ? "border-gofarm-green bg-gofarm-green/10 text-gofarm-green"
                             : "border-gray-200 text-gray-600 hover:border-gofarm-green"
                           }`}
                       >
-                        {weight}
+                        {unit}
                       </button>
                     ))}
                   </div>
