@@ -30,16 +30,23 @@ export async function POST(request: NextRequest) {
       ),
     }));
 
-    return NextResponse.json({
+    // In production, the reset token would be sent via email.
+    // In development, we include it in the response for testing convenience.
+    const responsePayload: Record<string, unknown> = {
       ok: true,
-      message: "If the email exists, a reset token has been generated.",
-      resetToken,
-      resetTokenExpiresAt: expiresAt,
-    });
+      message: "If the email exists, a password reset link has been sent.",
+    };
+
+    if (process.env.NODE_ENV !== "production") {
+      responsePayload.resetToken = resetToken;
+      responsePayload.resetTokenExpiresAt = expiresAt;
+    }
+
+    return NextResponse.json(responsePayload);
   }
 
   return NextResponse.json({
     ok: true,
-    message: "If the email exists, a reset token has been generated.",
+    message: "If the email exists, a password reset link has been sent.",
   });
 }

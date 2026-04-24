@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useCart } from "@/app/context/CartContext";
-import { useWishlist } from "@/app/context/WishlistContext";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
-import ProductShareHandler from "@/components/home/ProductShareHandler";
+import ProductShareHandler from "@/components/home/product-share-handler";
 import { ProductModal } from "@/components/product-modal";
-// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -370,7 +369,7 @@ export default function CollectionPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    import("@/app/share/ShareModal").then((mod) => {
+    import("@/app/share/share-modal").then((mod) => {
       setShareModalComponent(() => mod.default);
     });
   }, []);
@@ -611,7 +610,7 @@ export default function CollectionPage() {
             </p>
           </div>
         </main>
-        {/* ĐÃ XÓA: <SiteFooter /> */}
+        {/* Footer is rendered by root layout */}
       </div>
 
       {showShareModal && ShareModalComponent && selectedShareProduct && (

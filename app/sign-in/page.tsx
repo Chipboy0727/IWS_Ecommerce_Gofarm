@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -14,20 +14,16 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/");
 
-  // Lấy redirect URL từ query parameter hoặc sessionStorage
+  // Get the redirect target from the query string or session storage.
   useEffect(() => {
-    // Ưu tiên lấy từ URL param ?redirect=/cart
     const redirectParam = searchParams.get("redirect");
     if (redirectParam) {
       setRedirectTo(decodeURIComponent(redirectParam));
-      console.log("📌 Redirect from URL param:", redirectParam);
     } else {
-      // Nếu không có trong URL, lấy từ sessionStorage
       const savedRedirect = sessionStorage.getItem("redirectAfterLogin");
       if (savedRedirect) {
         setRedirectTo(savedRedirect);
         sessionStorage.removeItem("redirectAfterLogin");
-        console.log("📌 Redirect from sessionStorage:", savedRedirect);
       }
     }
   }, [searchParams]);
@@ -51,11 +47,9 @@ export default function SignInPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      
-      // Dispatch event để header cập nhật ngay lập tức
+
+      // Notify shared UI that authentication state changed immediately.
       window.dispatchEvent(new Event("auth-changed"));
-      
-      console.log("✅ Login success, redirecting to:", redirectTo);
       router.push(redirectTo);
     } catch (err: any) {
       setError(err.message);
@@ -139,7 +133,7 @@ export default function SignInPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20 transition-all"
-                    placeholder="••••••••"
+                    placeholder="********"
                     required
                   />
                   <button
@@ -240,5 +234,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-gofarm-green border-t-transparent rounded-full" /></div>}>
+      <SignInForm />
+    </Suspense>
   );
 }

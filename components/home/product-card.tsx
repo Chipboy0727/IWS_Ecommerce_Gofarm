@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useCart } from "@/app/context/CartContext";
-import { useWishlist } from "@/app/context/WishlistContext";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
 import { ProductModal } from "@/components/product-modal";
 
@@ -57,7 +57,7 @@ function ToastMessage({ message, onClose }: { message: string; onClose: () => vo
   );
 }
 
-// HTML version for static generation (giữ lại để tương thích)
+// HTML version for static generation (kept for compatibility)
 export function productCardHtml(product: LocalProduct) {
   const salePrice = product.discount && product.discount > 0
     ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))

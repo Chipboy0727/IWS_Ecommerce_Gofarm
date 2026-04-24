@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useCart } from "@/app/context/CartContext";
-import { useWishlist } from "@/app/context/WishlistContext";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { ProductModal } from "@/components/product-modal";
-import ProductShareHandler from "@/components/home/ProductShareHandler";
+import ProductShareHandler from "@/components/home/product-share-handler";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -92,7 +92,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    // ProductShareHandler sẽ xử lý via event delegation
+    // ProductShareHandler handles this via event delegation
   };
 
   return (

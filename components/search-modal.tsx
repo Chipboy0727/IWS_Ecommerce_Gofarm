@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/cart-context";
 
 import { ProductModal } from "@/components/product-modal";
 import type { LocalProduct } from "@/lib/local-catalog";

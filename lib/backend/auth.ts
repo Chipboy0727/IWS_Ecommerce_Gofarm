@@ -26,11 +26,13 @@ function sign(value: string) {
   return createHmac("sha256", TOKEN_SECRET).update(value).digest("base64url");
 }
 
+/** Hash a password using PBKDF2 with a random salt. Returns "salt:derived" format. */
 export function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
   const derived = pbkdf2Sync(password, salt, 120_000, 32, "sha256").toString("hex");
   return `${salt}:${derived}`;
 }
 
+/** Verify a plaintext password against a stored "salt:derived" hash using timing-safe comparison. */
 export function verifyPassword(password: string, storedHash: string) {
   const [salt, expected] = storedHash.split(":");
   if (!salt || !expected) return false;
@@ -41,6 +43,7 @@ export function verifyPassword(password: string, storedHash: string) {
   return timingSafeEqual(expectedBuffer, candidateBuffer);
 }
 
+/** Create a signed JWT session token valid for 7 days. */
 export function createSessionToken(user: { id: string; email: string; role: SessionRole }) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + 60 * 60 * 24 * 7;
@@ -51,6 +54,7 @@ export function createSessionToken(user: { id: string; email: string; role: Sess
   return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
+/** Verify and decode a JWT session token. Returns the payload or null if invalid/expired. */
 export function verifySessionToken(token: string): SessionUser | null {
   const parts = token.split(".");
   if (parts.length !== 3) return null;
@@ -67,17 +71,20 @@ export function verifySessionToken(token: string): SessionUser | null {
   }
 }
 
+/** Build a Set-Cookie header string for the session token. */
 export function buildSessionCookie(token: string) {
   const maxAge = 60 * 60 * 24 * 7;
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
+/** Build a Set-Cookie header that clears/expires the session cookie. */
 export function clearSessionCookie() {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
 }
 
+/** Extract the session token from the Authorization header or cookie. */
 export function readSessionToken(request: Request | NextRequest) {
   const authHeader = request.headers.get("authorization") ?? "";
   const bearer = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
@@ -87,10 +94,12 @@ export function readSessionToken(request: Request | NextRequest) {
   return cookieMatch?.[1] ?? "";
 }
 
+/** Generate a cryptographically random reset token. */
 export function createResetToken() {
   return randomBytes(24).toString("base64url");
 }
 
+/** Hash a reset token for secure storage comparison. */
 export function hashResetToken(token: string) {
   return createHmac("sha256", TOKEN_SECRET).update(`reset:${token}`).digest("hex");
 }

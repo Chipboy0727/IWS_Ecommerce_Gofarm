@@ -1,5 +1,4 @@
 import Link from "next/link";
-// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "Privacy Policy | GoFarm",
@@ -66,7 +65,7 @@ export default function PrivacyPage() {
           </div>
         </div>
       </main>
-      {/* ĐÃ XÓA: <SiteFooter /> */}
+      {/* Footer is rendered by root layout */}
     </>
   );
 }

@@ -1,11 +1,10 @@
 import Link from "next/link";
-// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
+
 import { loadLocalCatalog, type LocalProduct } from "@/lib/local-catalog";
-import RealCountdown from "./RealCountDown";
-import SubscribeButton from "./SubscribeButton";
-import DealList from "./DealList";
-import ProductShareHandler from "@/components/home/ProductShareHandler";
-import ShareModal from "@/app/share/ShareModal";
+import RealCountdown from "./real-countdown";
+import SubscribeButton from "./subscribe-button";
+import DealList from "./deal-list";
+import ProductShareHandler from "@/components/home/product-share-handler";
 
 export const metadata = {
   title: "Hot Deal | gofarm",
@@ -265,7 +264,7 @@ export default async function DealPage() {
         </div>
       </main>
 
-      {/* Thêm ProductShareHandler và ShareModal */}
+      {/* ProductShareHandler and ShareModal */}
       <ProductShareHandler products={dealProducts} />
     </div>
   );

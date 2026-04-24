@@ -165,7 +165,7 @@ export default function OrdersPage() {
       }
       
       setOrders([]);
-      // QUAN TRỌNG: Dispatch orders-cleared thay vì order-cancelled
+      // IMPORTANT: Dispatch orders-cleared instead of order-cancelled
       window.dispatchEvent(new Event("orders-cleared"));
       
       showNotificationMsg("All orders have been cleared", "success");

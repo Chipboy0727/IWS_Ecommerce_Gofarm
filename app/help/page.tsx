@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
-// ĐÃ XÓA: import SiteFooter from "@/components/site-footer"; (không có ở đây)
+
 
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
@@ -203,7 +202,7 @@ export default function HelpPage() {
 
   return (
     <>
-      {/* ĐÃ XÓA: <SiteHeader /> - header đã có trong layout.tsx */}
+      {/* Header is rendered by root layout */}
       <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
         <section className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green text-white py-16 lg:py-20">
           <div className="max-w-4xl mx-auto px-4 text-center">
@@ -327,7 +326,7 @@ export default function HelpPage() {
           </div>
         </section>
 
-        {/* ĐÃ XÓA FOOTER Ở ĐÂY - vì layout.tsx đã có SiteFooter */}
+        {/* Footer is rendered by root layout */}
       </div>
       <Modal isOpen={selectedHelpTopic !== null} onClose={() => setSelectedHelpTopic(null)} title={selectedHelpTopic?.detailedContent.title} content={selectedHelpTopic?.detailedContent} />
       <Modal isOpen={selectedPopularTopic !== null} onClose={() => setSelectedPopularTopic(null)} title={selectedPopularTopic?.question} content={{ answer: selectedPopularTopic?.answer }} />

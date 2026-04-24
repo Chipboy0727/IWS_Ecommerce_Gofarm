@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import type { LocalProduct } from "@/lib/local-catalog";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/cart-context";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {

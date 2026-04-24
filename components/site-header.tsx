@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
-import { useWishlist } from "@/app/context/WishlistContext";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 import { SearchModal as ProductSearchModal } from "@/components/search-modal";
 
 const navItems = [
@@ -235,12 +235,12 @@ export default function SiteHeader() {
   const [userEmail, setUserEmail] = useState("");
   const [orderCount, setOrderCount] = useState(0);
   
-  // Dùng ref để tránh re-render không cần thiết
+  // Use refs to avoid redundant refresh work between order events.
   const isRefreshingRef = useRef(false);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   const initialLoadRef = useRef(true);
 
-  // Load user data - chỉ chạy 1 lần
+  // Load user data - runs once on mount
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -253,7 +253,7 @@ export default function SiteHeader() {
     }
   }, []);
 
-  // Load order count từ localStorage - chỉ chạy 1 lần khi có userEmail
+  // Load order count from localStorage - runs once when userEmail is set
   useEffect(() => {
     if (userEmail && initialLoadRef.current) {
       initialLoadRef.current = false;
@@ -268,7 +268,7 @@ export default function SiteHeader() {
         } catch (e) {}
       }
       
-      // Fetch từ API lần đầu
+      // Fetch from API on first load
       const fetchInitialOrders = async () => {
         try {
           const response = await fetch("/api/orders", { credentials: "include" });
@@ -288,7 +288,7 @@ export default function SiteHeader() {
     }
   }, [userEmail]);
 
-  // Hàm fetch orders chung
+  // Reuse the same order refresh logic across header events.
   const fetchOrdersCount = useCallback(async () => {
     if (!userEmail || isRefreshingRef.current) return;
     
@@ -317,7 +317,7 @@ export default function SiteHeader() {
     }
   }, [userEmail]);
 
-  // Lắng nghe sự kiện orders-updated
+  // Listen for orders-updated event
   useEffect(() => {
     const handleOrdersUpdate = () => {
       fetchOrdersCount();
@@ -329,7 +329,7 @@ export default function SiteHeader() {
     };
   }, [fetchOrdersCount]);
 
-  // Lắng nghe sự kiện order-cancelled - giảm 1 đơn
+  // Listen for order-cancelled event - decrement by 1
   useEffect(() => {
     const handleOrderCancelled = () => {
       if (userEmail) {
@@ -341,7 +341,7 @@ export default function SiteHeader() {
     return () => window.removeEventListener("order-cancelled", handleOrderCancelled);
   }, [userEmail]);
 
-  // Lắng nghe sự kiện orders-cleared - xóa tất cả đơn
+  // Listen for orders-cleared event - clear all orders
   useEffect(() => {
     const handleOrdersCleared = () => {
       if (userEmail) {
@@ -353,7 +353,7 @@ export default function SiteHeader() {
     return () => window.removeEventListener("orders-cleared", handleOrdersCleared);
   }, [userEmail]);
 
-  // Lắng nghe sự kiện auth-changed
+  // Listen for auth-changed event
   useEffect(() => {
     const handleAuthChange = () => {
       const user = localStorage.getItem("user");
@@ -469,7 +469,7 @@ export default function SiteHeader() {
                   )}
                 </Link>
 
-                {/* Orders - Hiển thị số đơn chưa hủy */}
+                {/* Orders - show count of non-cancelled orders */}
                 <Link href="/orders" className="relative hover:text-gofarm-green transition-colors">
                   <IconOrders />
                   {orderCount > 0 && (

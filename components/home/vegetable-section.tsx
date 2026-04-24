@@ -1,8 +1,8 @@
-// components/home/vegetable-section.tsx
-// KHÔNG có "use client" ở đầu file
+// Server component without a "use client" directive.
 
 import type { LocalProduct } from "@/lib/local-catalog";
-import { productCardHtmlServer } from "@/lib/product-card-html"; // ĐỔI IMPORT
+import { productCardHtmlServer } from "@/lib/product-card-html";
+import { sanitizeServerHtml } from "@/lib/backend/sanitize-html";
 
 type SectionCarouselProps = {
   title: string;
@@ -23,7 +23,7 @@ export function sectionCarouselHtml({ title, href, products, productCount }: Sec
             ${productCount} Products
           </span>
         </div>
-        <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="/shop">
+        <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="${href}">
           <span>View More</span>
           <span aria-hidden="true">→</span>
         </a>
@@ -93,5 +93,5 @@ export function vegetableSectionHtml(products: LocalProduct[], productCount: num
 }
 
 export function VegetableSection({ products, productCount }: { products: LocalProduct[]; productCount: number }) {
-  return <div dangerouslySetInnerHTML={{ __html: vegetableSectionHtml(products, productCount) }} suppressHydrationWarning />;
+  return <div dangerouslySetInnerHTML={{ __html: sanitizeServerHtml(vegetableSectionHtml(products, productCount)) }} suppressHydrationWarning />;
 }

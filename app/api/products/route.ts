@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     products: [result.product, ...current.products],
   }));
 
-  // Làm mới cache cho các trang khách hàng
+  // Revalidate cache for customer-facing pages
   revalidatePath("/", "layout");
 
   const nextDb = await readDb();

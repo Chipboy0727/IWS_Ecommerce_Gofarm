@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { readDb, updateDb } from "@/lib/backend/db";
 import { getAuthenticatedUser } from "@/lib/backend/session";
-import { jsonError, readJsonBody, sanitizeOptionalString, sanitizeString, sanitizeNumber } from "@/lib/backend/http";
+import { jsonError, parsePositiveInt, readJsonBody, sanitizeOptionalString, sanitizeString, sanitizeNumber } from "@/lib/backend/http";
 import type { BackendOrder } from "@/lib/backend/catalog-seed";
 
 export const runtime = "nodejs";
@@ -16,16 +16,96 @@ function toOrderStatus(value: unknown): BackendOrder["status"] {
   return "pending";
 }
 
+type OrderSortBy = "date" | "total" | "status" | "customerName" | "createdAt" | "updatedAt" | "items";
+
+const ORDER_SORT_VALUES: OrderSortBy[] = ["date", "total", "status", "customerName", "createdAt", "updatedAt", "items"];
+
+function parseOrderSortBy(value: string | null): OrderSortBy {
+  if (!value) return "createdAt";
+  return ORDER_SORT_VALUES.includes(value as OrderSortBy) ? (value as OrderSortBy) : "createdAt";
+}
+
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) return jsonError("Unauthorized", 401);
 
   const db = await readDb();
-  const orders = user.role === "admin"
+  const url = new URL(request.url);
+
+  // ─── Filtering ───
+  const search = sanitizeOptionalString(url.searchParams.get("search"))?.toLowerCase() ?? "";
+  const statusFilter = sanitizeOptionalString(url.searchParams.get("status"))?.toLowerCase() ?? "";
+
+  let orders = user.role === "admin"
     ? db.orders
     : db.orders.filter((order) => order.customerEmail.toLowerCase() === user.email.toLowerCase());
 
-  return NextResponse.json({ orders });
+  // Apply search filter
+  if (search) {
+    orders = orders.filter((order) =>
+      [order.id, order.customerName, order.customerEmail, order.shippingAddress, order.paymentMethod]
+        .join(" ")
+        .toLowerCase()
+        .includes(search)
+    );
+  }
+
+  // Apply status filter
+  if (statusFilter) {
+    orders = orders.filter((order) => order.status.toLowerCase() === statusFilter);
+  }
+
+  // ─── Sorting ───
+  const sortBy = parseOrderSortBy(url.searchParams.get("sortBy"));
+  const sortOrder = url.searchParams.get("sortOrder") === "asc" ? "asc" : "desc";
+
+  const sorted = [...orders].sort((a, b) => {
+    switch (sortBy) {
+      case "date":
+        return Date.parse(a.date) - Date.parse(b.date);
+      case "total":
+        return a.total - b.total;
+      case "status":
+        return a.status.localeCompare(b.status);
+      case "customerName":
+        return a.customerName.localeCompare(b.customerName);
+      case "items":
+        return a.items - b.items;
+      case "updatedAt":
+        return Date.parse(a.updatedAt) - Date.parse(b.updatedAt);
+      case "createdAt":
+      default:
+        return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+    }
+  });
+
+  if (sortOrder === "desc") {
+    sorted.reverse();
+  }
+
+  // ─── Pagination ───
+  const paginated = url.searchParams.has("page") || url.searchParams.has("limit") || url.searchParams.get("paginated") === "true";
+  const page = parsePositiveInt(url.searchParams.get("page"), 1);
+  const limit = parsePositiveInt(url.searchParams.get("limit"), 12);
+  const total = sorted.length;
+  const totalPages = paginated ? Math.max(1, Math.ceil(total / limit)) : 1;
+  const safePage = paginated ? Math.min(page, totalPages) : 1;
+  const start = paginated ? (safePage - 1) * limit : 0;
+  const items = paginated ? sorted.slice(start, start + limit) : sorted;
+
+  return NextResponse.json({
+    orders: items,
+    meta: {
+      page: safePage,
+      limit: paginated ? limit : total,
+      total,
+      totalPages,
+      hasNextPage: paginated ? safePage < totalPages : false,
+      hasPrevPage: paginated ? safePage > 1 : false,
+      sortBy,
+      sortOrder,
+    },
+  });
 }
 
 export async function POST(request: NextRequest) {

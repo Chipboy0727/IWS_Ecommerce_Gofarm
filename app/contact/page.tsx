@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-// ĐÃ XÓA: import SiteHeader from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "Contact Us | gofarm",
@@ -149,7 +148,7 @@ const faqs = [
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
-      {/* ĐÃ XÓA: <SiteHeader /> */}
+      {/* Header is rendered by root layout */}
 
       <section className="bg-linear-to-r from-gofarm-green to-gofarm-light-green py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">
