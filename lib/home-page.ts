@@ -50,8 +50,15 @@ export async function readOriginalHomeBody() {
 
   const combinedBody = strippedHeader + restContent;
   const withoutFooter = combinedBody.replace(/<footer[^>]*>[\s\S]*?<\/footer>/i, "");
+  const withoutDocumentArtifacts = withoutFooter
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<link\b[^>]*>/gi, "")
+    .replace(/<meta\b[^>]*>/gi, "")
+    .replace(/<\/?(html|head|body)\b[^>]*>/gi, "")
+    .replace(/<div hidden="">\s*<!--\$--><!--\/\$-->\s*<\/div>/gi, "")
+    .replace(/<!--\$-->|<!--\/\$-->/g, "");
 
-  return withoutFooter.replace(
+  return withoutDocumentArtifacts.replace(
     /<link rel="preload" as="script" fetchpriority="low" href="\/_next\/static\/chunks\/([^"?]+)(?:\?[^"]*)?">/g,
     '<link rel="preload" as="script" fetchpriority="low" href="/js/$1">'
   );

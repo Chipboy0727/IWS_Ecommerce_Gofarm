@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../public/css/0k64glnxo6zf5.css";
+@import "../public/css/172o935743au2.css";
 
 html {
   scroll-behavior: smooth;
@@ -26,6 +28,7 @@ textarea,
 select {
   font: inherit;
 }
+
 @keyframes marquee {
   0% {
     transform: translateX(0);

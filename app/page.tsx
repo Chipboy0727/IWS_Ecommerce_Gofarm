@@ -1,6 +1,5 @@
 import { ProductGridClient } from "@/components/home/product-grid-client";
 import ProductShareHandler from "@/components/home/product-share-handler";
-import { loadLocalCatalog } from "@/lib/local-catalog";
 import { sanitizeServerHtml } from "@/lib/backend/sanitize-html";
 import {
   buildProductGridMarkup,
@@ -8,6 +7,7 @@ import {
   readOriginalHomeBody,
   transformHomeBody,
 } from "@/lib/home-page";
+import { loadLocalCatalog } from "@/lib/local-catalog";
 
 export default async function HomePage() {
   const bodyHtml = await readOriginalHomeBody();
@@ -100,7 +100,10 @@ export default async function HomePage() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: sanitizeServerHtml(transformedBody) }} suppressHydrationWarning />
+      <div
+        dangerouslySetInnerHTML={{ __html: sanitizeServerHtml(transformedBody) }}
+        suppressHydrationWarning
+      />
       <ProductGridClient products={allProducts} />
       <ProductShareHandler products={allProducts} />
     </>
