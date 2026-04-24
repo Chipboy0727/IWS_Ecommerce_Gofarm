@@ -15,8 +15,10 @@ export default function CheckoutPage() {
   const [selectedQR, setSelectedQR] = useState<string>("vietqr");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState<any>(null);
-  const [selectedAddress, setSelectedAddress] = useState<string>("default");
+  const [selectedAddress, setSelectedAddress] = useState<string>("");
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addressError, setAddressError] = useState<string>("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [newAddress, setNewAddress] = useState({
     address: "",
     city: "",
@@ -24,6 +26,7 @@ export default function CheckoutPage() {
     zipCode: "",
   });
   const [addresses, setAddresses] = useState<any[]>([]);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Bank account information for QR
   const bankInfo = {
@@ -38,35 +41,53 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.1;
   const finalTotal = subtotal + shipping + tax;
 
-  // Load user data from localStorage
+  // KIỂM TRA ĐĂNG NHẬP
   useEffect(() => {
     const user = localStorage.getItem("user");
-    if (user) {
-      try {
-        const parsedUser = JSON.parse(user);
-        setIsLoggedIn(true);
-        setUserData(parsedUser);
-        
-        // Load saved addresses
-        const savedAddresses = localStorage.getItem("userAddresses");
-        if (savedAddresses) {
-          setAddresses(JSON.parse(savedAddresses));
-        } else if (parsedUser.address) {
-          // Add default address from signup
-          const defaultAddress = {
-            id: "default",
-            address: parsedUser.address,
-            city: parsedUser.city,
-            state: parsedUser.state,
-            zipCode: parsedUser.zipCode,
-            isDefault: true,
-          };
-          setAddresses([defaultAddress]);
-          localStorage.setItem("userAddresses", JSON.stringify([defaultAddress]));
-        }
-      } catch (e) {}
+    
+    if (!user) {
+      sessionStorage.setItem("redirectAfterLogin", "/checkout");
+      router.push("/sign-in");
+      return;
     }
-  }, []);
+
+    setIsCheckingAuth(false);
+    try {
+      const parsedUser = JSON.parse(user);
+      setIsLoggedIn(true);
+      setUserData(parsedUser);
+      
+      // Load saved addresses
+      const savedAddresses = localStorage.getItem("userAddresses");
+      if (savedAddresses) {
+        const parsedAddresses = JSON.parse(savedAddresses);
+        setAddresses(parsedAddresses);
+        // Tìm address mặc định hoặc chọn address đầu tiên
+        const defaultAddr = parsedAddresses.find((a: any) => a.isDefault);
+        if (defaultAddr) {
+          setSelectedAddress(defaultAddr.id);
+        } else if (parsedAddresses.length > 0) {
+          setSelectedAddress(parsedAddresses[0].id);
+        }
+      } else if (parsedUser.address) {
+        // Add default address from signup
+        const defaultAddress = {
+          id: "default",
+          address: parsedUser.address,
+          city: parsedUser.city,
+          state: parsedUser.state,
+          zipCode: parsedUser.zipCode,
+          isDefault: true,
+          fromUserData: true,
+        };
+        setAddresses([defaultAddress]);
+        setSelectedAddress("default");
+        localStorage.setItem("userAddresses", JSON.stringify([defaultAddress]));
+      }
+    } catch (e) {
+      console.error("Error loading user data:", e);
+    }
+  }, [router]);
 
   // Save new address
   const handleAddAddress = () => {
@@ -79,28 +100,66 @@ export default function CheckoutPage() {
       id: Date.now().toString(),
       ...newAddress,
       isDefault: addresses.length === 0,
+      fromUserData: false,
     };
     
     const updatedAddresses = [...addresses, addressToAdd];
     setAddresses(updatedAddresses);
     localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
     setSelectedAddress(addressToAdd.id);
+    setAddressError("");
     setShowAddressForm(false);
     setNewAddress({ address: "", city: "", state: "", zipCode: "" });
   };
 
+  // Delete address
+  const handleDeleteAddress = (addressId: string) => {
+    const addressToDelete = addresses.find(a => a.id === addressId);
+    if (addressToDelete?.fromUserData) {
+      alert("Cannot delete your default address from account. Please update it in your account settings.");
+      return;
+    }
+    setShowDeleteConfirm(addressId);
+  };
+
+  const confirmDeleteAddress = () => {
+    if (!showDeleteConfirm) return;
+    
+    const updatedAddresses = addresses.filter(addr => addr.id !== showDeleteConfirm);
+    setAddresses(updatedAddresses);
+    localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+    
+    if (selectedAddress === showDeleteConfirm) {
+      if (updatedAddresses.length > 0) {
+        setSelectedAddress(updatedAddresses[0].id);
+      } else {
+        setSelectedAddress("");
+      }
+    }
+    
+    setShowDeleteConfirm(null);
+  };
+
+  const cancelDeleteAddress = () => {
+    setShowDeleteConfirm(null);
+  };
+
+  // Set default address
+  const handleSetDefaultAddress = (addressId: string) => {
+    const updatedAddresses = addresses.map(addr => ({
+      ...addr,
+      isDefault: addr.id === addressId
+    }));
+    setAddresses(updatedAddresses);
+    localStorage.setItem("userAddresses", JSON.stringify(updatedAddresses));
+    setSelectedAddress(addressId);
+  };
+
   // Get selected address details
   const getSelectedAddressDetails = () => {
-    if (selectedAddress === "default" && userData) {
-      return {
-        address: userData.address,
-        city: userData.city,
-        state: userData.state,
-        zipCode: userData.zipCode,
-      };
-    }
+    if (!selectedAddress) return null;
     const addr = addresses.find(a => a.id === selectedAddress);
-    return addr || { address: "", city: "", state: "", zipCode: "" };
+    return addr || null;
   };
 
   // Generate QR Code URL
@@ -111,12 +170,32 @@ export default function CheckoutPage() {
     return `https://img.vietqr.io/image/${bankInfo.bankCode}-${bankInfo.accountNumber}-${template}.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(bankInfo.accountName)}`;
   };
 
+  // Check if address is selected
+  const isAddressSelected = () => {
+    return selectedAddress && selectedAddress.trim() !== "" && getSelectedAddressDetails() !== null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isAddressSelected()) {
+      setAddressError("Please select or add a shipping address");
+      return;
+    }
+    
+    setAddressError("");
+    
+    const user = localStorage.getItem("user");
+    if (!user) {
+      sessionStorage.setItem("redirectAfterLogin", "/checkout");
+      router.push("/sign-in");
+      return;
+    }
+    
     setIsProcessing(true);
     
     const selectedAddr = getSelectedAddressDetails();
-    const shippingAddress = `${selectedAddr.address}, ${selectedAddr.city}, ${selectedAddr.state} ${selectedAddr.zipCode}`;
+    const shippingAddress = `${selectedAddr?.address}, ${selectedAddr?.city}, ${selectedAddr?.state} ${selectedAddr?.zipCode}`;
     
     const paymentMethodDisplay = 
       paymentMethod === "card" ? "Credit Card" : 
@@ -157,6 +236,9 @@ export default function CheckoutPage() {
         throw new Error(payload.error ?? "Failed to create order");
       }
 
+      // Dispatch event để OrdersPage và Header cập nhật
+      window.dispatchEvent(new Event("orders-updated"));
+
       setTimeout(() => {
         clearCart();
         setIsProcessing(false);
@@ -171,6 +253,14 @@ export default function CheckoutPage() {
       alert(error instanceof Error ? error.message : "Failed to create order");
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-gofarm-green" />
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -193,34 +283,35 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16">
-        <div className="max-w-md mx-auto px-4">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-20 h-20 mx-auto bg-gofarm-green/10 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-10 h-10 text-gofarm-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Please sign in to continue</h2>
-            <p className="text-gray-500 mb-6">You need to be logged in to complete your purchase</p>
-            <Link href="/sign-in" className="block w-full py-3 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green transition-colors">
-              Sign In
-            </Link>
-            <Link href="/sign-up" className="block w-full py-3 mt-3 border border-gofarm-green text-gofarm-green rounded-lg hover:bg-gofarm-green/10 transition-colors">
-              Create Account
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const selectedAddressDetails = getSelectedAddressDetails();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 lg:py-12">
+      {/* Delete Address Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Address?</h3>
+              <p className="text-gray-500 text-sm mb-6">Are you sure you want to delete this address? This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button onClick={confirmDeleteAddress} className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600">
+                  Yes, Delete
+                </button>
+                <button onClick={cancelDeleteAddress} className="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
           <Link href="/cart" className="inline-flex items-center gap-2 text-gofarm-green hover:text-gofarm-light-green transition-colors">
@@ -232,13 +323,12 @@ export default function CheckoutPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-6 lg:p-8">
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
               
               <form onSubmit={handleSubmit} className="space-y-8">
-                {/* User Info - Readonly from account */}
+                {/* User Info */}
                 <div className="bg-gray-50 rounded-xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-lg font-semibold text-gray-900">Contact Information</h2>
@@ -247,7 +337,7 @@ export default function CheckoutPage() {
                   <div className="space-y-2">
                     <p className="text-gray-700"><span className="font-medium">Name:</span> {userData?.name}</p>
                     <p className="text-gray-700"><span className="font-medium">Email:</span> {userData?.email}</p>
-                    <p className="text-gray-700"><span className="font-medium">Phone:</span> {userData?.phone}</p>
+                    <p className="text-gray-700"><span className="font-medium">Phone:</span> {userData?.phone || "Not provided"}</p>
                   </div>
                 </div>
 
@@ -264,52 +354,85 @@ export default function CheckoutPage() {
                     </button>
                   </div>
 
-                  {/* Address Selection */}
-                  <div className="space-y-3">
-                    {/* Default address from signup */}
-                    {userData?.address && (
-                      <label className="flex items-start gap-3 p-4 border rounded-xl cursor-pointer hover:border-gofarm-green transition-all">
-                        <input
-                          type="radio"
-                          name="address"
-                          value="default"
-                          checked={selectedAddress === "default"}
-                          onChange={() => setSelectedAddress("default")}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">Default Address</p>
-                          <p className="text-sm text-gray-600">
-                            {userData.address}, {userData.city}, {userData.state} {userData.zipCode}
-                          </p>
-                        </div>
-                      </label>
-                    )}
+                  {addressError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      {addressError}
+                    </div>
+                  )}
 
-                    {/* Saved addresses */}
-                    {addresses.map((addr) => (
-                      <label key={addr.id} className="flex items-start gap-3 p-4 border rounded-xl cursor-pointer hover:border-gofarm-green transition-all">
-                        <input
-                          type="radio"
-                          name="address"
-                          value={addr.id}
-                          checked={selectedAddress === addr.id}
-                          onChange={() => setSelectedAddress(addr.id)}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">
-                            {addr.isDefault ? "Default Address" : "Saved Address"}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {addr.address}, {addr.city}, {addr.state} {addr.zipCode}
-                          </p>
+                  <div className="space-y-3">
+                    {addresses.length === 0 ? (
+                      <div className="text-center p-6 border rounded-xl bg-gray-50">
+                        <p className="text-gray-500">No addresses saved. Please add a shipping address.</p>
+                      </div>
+                    ) : (
+                      addresses.map((addr) => (
+                        <div 
+                          key={addr.id} 
+                          className={`border rounded-xl p-4 transition-all ${
+                            selectedAddress === addr.id 
+                              ? "border-gofarm-green bg-gofarm-green/5" 
+                              : "border-gray-200 hover:border-gofarm-green"
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="radio"
+                              name="address"
+                              value={addr.id}
+                              checked={selectedAddress === addr.id}
+                              onChange={() => {
+                                setSelectedAddress(addr.id);
+                                setAddressError("");
+                              }}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-gray-900">
+                                  {addr.isDefault ? "Default Address" : "Saved Address"}
+                                </p>
+                                {addr.fromUserData && (
+                                  <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
+                                    From Account
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {addr.address}, {addr.city}, {addr.state} {addr.zipCode}
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              {!addr.fromUserData && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSetDefaultAddress(addr.id)}
+                                    className="text-xs text-gofarm-green hover:underline"
+                                    title="Set as default"
+                                  >
+                                    Set Default
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteAddress(addr.id)}
+                                    className="text-xs text-red-500 hover:underline"
+                                    title="Delete address"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </label>
-                    ))}
+                      ))
+                    )}
                   </div>
 
-                  {/* Add New Address Form */}
                   {showAddressForm && (
                     <div className="mt-4 p-4 border rounded-xl bg-gray-50">
                       <h3 className="font-medium text-gray-900 mb-3">New Address</h3>
@@ -401,7 +524,6 @@ export default function CheckoutPage() {
                     </button>
                   </div>
 
-                  {/* QR Code Payment */}
                   {paymentMethod === "qr" && (
                     <div className="p-6 bg-gray-50 rounded-xl">
                       <div className="flex flex-wrap gap-4 mb-6 justify-center">
@@ -477,8 +599,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  {/* COD Info */}
-                  {paymentMethod === "cod" && (
+                  {paymentMethod === "cod" && selectedAddressDetails && (
                     <div className="p-4 bg-green-50 rounded-xl border border-green-200">
                       <div className="flex items-start gap-3">
                         <svg className="w-6 h-6 text-gofarm-green mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -487,7 +608,7 @@ export default function CheckoutPage() {
                         <div>
                           <p className="font-medium text-gray-900">Pay when you receive</p>
                           <p className="text-sm text-gray-600 mt-1">
-                            You will pay <strong className="text-gofarm-green">${finalTotal.toFixed(2)}</strong> in cash when your order is delivered to <strong>{selectedAddressDetails.address}</strong>
+                            You will pay <strong className="text-gofarm-green">${finalTotal.toFixed(2)}</strong> in cash when your order is delivered to <strong>{selectedAddressDetails?.address}</strong>
                           </p>
                         </div>
                       </div>
@@ -497,7 +618,7 @@ export default function CheckoutPage() {
 
                 <button
                   type="submit"
-                  disabled={isProcessing}
+                  disabled={isProcessing || !isAddressSelected()}
                   className="w-full py-3 bg-gofarm-green text-white font-semibold rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
