@@ -70,7 +70,7 @@ export function productCardHtml(product: LocalProduct) {
     <div class="transform hover:scale-105 transition-transform duration-300">
       <article class="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id="${product.id}">
         <a href="/shop/${product.slug}" class="block">
-          <div class="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+          <div class="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
             <img src="${product.imageSrc}" class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110" alt="${product.imageAlt || product.name}" loading="lazy" />
             <div class="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
               <div class="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">${status}</div>
@@ -101,7 +101,7 @@ export function productCardHtml(product: LocalProduct) {
             </div>
           </div>
         </a>
-        <button class="add-to-cart-btn w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors mx-2 mb-2" style="width: calc(100% - 16px)" data-product-id="${product.id}" data-product-name="${product.name.replace(/'/g, "\\'")}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">Add to Cart</button>
+        <button class="add-to-cart-btn w-full rounded-md border border-gofarm-green bg-white px-2 py-1.5 text-[10px] font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white active:bg-gofarm-green active:text-white mx-2 mb-2" style="width: calc(100% - 16px)" data-product-id="${product.id}" data-product-name="${product.name.replace(/'/g, "\\'")}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">Add to Cart</button>
       </article>
     </div>
   `;
@@ -163,8 +163,8 @@ export function ProductCard({ product }: { product: LocalProduct }) {
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
           <Link href={`/shop/${product.slug}`} className="block" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-            <div className="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
-              <img src={product.imageSrc} className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110" alt={product.imageAlt} loading="lazy" />
+          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
+            <img src={product.imageSrc} className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105" alt={product.imageAlt} loading="lazy" />
               <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
                 <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">{status}</div>
                 {product.discount && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
@@ -194,7 +194,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
               </div>
             </div>
           </Link>
-          <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 mx-2 mb-2" style={{ width: 'calc(100% - 16px)' }}>
+          <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full rounded-md border border-gofarm-green bg-white px-2 py-1.5 text-[10px] font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white active:bg-gofarm-green active:text-white disabled:opacity-50 mx-2 mb-2" style={{ width: 'calc(100% - 16px)' }}>
             {isAddingToCart ? "Adding..." : "Add to Cart"}
           </button>
         </article>

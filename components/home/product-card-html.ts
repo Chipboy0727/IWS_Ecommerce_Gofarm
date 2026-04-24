@@ -23,10 +23,10 @@ export function productCardHtmlServer(product: LocalProduct) {
     <div class="transform hover:scale-105 transition-transform duration-300">
       <article class="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id="${product.id}">
         <a href="/shop/${product.slug}" class="block">
-          <div class="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
+          <div class="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
             <img
               src="${product.imageSrc}"
-              class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+              class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
               alt="${product.imageAlt || product.name}"
               loading="lazy"
             />
@@ -87,7 +87,7 @@ export function productCardHtmlServer(product: LocalProduct) {
           </div>
         </a>
         
-        <button class="w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors mx-2 mb-2" style="width: calc(100% - 16px)">
+        <button class="w-full rounded-md border border-gofarm-green bg-white px-2 py-1.5 text-[10px] font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white active:bg-gofarm-green active:text-white mx-2 mb-2" style="width: calc(100% - 16px)">
           Add to Cart
         </button>
       </article>

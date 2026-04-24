@@ -239,11 +239,11 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
     <>
       <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
-          <div className="relative h-52 overflow-hidden bg-linear-to-br from-gray-50 to-gray-100">
-            <Link href={`/shop/${product.slug}`} className="block h-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
+            <Link href={`/shop/${product.slug}`} className="block h-full w-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <img
                 src={product.imageSrc}
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
                 alt={product.imageAlt}
                 loading="lazy"
               />
