@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/cart-context";
 import type { LocalProduct } from "@/lib/local-catalog";
 
 function formatPrice(price: number) {

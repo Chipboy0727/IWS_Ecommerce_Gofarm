@@ -15,19 +15,19 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Tạo tên file duy nhất để tránh trùng lặp
+    // Generate unique filename to prevent collisions
     const fileExtension = path.extname(file.name) || ".png";
     const fileName = `${randomUUID()}${fileExtension}`;
     const uploadDir = path.join(process.cwd(), "public", "images");
     const filePath = path.join(uploadDir, fileName);
 
-    // Đảm bảo thư mục tồn tại
+    // Ensure upload directory exists
     await fs.mkdir(uploadDir, { recursive: true });
 
-    // Ghi file
+    // Write the uploaded file to disk.
     await fs.writeFile(filePath, buffer);
 
-    // Trả về đường dẫn tương đối để lưu vào database
+    // Return the relative path stored in the database.
     const relativePath = `/images/${fileName}`;
     return NextResponse.json({ url: relativePath });
   } catch (error: any) {

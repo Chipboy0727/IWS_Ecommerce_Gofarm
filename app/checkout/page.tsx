@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/cart-context";
 
 type PaymentMethod = "card" | "qr" | "cod";
 
@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.1;
   const finalTotal = subtotal + shipping + tax;
 
-  // KIỂM TRA ĐĂNG NHẬP
+  // Verify authentication
   useEffect(() => {
     const user = localStorage.getItem("user");
     
@@ -62,7 +62,7 @@ export default function CheckoutPage() {
       if (savedAddresses) {
         const parsedAddresses = JSON.parse(savedAddresses);
         setAddresses(parsedAddresses);
-        // Tìm address mặc định hoặc chọn address đầu tiên
+        // Find default address or select the first one
         const defaultAddr = parsedAddresses.find((a: any) => a.isDefault);
         if (defaultAddr) {
           setSelectedAddress(defaultAddr.id);
@@ -236,7 +236,7 @@ export default function CheckoutPage() {
         throw new Error(payload.error ?? "Failed to create order");
       }
 
-      // Dispatch event để OrdersPage và Header cập nhật
+      // Dispatch event to update OrdersPage and Header
       window.dispatchEvent(new Event("orders-updated"));
 
       setTimeout(() => {

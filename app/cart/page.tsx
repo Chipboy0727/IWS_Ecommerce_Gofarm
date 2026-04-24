@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
+import { useCart } from "@/app/context/cart-context";
 
 // Mock product data with stock information
 const getProductStock = (productId: string): number => {
@@ -188,7 +188,7 @@ export default function CartPage() {
     }
 
     if (!isLoggedIn) {
-      // FIX: Đổi từ localStorage thành sessionStorage
+      // Store the redirect in sessionStorage for the current checkout flow only.
       sessionStorage.setItem("redirectAfterLogin", "/cart");
       router.push("/sign-in");
     } else {
@@ -197,7 +197,7 @@ export default function CartPage() {
   };
 
   const confirmOrder = () => {
-    // FIX: Kiểm tra lại đăng nhập trước khi chuyển sang checkout
+    // Check login status before proceeding to checkout
     const user = localStorage.getItem("user");
     if (!user) {
       sessionStorage.setItem("redirectAfterLogin", "/checkout");

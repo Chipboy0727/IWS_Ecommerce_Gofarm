@@ -41,7 +41,7 @@ export async function loadLocalCatalog(): Promise<{
       categories: db.categories,
     };
   } catch (error) {
-    console.error("Loi khi tai du lieu tu MySQL:", error);
+    console.error("Failed to load data from MySQL:", error);
     return { products: [], categories: [] };
   }
 }

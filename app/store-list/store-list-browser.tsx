@@ -341,7 +341,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
         </p>
       </div>
 
-      {/* Search and Filter Bar - ĐÃ SỬA LỖI ICON ĐÈ CHỮ */}
+      {/* Search and Filter Bar */}
       <div className="mb-8">
         <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-md sm:flex-row">
           {/* Search Input */}
@@ -366,7 +366,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
             )}
           </div>
 
-          {/* Country Filter - ĐÃ TĂNG PADDING ĐỂ KHÔNG ĐÈ ICON */}
+          {/* Extra left padding keeps the leading icon clear of the select text. */}
           <div className="relative w-full sm:w-56">
             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
               <IconGlobe className="h-5 w-5 text-gray-400" />

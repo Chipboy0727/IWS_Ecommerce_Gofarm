@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useCart } from "@/app/context/CartContext";
-import { useWishlist } from "@/app/context/WishlistContext";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 
 export default function WishlistPage() {
   const { items: wishlist, removeFromWishlist, totalItems, clearWishlist } = useWishlist();
@@ -257,7 +257,7 @@ export default function WishlistPage() {
                   const isSelected = selectedItems.has(item.id);
                   return (
                     <div key={item.id} className={`group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 ${isSelected ? 'ring-2 ring-gofarm-green' : ''}`}>
-                      {/* Checkbox trên ảnh */}
+                      {/* Checkbox overlay on image */}
                       <div className="relative">
                         <div className="absolute top-3 left-3 z-10">
                           <input
@@ -324,7 +324,7 @@ export default function WishlistPage() {
         </div>
       </div>
 
-      {/* ĐÃ XÓA FOOTER - vì layout.tsx đã có SiteFooter */}
+      {/* Footer is rendered by root layout */}
     </div>
   );
 }

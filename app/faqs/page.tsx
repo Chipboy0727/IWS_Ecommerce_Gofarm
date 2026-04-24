@@ -116,7 +116,7 @@ function FAQItem({
           {question}
         </h3>
 
-        {/* Icon xoay khi mở */}
+        {/* Icon rotates when expanded */}
         <svg
           className="w-5 h-5 text-gofarm-green flex-shrink-0 ml-4 transition-transform group-open:rotate-180"
           fill="none"

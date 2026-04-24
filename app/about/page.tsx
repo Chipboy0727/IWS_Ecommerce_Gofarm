@@ -1,5 +1,4 @@
 import Link from "next/link";
-// ĐÃ XÓA: import SiteFooter from "@/components/site-footer";
 
 export const metadata = {
   title: "About Us | GoFarm",
@@ -98,7 +97,7 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
-      {/* ĐÃ XÓA: <SiteFooter /> */}
+      {/* Footer is rendered by root layout */}
     </>
   );
 }

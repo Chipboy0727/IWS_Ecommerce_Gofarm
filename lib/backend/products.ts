@@ -49,12 +49,14 @@ const PRODUCT_SORT_VALUES: ProductSortBy[] = [
   "stock",
 ];
 
+/** Parse and validate a product sort field from a query string value. */
 export function parseProductSortBy(value: string | null): ProductSortBy | undefined {
   if (!value) return undefined;
   const normalized = value as ProductSortBy;
   return PRODUCT_SORT_VALUES.includes(normalized) ? normalized : undefined;
 }
 
+/** Recompute product counts per category based on current product-category assignments. */
 export function normalizeProductCategories(products: LocalProduct[], categories: LocalCategory[]) {
   const counts = new Map<string, number>();
   for (const product of products) {
@@ -94,6 +96,7 @@ function compareByField(product: LocalProduct, sortBy: ProductSortBy) {
   }
 }
 
+/** Filter, sort, and paginate a product list according to the given query parameters. */
 export function listProducts(products: LocalProduct[], query: ProductListQuery) {
   const search = query.search?.trim().toLowerCase();
   const category = query.category?.trim().toLowerCase();
