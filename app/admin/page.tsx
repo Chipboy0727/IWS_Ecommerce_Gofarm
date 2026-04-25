@@ -85,31 +85,8 @@ export default async function AdminDashboardPage() {
           ))}
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_302px]">
+        <div>
           <SalesPerformanceCard series={series} />
-
-          <SectionCard className="bg-[linear-gradient(180deg,#0f7d17_0%,#0d6512_100%)] text-white">
-            <div className="flex min-h-[344px] h-full flex-col justify-between rounded-[20px] bg-[radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.10),transparent_32%),linear-gradient(180deg,#0f7d17_0%,#0d6512_100%)] p-0">
-              <div className="p-1">
-                <div className="text-[12px] font-semibold uppercase tracking-[0.24em] text-white/75">Market Intelligence</div>
-                <h3 className="mt-5 max-w-[240px] text-[31px] font-extrabold leading-[1.04] tracking-[-0.06em]">
-                  Crops yield expected to rise by 14.2% next quarter.
-                </h3>
-                <p className="mt-4 max-w-[245px] text-[13px] leading-6 text-white/68">
-                  Predictive models suggest increased demand for organic corn in the Midwest sector. Adjust logistics by week 4.
-                </p>
-              </div>
-              <div className="p-1">
-                <div className="rounded-[16px] bg-white/10 px-4 py-3">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-white/60">Confidence score</div>
-                  <div className="mt-1 flex items-end justify-between gap-4">
-                    <div className="text-[24px] font-bold">94.2%</div>
-                    <Pill tone="green">High</Pill>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SectionCard>
         </div>
 
         <SectionCard
