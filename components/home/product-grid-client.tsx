@@ -11,6 +11,35 @@ export function ProductGridClient({ products }: { products: any[] }) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   useEffect(() => {
+    const animateCarouselScroll = (element: HTMLElement, distance: number) => {
+      const start = element.scrollLeft;
+      const target = start + distance;
+      const duration = 450;
+      let startTime: number | null = null;
+
+      const easeInOutCubic = (progress: number) =>
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      const step = (timestamp: number) => {
+        if (startTime === null) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeInOutCubic(progress);
+
+        element.scrollLeft = start + distance * eased;
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          element.scrollLeft = target;
+        }
+      };
+
+      window.requestAnimationFrame(step);
+    };
+
     const normalizeProductCardImages = () => {
       const images = Array.from(
         document.querySelectorAll('[data-product-card-image="true"]')
@@ -197,11 +226,14 @@ export function ProductGridClient({ products }: { products: any[] }) {
       const carousel = document.getElementById(carouselTarget);
       if (!carousel) return;
 
-      const scrollAmount = carousel.clientWidth;
-      carousel.scrollBy({
-        left: direction === "prev" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
+      const firstItem = carousel.querySelector('[id*="-item-"]') as HTMLElement | null;
+      const itemWidth = firstItem?.getBoundingClientRect().width ?? carousel.clientWidth / 5;
+      const computedStyle = window.getComputedStyle(carousel.firstElementChild as Element);
+      const gap = Number.parseFloat(computedStyle.columnGap || computedStyle.gap || "16") || 16;
+      const visibleCards = window.innerWidth < 768 ? 1 : window.innerWidth < 1280 ? 2 : 3;
+      const scrollAmount = visibleCards * (itemWidth + gap);
+
+      animateCarouselScroll(carousel, direction === "prev" ? -scrollAmount : scrollAmount);
     };
 
     // Attach event listeners
