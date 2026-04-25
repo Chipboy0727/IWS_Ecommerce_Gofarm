@@ -48,6 +48,10 @@ export function ProductGridClient({ products }: { products: any[] }) {
       } catch(e) {}
     };
 
+    const animateCarouselScroll = (carousel: HTMLElement, scrollAmount: number) => {
+      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    };
+
     // Handle Add to Cart
     const handleAddToCart = async (e: Event) => {
       const target = e.target as HTMLElement;
