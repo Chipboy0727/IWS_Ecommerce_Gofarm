@@ -195,8 +195,7 @@ export default async function InventoryPage() {
     .inventory-search:focus-within {
       box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
     }
-    .inventory-input,
-    .inventory-select {
+    .inventory-input {
       width: 100%;
       border: 0;
       outline: 0;
@@ -204,16 +203,17 @@ export default async function InventoryPage() {
       color: #4f5f4b;
       font-size: 16px;
     }
-    .inventory-select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      padding-right: 20px;
-      cursor: pointer;
-      font-weight: 600;
-    }
     .inventory-input::placeholder {
       color: #7a8677;
+    }
+    .inventory-dropdown-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .inventory-filter-wrap {
+      position: relative;
+      flex: 0 0 auto;
     }
     .inventory-filter {
       display: inline-flex;
@@ -238,8 +238,16 @@ export default async function InventoryPage() {
       box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.22), 0 12px 22px rgba(98, 125, 69, 0.12);
     }
     .inventory-filter-select {
-      min-width: 150px;
+      min-width: 190px;
       position: relative;
+      justify-content: space-between;
+      border: 1px solid transparent;
+      padding-right: 40px;
+    }
+    .inventory-filter-select.is-open {
+      border-color: rgba(47, 151, 42, 0.24);
+      background: linear-gradient(180deg, #f8fcf3 0%, #eef7e5 100%);
+      box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.08), 0 16px 28px rgba(98, 125, 69, 0.14);
     }
     .inventory-filter-button {
       border: 0;
@@ -253,6 +261,63 @@ export default async function InventoryPage() {
       transform: translateY(-50%);
       color: #73916c;
       pointer-events: none;
+      transition: transform 0.18s ease, color 0.18s ease;
+    }
+    .inventory-filter-select.is-open .inventory-select-arrow {
+      transform: translateY(-50%) rotate(180deg);
+      color: #2d8c2f;
+    }
+    .inventory-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      min-width: 190px;
+      padding: 6px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(173, 191, 152, 0.55);
+      box-shadow: 0 14px 24px rgba(93, 118, 67, 0.12), 0 4px 10px rgba(93, 118, 67, 0.06);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+      box-sizing: border-box;
+      z-index: 20;
+      animation: inventoryMenuIn 0.18s ease;
+    }
+    .inventory-menu-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border: 0;
+      background: transparent;
+      border-radius: 9px;
+      padding: 9px 12px;
+      color: #4d6247;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease;
+    }
+    .inventory-menu-item:hover {
+      background: linear-gradient(180deg, #f3f9ea 0%, #ebf5df 100%);
+      color: #24752a;
+    }
+    .inventory-menu-item.active {
+      background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+    @keyframes inventoryMenuIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
     .inventory-table {
       width: 100%;
@@ -437,6 +502,18 @@ export default async function InventoryPage() {
       }
       .inventory-toolbar {
         flex-wrap: wrap;
+      }
+      .inventory-dropdown-group {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      .inventory-filter-wrap {
+        flex: 1 1 calc(50% - 8px);
+      }
+      .inventory-filter-select,
+      .inventory-menu {
+        width: 100%;
+        min-width: 0;
       }
       .inventory-search {
         width: 100%;
