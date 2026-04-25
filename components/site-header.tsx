@@ -14,6 +14,7 @@ const navItems = [
   { href: "/collection", label: "Collection" },
   { href: "/store-list", label: "Local Stores" },
   { href: "/contact", label: "Contact" },
+  { href: "/about", label: "About Us" },
   { href: "/help", label: "Need Help?" },
 ];
 
@@ -148,7 +149,13 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
       ].join(" ")}
     >
       {isHelp && <IconHelp />}
-      {label}
+      <span>{label}</span>
+      <span 
+        className={[
+          "absolute bottom-0 left-0 h-0.5 bg-gofarm-green transition-all duration-300",
+          active ? "w-full" : "w-0 group-hover:w-full"
+        ].join(" ")} 
+      />
     </Link>
   );
 }
@@ -191,11 +198,16 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               <>
                 <Link href="/account" onClick={onClose} className="block py-1.5 sm:py-2 text-sm sm:text-base text-gofarm-gray">My Account</Link>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
+                    try {
+                      await fetch("/api/auth/logout", { method: "POST" });
+                    } catch (e) {}
                     localStorage.removeItem("user");
                     localStorage.removeItem("cart");
                     localStorage.removeItem("wishlist");
+                    window.dispatchEvent(new Event("auth-changed"));
                     window.location.href = "/";
+                    onClose();
                   }}
                   className="block w-full text-left py-1.5 sm:py-2 text-sm sm:text-base text-red-600"
                 >
@@ -393,15 +405,31 @@ export default function SiteHeader() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isSearchOpen]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Clear the server session cookie
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (e) {
+      console.error("Logout API failed:", e);
+    }
+    
+    // Clear local storage
     localStorage.removeItem("user");
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
+    
+    // Reset local state
     setIsLoggedIn(false);
+    setUserName("");
     setUserEmail("");
     setOrderCount(0);
+    
+    // Notify other components
     window.dispatchEvent(new Event("auth-changed"));
+    
+    // Go to home page
     router.push("/");
+    setIsUserDropdownOpen(false);
   };
 
   return (

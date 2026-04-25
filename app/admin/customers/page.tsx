@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard } from "@/components/admin/admin-shell";
+import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconUsers, IconChart, IconBox } from "@/components/admin/admin-shell";
 import { buildCustomerRows, buildDashboardStats } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
 

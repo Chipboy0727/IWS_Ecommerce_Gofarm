@@ -262,10 +262,12 @@ export default function ProductManager() {
           </div>
         ) : (
           <>
-            <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5">
-              <table className="page-table min-w-full text-left">
+            <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5 border border-[#edf1e5]">
+              <div className="max-h-[800px] overflow-y-auto">
+                <table className="page-table min-w-full text-left">
                 <thead className="bg-[#f0f5e4]">
                   <tr className="text-[11px] uppercase tracking-[0.18em] text-[#748171]">
+                    <th className="px-5 py-4">SKU</th>
                     <th className="px-5 py-4">Product</th>
                     <th className="px-5 py-4">Category</th>
                     <th className="px-5 py-4">Stock Level</th>
@@ -280,6 +282,9 @@ export default function ProductManager() {
                     const tone = stockTone(stock);
                     return (
                       <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
+                        <td className="px-5 py-4 text-[13px] font-medium text-[#748171]">
+                          {product.slug.toUpperCase()}
+                        </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <img
@@ -288,10 +293,7 @@ export default function ProductManager() {
                               className="h-10 w-10 rounded-[10px] object-cover"
                               onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                             />
-                            <div>
-                              <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
-                              <div className="text-[12px] text-[#748171]">SKU: {product.slug.toUpperCase()}</div>
-                            </div>
+                            <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
                           </div>
                         </td>
                         <td className="px-5 py-4">
@@ -330,18 +332,8 @@ export default function ProductManager() {
                 </tbody>
               </table>
             </div>
-            <div className="flex items-center justify-between px-2 pt-4 text-[12px] text-[#6f7b6d]">
-              <div>Showing 1-4 of {products.length.toLocaleString("en-US")} products</div>
-              <div className="flex items-center gap-2">
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">‹</button>
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
-                <span className="px-1 text-[#919d90]">…</span>
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">321</button>
-                <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">›</button>
-              </div>
-            </div>
+          </div>
+
           </>
         )}
       </SectionCard>

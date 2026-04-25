@@ -1,25 +1,6 @@
 {
   "products": [
     {
-      "id": "dc584fdf-e910-4e93-9acd-008f7542f178",
-      "name": "Tuấn cùi",
-      "slug": "tuancui",
-      "createdAt": "2026-04-23T18:09:25.853Z",
-      "updatedAt": "2026-04-23T18:09:25.853Z",
-      "imageSrc": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "imageAlt": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "price": 0,
-      "discount": null,
-      "brand": null,
-      "categoryId": "4eb43c2e-65e5-4675-929e-da1327928bb5",
-      "categoryTitle": "Vegetables",
-      "description": "tests",
-      "rating": 0,
-      "reviews": 0,
-      "stock": null,
-      "status": "new"
-    },
-    {
       "id": "9d2051b8-a2e2-4af8-907b-119cdcc657e9",
       "name": "Onion",
       "slug": "onion",
@@ -882,6 +863,7 @@
       "email": "admin@gofarm.local",
       "passwordHash": "43ae2010e13654cb7e5b80f5534b0569:48ffec71309806b159044e4d2bd6b917595219d0a08da218dc3ab3b7bc565e72",
       "role": "admin",
+      "redirectTo": "/admin",
       "createdAt": "2026-04-21T16:17:06.895Z",
       "updatedAt": "2026-04-21T16:17:06.895Z"
     },
@@ -893,6 +875,15 @@
       "role": "user",
       "createdAt": "2026-04-21T16:17:06.839Z",
       "updatedAt": "2026-04-21T16:17:06.839Z"
+    },
+    {
+      "id": "user-test-id",
+      "name": "Test User",
+      "email": "user@gofarm.local",
+      "passwordHash": "77b4484aa083df2c649809658ce98aa2:b3536e33188ed3ce5e9b5db1155bb9574c8883448acfdbd90e81dcdd81a8b5e8",
+      "role": "user",
+      "createdAt": "2026-04-25T10:00:00.000Z",
+      "updatedAt": "2026-04-25T10:00:00.000Z"
     }
   ],
   "orders": [

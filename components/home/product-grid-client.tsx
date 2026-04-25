@@ -183,6 +183,31 @@ export function ProductGridClient({ products }: { products: any[] }) {
       }
     };
 
+    const handleCarouselNav = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const button = target.closest("[data-carousel-target][data-carousel-direction]") as HTMLElement | null;
+      if (!button) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const carouselTarget = button.dataset.carouselTarget;
+      const direction = button.dataset.carouselDirection;
+      if (!carouselTarget || !direction) return;
+
+      const carousel = document.getElementById(carouselTarget);
+      if (!carousel) return;
+
+      const firstItem = carousel.querySelector('[id*="-item-"]') as HTMLElement | null;
+      const itemWidth = firstItem?.getBoundingClientRect().width ?? carousel.clientWidth / 5;
+      const computedStyle = window.getComputedStyle(carousel.firstElementChild as Element);
+      const gap = Number.parseFloat(computedStyle.columnGap || computedStyle.gap || "16") || 16;
+      const visibleCards = window.innerWidth < 768 ? 1 : window.innerWidth < 1280 ? 2 : 3;
+      const scrollAmount = visibleCards * (itemWidth + gap);
+
+      animateCarouselScroll(carousel, direction === "prev" ? -scrollAmount : scrollAmount);
+    };
+
     // Attach event listeners
     document.addEventListener('click', handleAddToCart);
     document.addEventListener('click', handleWishlist);
@@ -197,6 +222,7 @@ export function ProductGridClient({ products }: { products: any[] }) {
       document.removeEventListener('click', handleWishlist);
       document.removeEventListener('click', handleShare);
       document.removeEventListener('click', handleQuickView);
+      document.removeEventListener('click', handleCarouselNav);
     };
   }, [addToCart, addToWishlist, removeFromWishlist, isInWishlist, products]);
 

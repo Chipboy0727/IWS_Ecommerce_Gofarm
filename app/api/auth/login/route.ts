@@ -22,7 +22,13 @@ export async function POST(request: NextRequest) {
 
   const token = createSessionToken({ id: user.id, email: user.email, role: user.role });
   const response = NextResponse.json({
-    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    user: { 
+      id: user.id, 
+      name: user.name, 
+      email: user.email, 
+      role: user.role,
+      redirectTo: (user as any).redirectTo 
+    },
     token,
   });
 

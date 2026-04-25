@@ -1,9 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useCart } from "@/app/context/cart-context";
-import { useWishlist } from "@/app/context/wishlist-context";
+import { ProductCard as SharedProductCard } from "@/components/home/product-card";
 import type { LocalProduct } from "@/lib/local-catalog";
 import { ProductModal } from "@/components/product-modal";
 

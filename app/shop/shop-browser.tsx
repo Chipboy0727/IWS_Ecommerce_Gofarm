@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { ProductModal } from "@/components/product-modal";
+import { ProductCard as SharedProductCard } from "@/components/home/product-card";
 import ProductShareHandler from "@/components/home/product-share-handler";
+import { ProductModal } from "@/components/product-modal";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -518,13 +519,9 @@ export default function ShopBrowser({
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {paginatedProducts.map((product) => (
-                      <ProductCard
+                      <SharedProductCard
                         key={product.id}
                         product={product}
-                        onAddToCart={handleAddToCart}
-                        onToggleWishlist={handleToggleWishlist}
-                        isWishlisted={wishlistStatus[product.id] || false}
-                        onQuickView={setSelectedProduct}
                       />
                     ))}
                   </div>

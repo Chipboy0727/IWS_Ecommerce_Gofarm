@@ -51,12 +51,19 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // ─── Admin Route Protection ───
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
+  // ─── Admin Route Protection & Unified Login ───
+  if (pathname.startsWith("/admin/login")) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/sign-in";
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (pathname.startsWith("/admin")) {
     const sessionCookie = request.cookies.get("gofarm_session")?.value;
     if (!sessionCookie) {
       const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/admin/login";
+      loginUrl.pathname = "/sign-in";
+      loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }

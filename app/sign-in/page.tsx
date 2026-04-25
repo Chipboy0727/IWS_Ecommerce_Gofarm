@@ -27,6 +27,18 @@ function SignInForm() {
     }
   }, [searchParams]);
 
+  // If already logged in, redirect away
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        const finalRedirect = userData.redirectTo || redirectTo || "/";
+        router.push(finalRedirect);
+      } catch (e) {}
+    }
+  }, [router, redirectTo]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -47,7 +59,7 @@ function SignInForm() {
 
       localStorage.setItem("user", JSON.stringify(data.user));
       window.dispatchEvent(new Event("auth-changed"));
-      router.push(redirectTo);
+      router.push(finalRedirect);
     } catch (err: any) {
       setError(err.message);
     } finally {

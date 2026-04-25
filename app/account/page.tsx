@@ -354,6 +354,9 @@ export default function AccountPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const memberSince = user?.registeredAt
+    ? new Date(user.registeredAt).getFullYear()
+    : null;
 
   useEffect(() => {
     const userData = localStorage.getItem("user");

@@ -154,7 +154,8 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
           type="button"
           class="absolute left-[-16px] top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
           aria-label="Previous products"
-          onclick="(function(el){if(el){el.scrollBy({left:-el.clientWidth,behavior:'smooth'})}})(document.getElementById('${carouselId}'))"
+          data-carousel-target="${carouselId}"
+          data-carousel-direction="prev"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5" aria-hidden="true">
             <path d="m15 18-6-6 6-6" />
@@ -165,7 +166,8 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
           type="button"
           class="absolute right-2 top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
           aria-label="Next products"
-          onclick="(function(el){if(el){el.scrollBy({left:el.clientWidth,behavior:'smooth'})}})(document.getElementById('${carouselId}'))"
+          data-carousel-target="${carouselId}"
+          data-carousel-direction="next"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-3.5 w-3.5" aria-hidden="true">
             <path d="m9 18 6-6-6-6" />
@@ -256,25 +258,15 @@ export function transformHomeBody({
       transformedBody.slice(nextSectionStart);
   }
 
-  const blogTitle = "Latest Blog Posts";
-  const blogEndText = "Discover more insights and stories in our blog section";
-  const blogEndMarker = "<!--$--><!--/$--><!--/$-->";
-  const blogTitleIndex = transformedBody.indexOf(blogTitle);
+  const blogTitleIndex = transformedBody.indexOf("Latest Blog Posts");
   if (blogTitleIndex >= 0) {
     const blogStart = transformedBody.lastIndexOf(
       '<div class="max-w-(--breakpoint-xl) mx-auto px-4 mt-16 lg:mt-24">',
       blogTitleIndex
     );
-    const blogEndTextIndex = transformedBody.indexOf(blogEndText, blogTitleIndex);
-    const blogEndMarkerIndex =
-      blogEndTextIndex >= 0
-        ? transformedBody.indexOf(blogEndMarker, blogEndTextIndex)
-        : transformedBody.indexOf(blogEndMarker, blogTitleIndex);
 
-    if (blogStart >= 0 && blogEndMarkerIndex >= 0) {
-      transformedBody =
-        transformedBody.slice(0, blogStart) +
-        transformedBody.slice(blogEndMarkerIndex + blogEndMarker.length);
+    if (blogStart >= 0) {
+      transformedBody = transformedBody.slice(0, blogStart);
     }
   }
 
