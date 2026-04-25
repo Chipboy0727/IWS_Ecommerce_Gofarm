@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type InventoryRow = {
   id: string;
@@ -52,6 +52,8 @@ export default function InventoryTableClient({
   const [stockFilter, setStockFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [busySlug, setBusySlug] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<null | "category" | "stock">(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
   const pageSize = 4;
 
   const categories = useMemo(() => {
@@ -75,6 +77,25 @@ export default function InventoryTableClient({
   const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const pageRows = filteredRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpenMenu(null);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenMenu(null);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const exportCsv = () => {
     const blob = new Blob([toCsv(filteredRows)], { type: "text/csv;charset=utf-8;" });
@@ -121,47 +142,81 @@ export default function InventoryTableClient({
           />
         </label>
 
-        <label className="inventory-filter inventory-filter-select">
-          <IconFilter />
-          <select
-            value={category}
-            onChange={(event) => {
-              setCategory(event.target.value);
-              setPage(1);
-            }}
-            className="inventory-select"
-          >
-            {categories.map((item) => (
-              <option key={item} value={item}>
-                {item === "all" ? "Category" : item}
-              </option>
-            ))}
-          </select>
-          <span className="inventory-select-arrow" aria-hidden="true">
-            <IconChevronDown />
-          </span>
-        </label>
+        <div className="inventory-dropdown-group" ref={menuRef}>
+          <div className="inventory-filter-wrap">
+            <button
+              type="button"
+              className={`inventory-filter inventory-filter-select${openMenu === "category" ? " is-open" : ""}`}
+              onClick={() => setOpenMenu((current) => (current === "category" ? null : "category"))}
+            >
+              <IconFilter />
+              <span>{category === "all" ? "Category" : category}</span>
+              <span className="inventory-select-arrow" aria-hidden="true">
+                <IconChevronDown />
+              </span>
+            </button>
+            {openMenu === "category" ? (
+              <div className="inventory-menu">
+                {categories.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={`inventory-menu-item${category === item ? " active" : ""}`}
+                    onClick={() => {
+                      setCategory(item);
+                      setPage(1);
+                      setOpenMenu(null);
+                    }}
+                  >
+                    {item === "all" ? "All Categories" : item}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
-        <label className="inventory-filter inventory-filter-select">
-          <IconFilter />
-          <select
-            value={stockFilter}
-            onChange={(event) => {
-              setStockFilter(event.target.value);
-              setPage(1);
-            }}
-            className="inventory-select"
-          >
-            <option value="all">Stock Level</option>
-            <option value="critical">Critical</option>
-            <option value="warning">Warning</option>
-            <option value="healthy">Healthy</option>
-            <option value="optimal">Optimal</option>
-          </select>
-          <span className="inventory-select-arrow" aria-hidden="true">
-            <IconChevronDown />
-          </span>
-        </label>
+          <div className="inventory-filter-wrap">
+            <button
+              type="button"
+              className={`inventory-filter inventory-filter-select${openMenu === "stock" ? " is-open" : ""}`}
+              onClick={() => setOpenMenu((current) => (current === "stock" ? null : "stock"))}
+            >
+              <IconFilter />
+              <span>
+                {stockFilter === "all"
+                  ? "Stock Level"
+                  : stockFilter.charAt(0).toUpperCase() + stockFilter.slice(1)}
+              </span>
+              <span className="inventory-select-arrow" aria-hidden="true">
+                <IconChevronDown />
+              </span>
+            </button>
+            {openMenu === "stock" ? (
+              <div className="inventory-menu">
+                {[
+                  ["all", "All Levels"],
+                  ["critical", "Critical"],
+                  ["warning", "Warning"],
+                  ["healthy", "Healthy"],
+                  ["optimal", "Optimal"],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={`inventory-menu-item${stockFilter === value ? " active" : ""}`}
+                    onClick={() => {
+                      setStockFilter(value);
+                      setPage(1);
+                      setOpenMenu(null);
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </div>
 
         <button type="button" className="inventory-filter inventory-filter-button" onClick={exportCsv}>
           <IconExport />
