@@ -29,8 +29,50 @@ const navItems: AdminNavItem[] = [
   { href: "/admin/customers", label: "Customers", icon: <IconUsers /> },
   { href: "/admin/products", label: "Products", icon: <IconPackage /> },
   { href: "/admin/analytics", label: "Analytics", icon: <IconChart /> },
-  { href: "/admin/settings", label: "Settings", icon: <IconGear /> },
 ];
+
+export function AdminSidebarNav({ activeHref }: { activeHref: string }) {
+  return (
+    <>
+      <nav className="nav-list">
+        {navItems.map((item) => {
+          const active = activeHref === item.href;
+          return (
+            <Link key={item.href} href={item.href} className={`nav-item${active ? " active" : ""}`}>
+              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-label">{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-links">
+          <Link href="/admin/settings" className="sidebar-link">
+            <IconGear className="h-4 w-4" />
+            <span className="sidebar-link-text">Settings</span>
+          </Link>
+          <button
+            onClick={async () => {
+              try {
+                await fetch("/api/auth/logout", { method: "POST" });
+              } catch (e) {}
+              localStorage.removeItem("user");
+              localStorage.removeItem("cart");
+              localStorage.removeItem("wishlist");
+              window.dispatchEvent(new Event("auth-changed"));
+              window.location.href = "/";
+            }}
+            className="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer"
+          >
+            <IconLogout className="h-4 w-4" />
+            <span className="sidebar-link-text">Logout</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
 
 export function AdminShell({
   activeHref,
@@ -78,25 +120,24 @@ export function AdminShell({
       position: sticky;
       top: 0;
       height: 100vh;
-      border-right: 1px solid rgba(0, 0, 0, 0.05);
-      background: linear-gradient(180deg, #e4ecd7 0%, #dee8cc 100%);
-      padding: 14px 0 14px 14px;
+      border-right: 1px solid rgba(36, 49, 31, 0.08);
+      background: linear-gradient(180deg, #dce6ca 0%, #e5ecd8 100%);
+      padding: 28px 14px 18px 18px;
       z-index: 30;
     }
     .sidebar-inner {
       display: flex;
       height: 100%;
       flex-direction: column;
-      border-radius: 28px;
-      padding: 0 12px 0 0;
+      padding: 0;
       transition: padding 0.24s ease;
     }
     .brand {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 10px 14px 16px 12px;
+      padding: 0 0 0 8px;
       transition: padding 0.24s ease;
     }
     .brand-copy {
@@ -131,24 +172,22 @@ export function AdminShell({
       background: rgba(255, 255, 255, 0.82);
     }
     .brand-title {
-      font-size: 18px;
+      font-size: 24px;
       line-height: 1;
       font-weight: 800;
-      letter-spacing: -0.05em;
-      color: #156f1c;
+      letter-spacing: -0.04em;
+      color: #1a8a18;
     }
     .brand-subtitle {
       margin-top: 3px;
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: #5b6658;
+      font-size: 16px;
+      color: #4f5b4a;
     }
     .nav-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 8px 0;
+      gap: 6px;
+      padding: 34px 0 0;
       flex: 1;
       overflow-y: auto;
       scrollbar-width: thin;
@@ -165,26 +204,32 @@ export function AdminShell({
       display: flex;
       align-items: center;
       gap: 12px;
-      border-radius: 6px;
-      padding: 13px 14px;
+      border-radius: 8px;
+      padding: 11px 12px;
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
-      color: #5d655d;
+      color: #4c5949;
       transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.54);
-      color: #0b7312;
+      background: rgba(255, 255, 255, 0.56);
+      color: #158218;
     }
     .nav-item.active {
       background: #fff;
-      color: #0b7312;
-      box-shadow: 0 8px 20px rgba(34, 56, 29, 0.07);
+      color: #158218;
+      box-shadow: 0 8px 18px rgba(26, 57, 19, 0.06);
     }
     .nav-icon {
-      color: #616961;
+      color: currentColor;
       display: inline-flex;
+      flex: 0 0 auto;
+    }
+    .nav-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
       flex: 0 0 auto;
     }
     .nav-label {
@@ -199,55 +244,19 @@ export function AdminShell({
     }
     .sidebar-footer {
       margin-top: auto;
-      padding: 18px 0 4px;
-    }
-    .sidebar-divider {
-      height: 1px;
-      margin: 0 4px 14px 0;
-      background: rgba(0, 0, 0, 0.06);
-    }
-    .cta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #16b516 0%, #089809 100%);
-      color: #fff;
-      padding: 13px 16px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
-      box-shadow: 0 12px 22px rgba(10, 146, 12, 0.28);
-      margin-right: 8px;
-    }
-    .cta-mark {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      flex: 0 0 auto;
-      transition: margin 0.18s ease;
-    }
-    .cta-text {
-      transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
-    }
-    .cta:hover {
-      filter: brightness(0.98);
+      padding: 18px 0 0;
     }
     .sidebar-links {
       display: grid;
-      gap: 6px;
-      margin-top: 14px;
-      color: #5d665d;
-      font-size: 13px;
-      padding-right: 8px;
+      gap: 4px;
+      color: #4c5949;
+      font-size: 15px;
     }
     .sidebar-link {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 9px 8px;
+      gap: 12px;
+      padding: 11px 12px;
       border-radius: 8px;
       text-decoration: none;
       color: inherit;
@@ -847,9 +856,6 @@ export function AdminShell({
           <aside className="admin-sidebar">
             <div className="sidebar-inner">
               <div className="brand">
-                <div className="brand-logo">
-                  <IconLeaf className="h-5 w-5" />
-                </div>
                 <div className="brand-copy">
                   <div className="brand-title">GoFarm</div>
                   <div className="brand-subtitle">Agricultural Admin</div>
@@ -864,47 +870,7 @@ export function AdminShell({
                   <IconSidebarCollapse className="h-4 w-4" />
                 </button>
               </div>
-
-              <nav className="nav-list">
-                {navItems.map((item) => {
-                  const active = activeHref === item.href;
-                  return (
-                    <Link key={item.href} href={item.href} className={`nav-item${active ? " active" : ""}`}>
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              <div className="sidebar-footer">
-                <div className="sidebar-divider" />
-                <Link href="/admin/products" className="cta">
-                  <span className="cta-text">+ Add New Product</span>
-                </Link>
-                <div className="sidebar-links">
-                  <Link href="/contact" className="sidebar-link">
-                    <IconHelp className="h-4 w-4" />
-                    <span className="sidebar-link-text">Support</span>
-                  </Link>
-                  <button
-                    onClick={async () => {
-                      try {
-                        await fetch("/api/auth/logout", { method: "POST" });
-                      } catch (e) {}
-                      localStorage.removeItem("user");
-                      localStorage.removeItem("cart");
-                      localStorage.removeItem("wishlist");
-                      window.dispatchEvent(new Event("auth-changed"));
-                      window.location.href = "/";
-                    }}
-                    className="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer"
-                  >
-                    <IconLogout className="h-4 w-4" />
-                    <span className="sidebar-link-text">Log Out</span>
-                  </button>
-                </div>
-              </div>
+              <AdminSidebarNav activeHref={activeHref} />
             </div>
           </aside>
         ) : null}
@@ -1095,7 +1061,7 @@ export function IconLeaf({ className = "" }: { className?: string }) {
 export function IconGrid({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z" fill="currentColor" />
+      <path d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z" fill="currentColor" />
     </svg>
   );
 }
@@ -1103,9 +1069,8 @@ export function IconGrid({ className = "h-4.5 w-4.5" }: { className?: string }) 
 export function IconBox({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M21 8.5 12 13 3 8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 13v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M4 6.8 12 3l8 3.8-8 3.8-8-3.8z" fill="currentColor" opacity="0.2" />
+      <path d="M6 4h12a2 2 0 0 1 2 2v2H4V6a2 2 0 0 1 2-2Z" fill="currentColor" />
+      <path d="M4 10h16v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8Z" fill="currentColor" opacity="0.35" />
     </svg>
   );
 }
@@ -1113,7 +1078,7 @@ export function IconBox({ className = "h-4.5 w-4.5" }: { className?: string }) {
 export function IconCart({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M3 5h2l2.2 9.5a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 1.9-1.4L21 8H7.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3 5h2l2 9h10l2-6H7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="10" cy="19" r="1.5" fill="currentColor" />
       <circle cx="17" cy="19" r="1.5" fill="currentColor" />
     </svg>
@@ -1123,9 +1088,9 @@ export function IconCart({ className = "h-4.5 w-4.5" }: { className?: string }) 
 export function IconStore({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M4 10h16v9H4v-9z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M3 8h18v2H3V8z" fill="currentColor" opacity="0.2" />
-      <path d="M7 12h4v7H7z" fill="currentColor" opacity="0.25" />
+      <path d="M4 9h16v10H4V9Z" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M3 7h18l-2-3H5L3 7Z" fill="currentColor" opacity="0.3" />
+      <path d="M8 12h4v7H8v-7Z" fill="currentColor" opacity="0.35" />
     </svg>
   );
 }
@@ -1152,9 +1117,8 @@ export function IconPackage({ className = "h-4.5 w-4.5" }: { className?: string 
 export function IconChart({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M5 19V9m7 10V5m7 14v-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
       <path d="M4 19h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M7 15v-5m5 5V8m5 7v-9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M6.5 15.5 11.2 10.8 14.2 12.6 18 7.9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -1162,8 +1126,8 @@ export function IconChart({ className = "h-4.5 w-4.5" }: { className?: string })
 export function IconGear({ className = "h-4.5 w-4.5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
-      <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M19.4 13.4v-2.8l-2-.7a5.8 5.8 0 0 0-.8-1.9l1-1.8-2-2-1.8 1a5.8 5.8 0 0 0-1.9-.8l-.7-2h-2.8l-.7 2a5.8 5.8 0 0 0-1.9.8l-1.8-1-2 2 1 1.8a5.8 5.8 0 0 0-.8 1.9l-2 .7v2.8l2 .7c.2.7.5 1.3.8 1.9l-1 1.8 2 2 1.8-1c.6.3 1.2.6 1.9.8l.7 2h2.8l.7-2c.7-.2 1.3-.5 1.9-.8l1.8 1 2-2-1-1.8c.4-.6.6-1.2.8-1.9l2-.7z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" opacity="0.55" />
+      <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4.7a7 7 0 0 0-1.7-1l-.4-2.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.4-.7-2 3.4L5.1 11A7 7 0 0 0 5 12c0 .34.03.67.1 1l-2 1.5 2 3.4 2.4-.7c.53.42 1.1.76 1.7 1l.4 2.5h4l.4-2.5c.6-.24 1.17-.58 1.7-1l2.4.7 2-3.4-2-1.5c.07-.33.1-.66.1-1Z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" opacity="0.6" />
     </svg>
   );
 }

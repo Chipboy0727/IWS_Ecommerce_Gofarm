@@ -1,222 +1,558 @@
 import type { Metadata } from "next";
-import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconGear, IconBox } from "@/components/admin/admin-shell";
+import Link from "next/link";
+import { AdminShell } from "@/components/admin/admin-shell";
+import InventoryTableClient, { type InventoryRow } from "@/components/admin/inventory-table-client";
+import { readDb } from "@/lib/backend/db";
 
 export const metadata: Metadata = {
-  title: "Inventory Management | GoFarm",
+  title: "Product Management | GoFarm",
   description: "Inventory management screen for GoFarm admin.",
 };
 
-function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
+function formatUnits(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
 }
 
-const products = [
-  {
-    name: "Heritage Tomato Seeds",
-    sku: "GF-SEED-291",
-    category: "Seeds",
-    stock: 820,
-    capacity: 1000,
-    price: 12.5,
-    status: "Optimal",
-    tone: "green" as const,
-    image: "/images/image_5.jpg",
-  },
-  {
-    name: "Bio-Active Growth Booster",
-    sku: "GF-FERT-442",
-    category: "Fertilizers",
-    stock: 45,
-    capacity: 300,
-    price: 89,
-    status: "Critical",
-    tone: "red" as const,
-    image: "/images/image_6.jpg",
-  },
-  {
-    name: "Titan Forged Hand Trowel",
-    sku: "GF-TOOL-088",
-    category: "Tools",
-    stock: 112,
-    capacity: 260,
-    price: 34.99,
-    status: "Warning",
-    tone: "amber" as const,
-    image: "/images/image_7.jpg",
-  },
-  {
-    name: "AgroSensor Node V2",
-    sku: "GF-TECH-101",
-    category: "Tech",
-    stock: 560,
-    capacity: 600,
-    price: 145,
-    status: "Optimal",
-    tone: "green" as const,
-    image: "/images/image_4.jpg",
-  },
-];
-
-function stockWidth(stock: number, capacity: number) {
-  return Math.max(10, Math.min(100, Math.round((stock / capacity) * 100)));
+function buildSku(slug: string, index: number) {
+  const compact = slug.replace(/[^a-z0-9]/gi, "").toUpperCase().slice(0, 6) || "ITEM";
+  return `GF-${compact}-${String(index + 1).padStart(3, "0")}`;
 }
 
-export default function InventoryPage() {
+function buildCapacity(stock: number) {
+  if (stock <= 25) return Math.max(120, Math.ceil(stock * 4));
+  if (stock <= 100) return Math.max(200, Math.ceil(stock * 2.5));
+  return Math.max(500, Math.ceil(stock * 1.18));
+}
+
+function getInventoryStatus(stock: number | null) {
+  if (stock === null || stock <= 10) return { label: "CRITICAL", tone: "critical" as const };
+  if (stock <= 40) return { label: "WARNING", tone: "warning" as const };
+  if (stock <= 120) return { label: "HEALTHY", tone: "healthy" as const };
+  return { label: "OPTIMAL", tone: "optimal" as const };
+}
+
+function categoryLabel(value: string | null) {
+  if (!value) return "General";
+  if (value.toLowerCase() === "juice") return "Juices";
+  return value;
+}
+
+export default async function InventoryPage() {
+  const db = await readDb();
+  const products = [...db.products].sort((a, b) => {
+    const stockA = typeof a.stock === "number" ? a.stock : -1;
+    const stockB = typeof b.stock === "number" ? b.stock : -1;
+    if (stockA !== stockB) return stockA - stockB;
+    return a.name.localeCompare(b.name);
+  });
+
+  const rows: InventoryRow[] = products.map((product, index) => {
+    const stock = typeof product.stock === "number" ? product.stock : 0;
+    const capacity = buildCapacity(stock);
+    const status = getInventoryStatus(product.stock);
+    return {
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      sku: buildSku(product.slug, index),
+      category: categoryLabel(product.categoryTitle),
+      stock,
+      capacity,
+      price: product.price,
+      imageSrc: product.imageSrc,
+      imageAlt: product.imageAlt || product.name,
+      status,
+      progress: Math.max(8, Math.min(100, Math.round((stock / capacity) * 100))),
+    };
+  });
+
+  const totalUnits = products.reduce((sum, product) => sum + (typeof product.stock === "number" ? product.stock : 0), 0);
+  const lowStockCount = products.filter((product) => typeof product.stock !== "number" || product.stock <= 40).length;
+  const categoryCount = new Set(products.map((product) => categoryLabel(product.categoryTitle))).size;
+  const growth = products.length === 0 ? 0 : Math.min(99.9, (categoryCount / products.length) * 100 + 18.5);
+
+  const css = `
+    .page-title {
+      font-size: 42px;
+      line-height: 0.98;
+    }
+    .page-subtitle {
+      display: none;
+    }
+    .actions {
+      padding-top: 0;
+    }
+    .inventory-add-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      height: 44px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #139f12 0%, #138d11 100%);
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(17, 140, 16, 0.18);
+    }
+    .inventory-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .inventory-stat-card {
+      background: #fff;
+      border-radius: 12px;
+      min-height: 138px;
+      padding: 22px 24px;
+      box-shadow: 0 14px 28px rgba(48, 76, 37, 0.05);
+    }
+    .inventory-stat-card.green {
+      background: linear-gradient(180deg, #1d9c13 0%, #188b12 100%);
+      color: #fff;
+    }
+    .inventory-stat-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .inventory-stat-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #6f7b6c;
+    }
+    .inventory-stat-card.green .inventory-stat-label {
+      color: rgba(255, 255, 255, 0.76);
+    }
+    .inventory-stat-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: #d8f0c8;
+      color: #2c9721;
+    }
+    .inventory-stat-icon.red {
+      background: #ffe0da;
+      color: #d24437;
+    }
+    .inventory-stat-card.green .inventory-stat-icon {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    .inventory-stat-value {
+      margin-top: 18px;
+      font-size: 46px;
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: #207e1e;
+    }
+    .inventory-stat-card.red .inventory-stat-value {
+      color: #b72727;
+    }
+    .inventory-stat-card.green .inventory-stat-value {
+      color: #fff;
+    }
+    .inventory-stat-meta {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #556152;
+    }
+    .inventory-stat-card.green .inventory-stat-meta {
+      color: rgba(255, 255, 255, 0.72);
+    }
+    .inventory-table-card {
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: 22px;
+      box-shadow: 0 18px 36px rgba(48, 76, 37, 0.05);
+      overflow: hidden;
+    }
+    .inventory-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 24px 16px;
+    }
+    .inventory-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+      padding: 0 16px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #e8f0dc 0%, #e2ecd3 100%);
+      color: #6f7d6c;
+      font-size: 17px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 8px 16px rgba(112, 137, 83, 0.06);
+      transition: box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .inventory-search:focus-within {
+      box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
+    }
+    .inventory-input,
+    .inventory-select {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #4f5f4b;
+      font-size: 16px;
+    }
+    .inventory-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .inventory-input::placeholder {
+      color: #7a8677;
+    }
+    .inventory-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f4f8ed 0%, #eaf2de 100%);
+      color: #4f604b;
+      font-size: 15px;
+      text-decoration: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 10px 18px rgba(117, 139, 89, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .inventory-filter:hover {
+      transform: translateY(-1px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 22px rgba(98, 125, 69, 0.12);
+      background: linear-gradient(180deg, #f7fbf0 0%, #edf5e2 100%);
+    }
+    .inventory-filter:focus-within {
+      box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.22), 0 12px 22px rgba(98, 125, 69, 0.12);
+    }
+    .inventory-filter-select {
+      min-width: 150px;
+      position: relative;
+    }
+    .inventory-filter-button {
+      border: 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .inventory-select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #73916c;
+      pointer-events: none;
+    }
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .inventory-table thead {
+      background: #ebf1dc;
+    }
+    .inventory-table th {
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #51604e;
+    }
+    .inventory-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid #edf2e5;
+      vertical-align: middle;
+    }
+    .inventory-table tr:last-child td {
+      border-bottom: 0;
+    }
+    .inventory-product {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .inventory-product img {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #fff;
+    }
+    .inventory-product-name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.28;
+      color: #2b3428;
+    }
+    .inventory-product-sku {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #72806e;
+      line-height: 1.3;
+    }
+    .inventory-category-pill,
+    .inventory-status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 26px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .inventory-category-pill {
+      background: linear-gradient(180deg, #edf5e3 0%, #e1ebd5 100%);
+      color: #63845f;
+    }
+    .inventory-status-pill.optimal {
+      background: #baf28f;
+      color: #38862f;
+    }
+    .inventory-status-pill.healthy {
+      background: #e7eed7;
+      color: #66775d;
+    }
+    .inventory-status-pill.warning {
+      background: #baf28f;
+      color: #588f31;
+    }
+    .inventory-status-pill.critical {
+      background: #ffdeda;
+      color: #c9443a;
+    }
+    .inventory-stock-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .inventory-stock-bar {
+      width: 116px;
+      height: 6px;
+      border-radius: 999px;
+      background: #e2ebdc;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .inventory-stock-fill {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #1f7c1a;
+      min-width: 30px;
+    }
+    .inventory-stock-fill.critical {
+      background: #c4362d;
+      min-width: 10px;
+    }
+    .inventory-stock-fill.warning {
+      background: #38b12d;
+      min-width: 32px;
+    }
+    .inventory-stock-fill.healthy {
+      background: #2ea126;
+      min-width: 34px;
+    }
+    .inventory-stock-text,
+    .inventory-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: #394337;
+    }
+    .inventory-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #445540;
+    }
+    .inventory-actions a,
+    .inventory-actions button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+    .inventory-actions .danger {
+      color: #db3d30;
+    }
+    .inventory-empty {
+      text-align: center;
+      color: #64725f;
+      font-size: 14px;
+      padding: 28px 18px;
+    }
+    .inventory-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 18px 20px;
+      color: #64725f;
+      font-size: 14px;
+    }
+    .inventory-pagination {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .inventory-page-btn {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 4px;
+      border: 0;
+      background: #fff;
+      color: #51604c;
+      box-shadow: inset 0 0 0 1px rgba(45, 58, 40, 0.08);
+      cursor: pointer;
+    }
+    .inventory-page-btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+    .inventory-page-btn.active {
+      background: #1a7e19;
+      color: #fff;
+      box-shadow: none;
+    }
+    @media (max-width: 1200px) {
+      .inventory-stats {
+        grid-template-columns: 1fr;
+      }
+      .inventory-toolbar {
+        flex-wrap: wrap;
+      }
+      .inventory-search {
+        width: 100%;
+        flex: 1 1 100%;
+      }
+    }
+    @media (max-width: 900px) {
+      .page-title {
+        font-size: 34px;
+      }
+      .inventory-table-wrap {
+        overflow-x: auto;
+      }
+      .inventory-table {
+        min-width: 960px;
+      }
+      .inventory-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  `;
+
   return (
     <AdminShell
       activeHref="/admin/inventory"
-      title="Inventory Management"
-      subtitle="Monitor stock levels, manage product details, and optimize your supply chain."
-      searchPlaceholder="Search inventory..."
-      userName="Admin User"
-      userRole="System Admin"
-      userLabel="Admin Console"
+      title="Product Management"
+      subtitle=""
+      searchPlaceholder="Search products, SKU or category..."
+      userName="Admin"
+      userRole="Inventory Admin"
+      userLabel=""
       actions={
-        <>
-          <AdminActionButton tone="secondary">Export CSV</AdminActionButton>
-          <AdminActionButton tone="primary">Create Entry</AdminActionButton>
-        </>
+        <Link href="/admin/products" className="inventory-add-button">
+          <IconPlus />
+          <span>Add New Product</span>
+        </Link>
       }
     >
-      <div className="space-y-4 sm:space-y-6">
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1.1fr]">
-          <StatCard label="Total SKU" value="1,284" delta="+12%" deltaTone="green" hint="current catalog" icon={<IconBox />} />
-          <StatCard label="Critical Stock" value="12" delta="Alert" deltaTone="red" hint="needs restock" icon={<IconGear />} />
-          <div className="rounded-xl sm:rounded-[20px] bg-[linear-gradient(180deg,#127d12_0%,#0f6f11_100%)] p-4 sm:p-5 text-white shadow-sm ring-1 ring-black/5">
-            <div className="text-[10px] sm:text-[12px] uppercase tracking-[0.2em] text-white/60">Inventory Growth</div>
-            <div className="mt-2 sm:mt-4 text-3xl sm:text-[44px] font-extrabold tracking-[-0.06em]">24.5%</div>
-            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[13px] text-white/74">Annual increase in variety</div>
-          </div>
-        </div>
-
-        <SectionCard
-          className="overflow-hidden"
-          right={
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#58715a]">Filter</button>
-              <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#58715a]">Sort</button>
+      <style>{css}</style>
+      <div className="space-y-6">
+        <section className="inventory-stats">
+          <div className="inventory-stat-card">
+            <div className="inventory-stat-header">
+              <div className="inventory-stat-label">Total Active Units</div>
+              <div className="inventory-stat-icon">
+                <IconClipboard />
+              </div>
             </div>
-          }
-          title="All Products"
-          subtitle="Live inventory across core produce and supplies"
-        >
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pb-3 sm:pb-4">
-            <button className="rounded-full bg-[#0b7312] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-white">All Products</button>
-            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Seeds</button>
-            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Fertilizers</button>
-            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Tools</button>
+            <div className="inventory-stat-value">{formatUnits(totalUnits)}</div>
+            <div className="inventory-stat-meta">~ {categoryCount} active categories</div>
           </div>
 
-          <div className="overflow-x-auto overflow-hidden rounded-xl sm:rounded-[18px] ring-1 ring-black/5">
-            <table className="page-table min-w-[800px] sm:min-w-full">
-              <thead>
-                <tr>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Product</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">SKU</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Category</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Inventory</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Price</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Status</th>
-                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => {
-                  const width = stockWidth(product.stock, product.capacity);
-                  return (
-                    <tr key={product.sku}>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                        <div className="product-row flex items-center gap-2 sm:gap-3">
-                          <img src={product.image} alt={product.name} className="product-thumb w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover" />
-                          <div>
-                            <div className="max-w-[140px] sm:max-w-[190px] text-[12px] sm:text-[13px] font-semibold leading-4 sm:leading-5 text-[#243322]">{product.name}</div>
-                            <div className="text-[10px] sm:text-[12px] text-[#748171]">SKU: {product.sku}</div>
-                          </div>
-                        </div>
-                       </td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-[#637162]">{product.sku}</td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                        <Pill tone={product.tone === "green" ? "green" : product.tone === "red" ? "red" : "amber"}>{product.category}</Pill>
-                      </td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="progress w-16 sm:w-20">
-                            <span
-                              className={product.tone === "green" ? "status-green" : product.tone === "red" ? "status-red" : "status-amber"}
-                              style={{ width: `${width}%` }}
-                            />
-                          </div>
-                          <div className="text-[11px] sm:text-[13px] font-semibold text-[#243322]">{product.stock}/{product.capacity}</div>
-                        </div>
-                      </td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3 table-amount text-[12px] sm:text-[13px]">{formatMoney(product.price)}</td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                        <Pill tone={product.tone}>{product.status.toUpperCase()}</Pill>
-                      </td>
-                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                        <div className="icon-actions flex gap-1 sm:gap-2">
-                          <button type="button" className="p-1 hover:bg-gray-100 rounded" aria-label={`Edit ${product.name}`}>
-                            <IconPen />
-                          </button>
-                          <button type="button" className="p-1 hover:bg-gray-100 rounded" aria-label={`Delete ${product.name}`}>
-                            <IconTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 pt-4 text-[11px] sm:text-[12px] text-[#6f7b6d]">
-            <div>Showing 1-4 of 1,284 entries</div>
-            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">‹</button>
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
-              <span className="px-0.5 sm:px-1 text-[#919d90]">…</span>
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">321</button>
-              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">›</button>
+          <div className="inventory-stat-card red">
+            <div className="inventory-stat-header">
+              <div className="inventory-stat-label">Low Stock Items</div>
+              <div className="inventory-stat-icon red">
+                <IconWarning />
+              </div>
             </div>
+            <div className="inventory-stat-value">{lowStockCount}</div>
+            <div className="inventory-stat-meta">Requires immediate attention</div>
           </div>
-        </SectionCard>
 
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-          <SectionCard className="bg-[#e8f6dd]" title="Restock Velocity" subtitle="Based on current sales data, you should reorder soon.">
-            <div className="text-[12px] sm:text-[13px] leading-5 sm:leading-6 text-[#60705f]">
-              Reorder Bio-Active Growth Booster within the next 48 hours to avoid out-of-stock status.
+          <div className="inventory-stat-card green">
+            <div className="inventory-stat-header">
+              <div className="inventory-stat-label">Inventory Growth</div>
+              <div className="inventory-stat-icon">
+                <IconTrend />
+              </div>
             </div>
-          </SectionCard>
-          <SectionCard title="Warehouse Cap." subtitle="Operational load">
-            <div className="text-2xl sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">68%</div>
-            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#657364]">Utilized</div>
-          </SectionCard>
-          <SectionCard title="Compliance" subtitle="ISO and inspection status">
-            <div className="text-2xl sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">Active</div>
-            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#657364]">ISO 22000</div>
-          </SectionCard>
-        </div>
+            <div className="inventory-stat-value">{growth.toFixed(1)}%</div>
+            <div className="inventory-stat-meta">Annual increase in variety</div>
+          </div>
+        </section>
+
+        <section className="inventory-table-card">
+          <InventoryTableClient initialRows={rows} totalProducts={products.length} />
+        </section>
       </div>
     </AdminShell>
   );
 }
 
-function IconPen() {
+function IconPlus() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 sm:h-4 sm:w-4">
-      <path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="m13 6 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );
 }
 
-function IconTrash() {
+function IconClipboard() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 sm:h-4 sm:w-4">
-      <path d="M5 7h14M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.6a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M9 4.5h6l.8 1.5H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2.2L9 4.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="m9 12 2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconWarning() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M12 4 21 20H3L12 4Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M12 9v4.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="16.2" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function IconTrend() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M5 16.5 10 11l3 3 6-7" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19 7h-4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
     </svg>
   );
 }
