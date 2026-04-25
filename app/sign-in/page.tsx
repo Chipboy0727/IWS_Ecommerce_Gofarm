@@ -14,6 +14,12 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/");
 
+  function getRedirectPath(userRole?: string | null, fallbackPath?: string | null) {
+    if (userRole === "admin") return "/admin";
+    if (fallbackPath && fallbackPath.trim()) return fallbackPath;
+    return "/";
+  }
+
   useEffect(() => {
     const redirectParam = searchParams.get("redirect");
     if (redirectParam) {
@@ -33,7 +39,7 @@ function SignInForm() {
     if (user) {
       try {
         const userData = JSON.parse(user);
-        const finalRedirect = userData.redirectTo || redirectTo || "/";
+        const finalRedirect = getRedirectPath(userData.role, userData.redirectTo || redirectTo);
         router.push(finalRedirect);
       } catch (e) {}
     }
@@ -59,6 +65,7 @@ function SignInForm() {
 
       localStorage.setItem("user", JSON.stringify(data.user));
       window.dispatchEvent(new Event("auth-changed"));
+      const finalRedirect = getRedirectPath(data.user?.role, redirectTo);
       router.push(finalRedirect);
     } catch (err: any) {
       setError(err.message);
