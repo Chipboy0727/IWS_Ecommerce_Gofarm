@@ -1,25 +1,6 @@
 {
   "products": [
     {
-      "id": "dc584fdf-e910-4e93-9acd-008f7542f178",
-      "name": "Tuấn cùi",
-      "slug": "tuancui",
-      "createdAt": "2026-04-23T18:09:25.853Z",
-      "updatedAt": "2026-04-23T18:09:25.853Z",
-      "imageSrc": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "imageAlt": "/images/1776967737728-z7757218868755_3c5757a4d3607aa7bad1317e709978bf.jpg",
-      "price": 0,
-      "discount": null,
-      "brand": null,
-      "categoryId": "4eb43c2e-65e5-4675-929e-da1327928bb5",
-      "categoryTitle": "Vegetables",
-      "description": "tests",
-      "rating": 0,
-      "reviews": 0,
-      "stock": null,
-      "status": "new"
-    },
-    {
       "id": "9d2051b8-a2e2-4af8-907b-119cdcc657e9",
       "name": "Onion",
       "slug": "onion",
@@ -1083,6 +1064,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-24T14:11:33.535Z"
+    "updatedAt": "2026-04-25T03:39:00.349Z"
   }
 }

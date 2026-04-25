@@ -11,6 +11,40 @@ export function ProductGridClient({ products }: { products: any[] }) {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   useEffect(() => {
+    const normalizeProductCardImages = () => {
+      const images = Array.from(
+        document.querySelectorAll('[data-product-card-image="true"]')
+      ) as HTMLImageElement[];
+
+      for (const image of images) {
+        const applyFit = () => {
+          if (!image.naturalWidth || !image.naturalHeight) return;
+
+          const isPortrait = image.naturalHeight > image.naturalWidth * 1.15;
+          image.classList.toggle("object-cover", isPortrait);
+          image.classList.toggle("w-full", isPortrait);
+          image.classList.toggle("h-full", isPortrait);
+          image.classList.toggle("max-w-none", isPortrait);
+          image.classList.toggle("max-h-none", isPortrait);
+
+          image.classList.toggle("object-contain", !isPortrait);
+          image.classList.toggle("w-auto", !isPortrait);
+          image.classList.toggle("h-auto", !isPortrait);
+          image.classList.toggle("max-w-[70%]", !isPortrait);
+          image.classList.toggle("max-h-[70%]", !isPortrait);
+        };
+
+        if (image.complete) {
+          applyFit();
+          continue;
+        }
+
+        image.addEventListener("load", applyFit, { once: true });
+      }
+    };
+
+    normalizeProductCardImages();
+
     // Show toast notification
     const showToast = (message: string) => {
       const existingToast = document.querySelector('.product-toast');
@@ -148,17 +182,41 @@ export function ProductGridClient({ products }: { products: any[] }) {
       }
     };
 
+    const handleCarouselNav = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const button = target.closest("[data-carousel-target][data-carousel-direction]") as HTMLElement | null;
+      if (!button) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const carouselTarget = button.dataset.carouselTarget;
+      const direction = button.dataset.carouselDirection;
+      if (!carouselTarget || !direction) return;
+
+      const carousel = document.getElementById(carouselTarget);
+      if (!carousel) return;
+
+      const scrollAmount = carousel.clientWidth;
+      carousel.scrollBy({
+        left: direction === "prev" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    };
+
     // Attach event listeners
     document.addEventListener('click', handleAddToCart);
     document.addEventListener('click', handleWishlist);
     document.addEventListener('click', handleShare);
     document.addEventListener('click', handleQuickView);
+    document.addEventListener('click', handleCarouselNav);
 
     return () => {
       document.removeEventListener('click', handleAddToCart);
       document.removeEventListener('click', handleWishlist);
       document.removeEventListener('click', handleShare);
       document.removeEventListener('click', handleQuickView);
+      document.removeEventListener('click', handleCarouselNav);
     };
   }, [addToCart, addToWishlist, removeFromWishlist, isInWishlist, products]);
 
