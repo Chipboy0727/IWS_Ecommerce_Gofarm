@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { verifySessionToken } from "@/lib/backend/auth";
 import { ProductGridClient } from "@/components/home/product-grid-client";
 import ProductShareHandler from "@/components/home/product-share-handler";
 import { sanitizeServerHtml } from "@/lib/backend/sanitize-html";
@@ -10,6 +13,8 @@ import {
 import { loadLocalCatalog } from "@/lib/local-catalog";
 
 export default async function HomePage() {
+
+
   const bodyHtml = await readOriginalHomeBody();
   const { products: allProducts } = await loadLocalCatalog();
   const storefrontProducts = allProducts.filter(

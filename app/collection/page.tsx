@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
+import { ProductCard } from "@/components/home/product-card";
 import ProductShareHandler from "@/components/home/product-share-handler";
 import { ProductModal } from "@/components/product-modal";
 
@@ -124,201 +125,7 @@ function ShareIcon({ className }: { className?: string }) {
 }
 
 // Product Card Component
-function ProductCardComponent({ product, viewMode = "grid", onShare }: { 
-  product: LocalProduct; 
-  viewMode?: string;
-  onShare?: (product: LocalProduct) => void;
-}) {
-  const salePrice = salePriceFor(product);
-  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
-  const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const [isAdding, setIsAdding] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    setIsWishlisted(isInWishlist(product.id));
-  }, [isInWishlist, product.id]);
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsAdding(true);
-    
-    try {
-      await addToCart({
-        id: product.id,
-        name: product.name,
-        price: salePrice,
-        imageSrc: product.imageSrc,
-        slug: product.slug,
-      });
-      
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 2000);
-      
-    } catch (error) {
-      console.error("Failed to add to cart:", error);
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
-  const handleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isWishlisted) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist({
-        id: product.id,
-        name: product.name,
-        price: salePrice,
-        imageSrc: product.imageSrc,
-        slug: product.slug,
-      });
-    }
-    setIsWishlisted(!isWishlisted);
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (onShare) {
-      onShare(product);
-    }
-  };
-
-  // List view mode
-  if (viewMode === "list") {
-    return (
-      <>
-        <div className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
-          <div className="relative w-24 h-24 shrink-0">
-            <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-cover rounded-lg" />
-            {product.discount && (
-              <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>
-            )}
-          </div>
-          <div className="flex-1">
-            <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <h3 className="font-semibold text-gofarm-black hover:text-gofarm-green">{product.name}</h3>
-            </Link>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="flex">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <StarIcon key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
-                ))}
-              </div>
-              <span className="text-xs text-gofarm-gray">({product.reviews})</span>
-            </div>
-            <p className="text-sm text-gofarm-gray mt-1 line-clamp-1">{product.description}</p>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-              {product.discount && (
-                <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
-              )}
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className="ml-auto px-3 py-1 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green text-sm disabled:opacity-50"
-              >
-                {isAdding ? "..." : "Add to Cart"}
-              </button>
-            </div>
-          </div>
-        </div>
-        {showToast && <ToastMessage />}
-        <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      </>
-    );
-  }
-
-  // Grid view mode
-  return (
-    <>
-      <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
-        <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
-          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
-            <Link href={`/shop/${product.slug}`} className="block h-full w-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <img
-                src={product.imageSrc}
-                className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
-                alt={product.imageAlt}
-                loading="lazy"
-              />
-            </Link>
-
-            <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-              <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
-                {status}
-              </div>
-              {product.discount ? (
-                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
-                  -{product.discount}%
-                </div>
-              ) : null}
-            </div>
-
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-              <button
-                type="button"
-                onClick={handleWishlist}
-                className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-                aria-label="Add to wishlist"
-              >
-                <HeartIcon className={`w-3 h-3 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
-              </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
-                aria-label="Share product"
-              >
-                <ShareIcon className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-
-          <div className="p-2 space-y-1">
-            <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <h2 className="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
-                {product.name}
-              </h2>
-            </Link>
-
-            <div className="flex items-center gap-1">
-              <div className="flex items-center">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className={`w-2.5 h-2.5 ${index < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
-                ))}
-              </div>
-              <span className="text-[9px] text-gofarm-gray">({product.reviews})</span>
-            </div>
-
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1 flex-wrap">
-                <span className="text-gofarm-green text-sm font-bold">{formatPrice(salePrice)}</span>
-                {product.discount ? (
-                  <span className="text-[10px] text-gray-400 line-through">{formatPrice(product.price)}</span>
-                ) : null}
-              </div>
-            </div>
-
-            <button
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              className="w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50"
-            >
-              {isAdding ? "Adding..." : "Add to Cart"}
-            </button>
-          </div>
-        </article>
-      </div>
-      {showToast && <ToastMessage />}
-      <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
-  );
-}
+// Shared ProductCard used instead
 
 function ToastMessage() {
   return (
@@ -587,7 +394,7 @@ export default function CollectionPage() {
 
             <div className={`grid ${getGridColsClass()} gap-4`}>
               {products.map((product) => (
-                <ProductCardComponent key={product.id} product={product} viewMode={viewMode} onShare={handleShare} />
+                <ProductCard key={product.id} product={product} viewMode={viewMode as "grid" | "list"} onShare={handleShare} />
               ))}
             </div>
 

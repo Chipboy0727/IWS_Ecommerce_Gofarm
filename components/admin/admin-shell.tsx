@@ -75,10 +75,13 @@ export function AdminShell({
       padding-right: 24px;
     }
     .admin-sidebar {
-      position: relative;
+      position: sticky;
+      top: 0;
+      height: 100vh;
       border-right: 1px solid rgba(0, 0, 0, 0.05);
       background: linear-gradient(180deg, #e4ecd7 0%, #dee8cc 100%);
       padding: 14px 0 14px 14px;
+      z-index: 30;
     }
     .sidebar-inner {
       display: flex;
@@ -145,7 +148,18 @@ export function AdminShell({
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding: 8px 0 0;
+      padding: 8px 0;
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+    }
+    .nav-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .nav-list::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 999px;
     }
     .nav-item {
       display: flex;
@@ -486,10 +500,10 @@ export function AdminShell({
     }
     .stat-card {
       position: relative;
-      min-height: 150px;
+      min-height: 120px;
       border-radius: 20px;
       background: #fff;
-      padding: 18px 20px 20px;
+      padding: 16px 20px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
       border: 1px solid rgba(0, 0, 0, 0.04);
       overflow: hidden;
@@ -529,8 +543,8 @@ export function AdminShell({
       color: #fff;
     }
     .stat-value {
-      margin-top: 10px;
-      font-size: 44px;
+      margin-top: 8px;
+      font-size: 36px;
       line-height: 0.98;
       font-weight: 800;
       letter-spacing: -0.06em;
@@ -873,10 +887,22 @@ export function AdminShell({
                     <IconHelp className="h-4 w-4" />
                     <span className="sidebar-link-text">Support</span>
                   </Link>
-                  <Link href="/admin/login" className="sidebar-link">
+                  <button
+                    onClick={async () => {
+                      try {
+                        await fetch("/api/auth/logout", { method: "POST" });
+                      } catch (e) {}
+                      localStorage.removeItem("user");
+                      localStorage.removeItem("cart");
+                      localStorage.removeItem("wishlist");
+                      window.dispatchEvent(new Event("auth-changed"));
+                      window.location.href = "/";
+                    }}
+                    className="sidebar-link w-full text-left bg-transparent border-0 cursor-pointer"
+                  >
                     <IconLogout className="h-4 w-4" />
                     <span className="sidebar-link-text">Log Out</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

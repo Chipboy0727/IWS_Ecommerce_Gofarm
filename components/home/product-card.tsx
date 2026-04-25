@@ -108,7 +108,15 @@ export function productCardHtml(product: LocalProduct) {
 }
 
 // React Component version
-export function ProductCard({ product }: { product: LocalProduct }) {
+export function ProductCard({ 
+  product, 
+  viewMode = "grid",
+  onShare 
+}: { 
+  product: LocalProduct;
+  viewMode?: "grid" | "list";
+  onShare?: (product: LocalProduct) => void;
+}) {
   const salePrice = product.discount && product.discount > 0
     ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
     : product.price;
@@ -158,27 +166,96 @@ export function ProductCard({ product }: { product: LocalProduct }) {
     }
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onShare) {
+      onShare(product);
+    }
+  };
+
+  if (viewMode === "list") {
+    return (
+      <>
+        <div className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white group" data-product-id={product.id}>
+          <div className="relative w-32 h-32 shrink-0 bg-white flex items-center justify-center p-2 rounded-lg overflow-hidden border border-gray-100">
+            <Link href={`/shop/${product.slug}`} className="block h-full w-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+              <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110" />
+            </Link>
+            <div className="absolute top-1 left-1 flex flex-col gap-1 z-10">
+              <span className="bg-gofarm-green text-white text-[9px] px-1.5 py-0.5 rounded font-bold">{status}</span>
+              {product.discount && (
+                <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">-{product.discount}%</span>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col justify-between py-1">
+            <div>
+              <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+                <h3 className="font-bold text-gofarm-black hover:text-gofarm-green transition-colors text-base line-clamp-1">{product.name}</h3>
+              </Link>
+              <div className="flex items-center gap-1 mt-1">
+                <div className="flex">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <StarIcon key={i} filled={i < Math.round(product.rating)} />
+                  ))}
+                </div>
+                <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
+              </div>
+              <p className="text-sm text-gofarm-gray mt-2 line-clamp-2 leading-snug">{product.description}</p>
+            </div>
+            
+            <div className="flex items-center justify-between mt-3">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
+                {product.discount && (
+                  <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={handleWishlist} className={`p-2 rounded-full border transition-all ${isWishlisted ? 'bg-gofarm-green text-white border-gofarm-green' : 'bg-white text-gofarm-gray border-gray-200 hover:border-gofarm-green hover:text-gofarm-green'}`}>
+                  <HeartIcon filled={isWishlisted} />
+                </button>
+                <button onClick={handleAddToCart} disabled={isAddingToCart} className="px-5 py-2 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green font-semibold text-sm disabled:opacity-50 transition-colors">
+                  {isAddingToCart ? "..." : "Add to Cart"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {showCartToast && <ToastMessage message="Added to cart!" onClose={() => setShowCartToast(false)} />}
+        {showWishlistToast && <ToastMessage message={isWishlisted ? "Added to wishlist!" : "Removed from wishlist!"} onClose={() => setShowWishlistToast(false)} />}
+        <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
-          <Link href={`/shop/${product.slug}`} className="block" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
           <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
-            <img src={product.imageSrc} className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105" alt={product.imageAlt} loading="lazy" />
-              <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-                <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">{status}</div>
-                {product.discount && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
-              </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-                <button type="button" onClick={handleWishlist} className={`p-1.5 rounded-full shadow-lg border backdrop-blur-sm hover:scale-110 transition-all duration-300 ${isWishlisted ? 'bg-gofarm-green text-white border-gofarm-green' : 'bg-white/90 text-gofarm-gray border-gofarm-green/20 hover:bg-gofarm-green hover:text-white'}`} aria-label="Add to wishlist">
-                  <HeartIcon filled={isWishlisted} />
-                </button>
-                <button type="button" className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" aria-label="Share product">
-                  <ShareIcon />
-                </button>
-              </div>
+            <Link href={`/shop/${product.slug}`} className="block h-full w-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+              <img src={product.imageSrc} className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-110" alt={product.imageAlt} loading="lazy" />
+            </Link>
+            
+            <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10 pointer-events-none">
+              <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">{status}</div>
+              {product.discount && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
             </div>
-            <div className="p-2 space-y-1">
+
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-20">
+              <button type="button" onClick={handleWishlist} className={`p-1.5 rounded-full shadow-lg border backdrop-blur-sm hover:scale-110 transition-all duration-300 ${isWishlisted ? 'bg-gofarm-green text-white border-gofarm-green' : 'bg-white/90 text-gofarm-gray border-gofarm-green/20 hover:bg-gofarm-green hover:text-white'}`} aria-label="Add to wishlist">
+                <HeartIcon filled={isWishlisted} />
+              </button>
+              <button type="button" onClick={handleShare} className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" aria-label="Share product">
+                <ShareIcon />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-2 space-y-1">
+            <Link href={`/shop/${product.slug}`} className="block" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <h2 className="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">{product.name}</h2>
               <div className="flex items-center gap-1">
                 <div className="flex items-center">
@@ -192,8 +269,9 @@ export function ProductCard({ product }: { product: LocalProduct }) {
                   {product.discount && <span className="text-[10px] text-gray-400 line-through">{formatPrice(product.price)}</span>}
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
+
           <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full rounded-md border border-gofarm-green bg-white px-2 py-1.5 text-[10px] font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white active:bg-gofarm-green active:text-white disabled:opacity-50 mx-2 mb-2" style={{ width: 'calc(100% - 16px)' }}>
             {isAddingToCart ? "Adding..." : "Add to Cart"}
           </button>

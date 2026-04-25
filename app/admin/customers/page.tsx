@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard } from "@/components/admin/admin-shell";
+import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconUsers, IconChart, IconBox } from "@/components/admin/admin-shell";
 import { buildCustomerRows, buildDashboardStats } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
 
@@ -31,16 +31,10 @@ export default async function CustomersPage() {
       }
     >
       <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-[260px_260px_1fr]">
-          <StatCard label="Total Active Users" value={stats.userCount.toLocaleString("en-US")} delta="Live" deltaTone="green" hint="backend users" />
-          <StatCard label="Staff-to-Customer Ratio" value={`1:${Math.max(1, Math.round(stats.userCount / Math.max(1, stats.newCustomers)))}`} delta={`${adminCount} Staff`} deltaTone="pink" hint="staff-to-customer ratio" />
-          <div className="rounded-[20px] bg-[linear-gradient(180deg,#0f7d17_0%,#0d6512_100%)] p-5 text-white shadow-sm ring-1 ring-black/5">
-            <div className="text-[12px] uppercase tracking-[0.2em] text-white/60">System Health</div>
-            <div className="mt-2 text-[28px] font-extrabold tracking-[-0.05em]">Operational</div>
-            <div className="mt-5 h-1.5 w-full rounded-full bg-white/18">
-              <div className="h-1.5 w-[76%] rounded-full bg-white" />
-            </div>
-          </div>
+        <div className="grid gap-4 xl:grid-cols-3">
+          <StatCard label="Total Active Users" value={stats.userCount.toLocaleString("en-US")} delta="Live" deltaTone="green" hint="backend users" icon={<IconUsers />} />
+          <StatCard label="Staff-to-Customer Ratio" value={`1:${Math.max(1, Math.round(stats.userCount / Math.max(1, stats.newCustomers)))}`} delta={`${adminCount} Staff`} deltaTone="pink" hint="staff-to-customer ratio" icon={<IconChart />} />
+          <StatCard label="System Health" value="Operational" delta="99.9%" deltaTone="green" hint="All systems normal" icon={<IconBox />} />
         </div>
 
         <SectionCard
@@ -107,18 +101,7 @@ export default async function CustomersPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between px-2 pt-4 text-[12px] text-[#6f7b6d]">
-            <div>Showing {users.length > 0 ? `1-${users.length}` : "0"} of {users.length.toLocaleString("en-US")} users</div>
-            <div className="flex items-center gap-2">
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">â€¹</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
-              <span className="px-1 text-[#919d90]">â€¦</span>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">711</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">â€º</button>
-            </div>
-          </div>
+
         </SectionCard>
 
         <div className="grid gap-4 xl:grid-cols-2">

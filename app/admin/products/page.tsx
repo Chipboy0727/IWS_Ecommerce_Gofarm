@@ -24,14 +24,10 @@ export default async function ProductsPage() {
       userLabel="Agricultural Admin"
     >
       <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-[1fr_1fr_1.1fr]">
+        <div className="grid gap-4 md:grid-cols-3">
           <StatCard label="Total Active Units" value={products.length.toLocaleString("en-US")} delta="+4.2%" deltaTone="green" hint="from last month" icon={<IconBox />} />
           <StatCard label="Low Stock Items" value={lowStockItems.toString()} delta="Alert" deltaTone="red" hint="requires immediate attention" icon={<IconGear />} />
-          <div className="rounded-[20px] bg-[linear-gradient(180deg,#0f7d17_0%,#0d6512_100%)] p-5 text-white shadow-sm ring-1 ring-black/5">
-            <div className="text-[12px] uppercase tracking-[0.2em] text-white/60">Inventory Growth</div>
-            <div className="mt-4 text-[44px] font-extrabold tracking-[-0.06em]">24.5%</div>
-            <div className="mt-1 text-[13px] text-white/74">Annual increase in variety</div>
-          </div>
+          <StatCard label="Inventory Growth" value="24.5%" delta="+1.8%" deltaTone="green" hint="Annual increase in variety" icon={<IconBox />} />
         </div>
 
         <ProductManager />

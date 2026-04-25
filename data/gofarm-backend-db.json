@@ -863,6 +863,7 @@
       "email": "admin@gofarm.local",
       "passwordHash": "43ae2010e13654cb7e5b80f5534b0569:48ffec71309806b159044e4d2bd6b917595219d0a08da218dc3ab3b7bc565e72",
       "role": "admin",
+      "redirectTo": "/admin",
       "createdAt": "2026-04-21T16:17:06.895Z",
       "updatedAt": "2026-04-21T16:17:06.895Z"
     },
@@ -874,9 +875,58 @@
       "role": "user",
       "createdAt": "2026-04-21T16:17:06.839Z",
       "updatedAt": "2026-04-21T16:17:06.839Z"
+    },
+    {
+      "id": "user-test-id",
+      "name": "Test User",
+      "email": "user@gofarm.local",
+      "passwordHash": "77b4484aa083df2c649809658ce98aa2:b3536e33188ed3ce5e9b5db1155bb9574c8883448acfdbd90e81dcdd81a8b5e8",
+      "role": "user",
+      "createdAt": "2026-04-25T10:00:00.000Z",
+      "updatedAt": "2026-04-25T10:00:00.000Z"
     }
   ],
   "orders": [
+    {
+      "id": "ORD-1777111791001",
+      "date": "2026-04-25",
+      "total": 517,
+      "status": "pending",
+      "items": 3,
+      "products": [
+        {
+          "id": "d9b6f58c-5abc-4d47-b9c0-2e6290563f3e-1 Bottle",
+          "name": "Dandy (1 Bottle)",
+          "price": 11,
+          "quantity": 3,
+          "imageSrc": "/images/98a43d1422997e1afb569bdbad7f0bad87d77ebf-750x750.webp",
+          "slug": "dandy"
+        },
+        {
+          "id": "a36d4b88-3484-47f0-9467-7ba0024cf4e3",
+          "name": "Pistachio",
+          "price": 44,
+          "quantity": 5,
+          "imageSrc": "/images/6df699a5a14720d75316a12c4dd3d46408fb1f0f-1024x1024.png",
+          "slug": "pistachio"
+        },
+        {
+          "id": "8fcfaf45-15f1-4c73-9b09-68d059ec6a3a",
+          "name": "Almond",
+          "price": 31,
+          "quantity": 7,
+          "imageSrc": "/images/1d19d0adbefedbdfce77186a46186f0f8be34b5e-1024x1024.png",
+          "slug": "almond"
+        }
+      ],
+      "shippingAddress": "aaaaaa, Hanoi, Vietnam 10000",
+      "customerName": "Test User",
+      "customerEmail": "user@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-25T10:09:51.026Z",
+      "updatedAt": "2026-04-25T10:09:51.026Z"
+    },
     {
       "id": "ORD-1777039881346",
       "date": "2026-04-24",
@@ -1064,6 +1114,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-25T03:39:00.349Z"
+    "updatedAt": "2026-04-25T10:09:51.027Z"
   }
 }

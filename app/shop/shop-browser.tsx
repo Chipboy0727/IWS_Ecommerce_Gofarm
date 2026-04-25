@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { ProductModal } from "@/components/product-modal";
+import { ProductCard as SharedProductCard } from "@/components/home/product-card";
 import ProductShareHandler from "@/components/home/product-share-handler";
+import { ProductModal } from "@/components/product-modal";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
 
@@ -69,118 +70,7 @@ function StarIcon({ className = "", filled = false }: { className?: string; fill
   );
 }
 
-function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQuickView }: { 
-  product: LocalProduct; 
-  onAddToCart: (product: LocalProduct) => void;
-  onToggleWishlist: (product: LocalProduct) => void;
-  isWishlisted: boolean;
-  onQuickView: (product: LocalProduct) => void;
-}) {
-  const salePrice = salePriceFor(product);
-  const status = product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "New";
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onAddToCart(product);
-  };
-
-  const handleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onToggleWishlist(product);
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // ProductShareHandler handles this via event delegation
-  };
-
-  return (
-    <article className="group rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl" data-product-id={product.id}>
-      <div className="relative">
-        <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
-          <div className="relative h-52 overflow-hidden rounded-t-2xl bg-white flex items-center justify-center p-4">
-            <div className="absolute left-3 top-3 z-10 flex flex-col gap-2">
-              <span className="inline-flex items-center rounded-full bg-gofarm-green px-3 py-1 text-xs font-semibold text-white shadow">
-                {status}
-              </span>
-              {product.discount ? (
-                <span className="inline-flex items-center rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white shadow">
-                  -{product.discount}%
-                </span>
-              ) : null}
-            </div>
-
-            <img
-              src={product.imageSrc}
-              alt={product.imageAlt}
-              className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
-          </div>
-        </button>
-
-        {/* Action Buttons - Wishlist and Share */}
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-          <button
-            type="button"
-            onClick={handleWishlist}
-            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          >
-            <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
-          </button>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
-            title="Share product"
-            aria-label="Share product"
-          >
-            <ShareIcon className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div className="px-4 pb-4 pt-2">
-        <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
-          <h3 className="text-[17px] font-bold text-gofarm-black leading-tight hover:text-gofarm-green transition-colors">
-            {product.name}
-          </h3>
-        </button>
-
-        <div className="mt-1 flex items-center gap-1 text-[12px] leading-none">
-          {[...Array(5)].map((_, i) => (
-            <StarIcon key={i} className={`w-3 h-3 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
-          ))}
-          <span className="text-gofarm-gray ml-1">({product.reviews})</span>
-        </div>
-
-        <div className="mt-2 flex items-end gap-2 flex-wrap">
-          <span className="text-[22px] font-bold text-gofarm-green leading-none">{formatPrice(salePrice)}</span>
-          {product.discount ? (
-            <>
-              <span className="text-[18px] font-semibold text-gray-500 line-through leading-none">
-                {formatPrice(product.price)}
-              </span>
-              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium text-red-500">
-                -{product.discount}%
-              </span>
-            </>
-          ) : null}
-        </div>
-
-        {/* Button Add to Cart */}
-        <button
-          onClick={handleAddToCart}
-          className="mt-4 w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors"
-        >
-          Add to Cart
-        </button>
-      </div>
-    </article>
-  );
-}
+// Shared ProductCard used instead
 
 function FilterOption({
   active,
@@ -407,13 +297,9 @@ export default function ShopBrowser({
                 <>
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                     {paginatedProducts.map((product) => (
-                      <ProductCard
+                      <SharedProductCard
                         key={product.id}
                         product={product}
-                        onAddToCart={handleAddToCart}
-                        onToggleWishlist={handleToggleWishlist}
-                        isWishlisted={wishlistStatus[product.id] || false}
-                        onQuickView={setSelectedProduct}
                       />
                     ))}
                   </div>
