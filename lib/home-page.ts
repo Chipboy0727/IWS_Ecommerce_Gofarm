@@ -133,6 +133,7 @@ export function buildProductGridMarkup(products: LocalProduct[]) {
 export function buildSectionCarouselHtml({ title, products, productCount }: SectionCarouselOptions) {
   const items = products.slice(0, 10);
   const carouselId = `carousel-${title.replace(/\s/g, "")}`;
+  const dotCount = Math.max(1, Math.ceil(items.length / 5));
 
   return `
     <div class="bg-gofarm-white rounded-2xl shadow-lg border border-gofarm-light-green/20 p-6 mb-8">
@@ -185,15 +186,16 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
         </div>
       </div>
 
-      <div class="flex items-center justify-center gap-2 pt-8">
-        <span class="h-3 w-8 rounded-full bg-gofarm-green"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
-        <span class="h-3 w-3 rounded-full bg-gray-200"></span>
+      <div class="flex items-center justify-center gap-2 pt-8" data-carousel-dots="${carouselId}">
+        ${Array.from({ length: dotCount }, (_, index) => `
+          <button
+            type="button"
+            aria-label="Go to slide ${index + 1}"
+            class="carousel-dot h-3 rounded-full transition-all duration-300 ${index === 0 ? "w-8 bg-gofarm-green" : "w-3 bg-gray-200 hover:bg-gray-300"}"
+            data-carousel-target="${carouselId}"
+            data-carousel-dot="${index}"
+          ></button>
+        `).join("")}
       </div>
     </div>
   `;

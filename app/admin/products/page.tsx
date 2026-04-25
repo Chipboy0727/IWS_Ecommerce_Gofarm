@@ -75,7 +75,8 @@ export default async function ProductsPage() {
           className="overflow-hidden"
           right={<div className="text-[11px] sm:text-[12px] font-semibold text-[#0b7312]">Showing {products.length.toLocaleString("en-US")} items</div>}
         >
-          <div className="overflow-x-auto overflow-hidden rounded-b-[18px] ring-1 ring-black/5">
+          <div className="overflow-hidden rounded-b-[18px] ring-1 ring-black/5">
+            <div className="max-h-[420px] overflow-auto">
             <table className="page-table min-w-[900px] sm:min-w-full">
               <thead>
                 <tr>
@@ -123,6 +124,7 @@ export default async function ProductsPage() {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
         </SectionCard>
       </div>
