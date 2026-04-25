@@ -1,6 +1,9 @@
 "use client";
 
-import { ProductCard as SharedProductCard } from "@/components/home/product-card";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useCart } from "@/app/context/cart-context";
+import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
 import { ProductModal } from "@/components/product-modal";
 
@@ -18,7 +21,6 @@ function salePriceFor(product: LocalProduct) {
     : product.price;
 }
 
-// Toast Message Component
 function ToastMessage({ productName, onClose }: { productName: string; onClose: () => void }) {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -198,23 +200,24 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
               ) : null}
             </div>
 
+            {/* Nút Wishlist và Share - NỀN TRẮNG, KHÔNG VIỀN */}
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 sm:gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
               <button
                 type="button"
                 onClick={handleWishlist}
-                className="p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+                className="p-1.5 sm:p-2 rounded-full shadow-md hover:scale-110 transition-all duration-300 bg-white"
                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <HeartIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
+                <HeartIcon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-500"}`} filled={isWishlisted} />
               </button>
               <button
                 type="button"
                 onClick={handleShare}
-                className="p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
+                className="p-1.5 sm:p-2 rounded-full shadow-md hover:scale-110 transition-all duration-300 bg-white hover:text-red-500"
                 title="Share product"
                 aria-label="Share product"
               >
-                <ShareIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <ShareIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 hover:text-red-500" />
               </button>
             </div>
           </div>
