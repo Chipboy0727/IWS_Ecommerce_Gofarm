@@ -12,10 +12,13 @@ import { loadLocalCatalog } from "@/lib/local-catalog";
 export default async function HomePage() {
   const bodyHtml = await readOriginalHomeBody();
   const { products: allProducts } = await loadLocalCatalog();
+  const storefrontProducts = allProducts.filter(
+    (product) => product.price > 0 && product.name.trim() && product.imageSrc.trim()
+  );
   const usedSlugs = new Set<string>();
 
-  const takeSectionProducts = (matches: typeof allProducts, limit = 10) => {
-    const items: typeof allProducts = [];
+  const takeSectionProducts = (matches: typeof storefrontProducts, limit = 10) => {
+    const items: typeof storefrontProducts = [];
 
     for (const product of matches) {
       if (!product.slug || usedSlugs.has(product.slug)) continue;
@@ -24,7 +27,7 @@ export default async function HomePage() {
       if (items.length >= limit) return items;
     }
 
-    for (const product of allProducts) {
+    for (const product of storefrontProducts) {
       if (!product.slug || usedSlugs.has(product.slug)) continue;
       items.push(product);
       usedSlugs.add(product.slug);
@@ -35,7 +38,7 @@ export default async function HomePage() {
   };
 
   const vegetableProducts = takeSectionProducts(
-    allProducts.filter(
+    storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "vegetables" ||
         /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce/i.test(product.name)
@@ -43,7 +46,7 @@ export default async function HomePage() {
   );
 
   const fruitsProducts = takeSectionProducts(
-    allProducts.filter(
+    storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "fruits" ||
         /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
@@ -51,7 +54,7 @@ export default async function HomePage() {
   );
 
   const juicesProducts = takeSectionProducts(
-    allProducts.filter(
+    storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "juices" ||
         /juice|juices|smoothie/i.test(product.name)
@@ -59,14 +62,14 @@ export default async function HomePage() {
   );
 
   const spicesProducts = takeSectionProducts(
-    allProducts.filter(
+    storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "spices & herbs" ||
         /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
     )
   );
 
-  const products = allProducts.filter((product) => !usedSlugs.has(product.slug)).slice(0, 15);
+  const products = storefrontProducts.filter((product) => !usedSlugs.has(product.slug)).slice(0, 15);
   const productGridMarkup = buildProductGridMarkup(products);
   const sectionMarkups = [
     buildSectionCarouselHtml({
@@ -104,8 +107,8 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: sanitizeServerHtml(transformedBody) }}
         suppressHydrationWarning
       />
-      <ProductGridClient products={allProducts} />
-      <ProductShareHandler products={allProducts} />
+      <ProductGridClient products={storefrontProducts} />
+      <ProductShareHandler products={storefrontProducts} />
     </>
   );
 }

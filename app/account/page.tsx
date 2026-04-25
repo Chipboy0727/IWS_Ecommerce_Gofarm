@@ -353,6 +353,9 @@ export default function AccountPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const memberSince = user?.registeredAt
+    ? new Date(user.registeredAt).getFullYear()
+    : null;
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -416,7 +419,7 @@ export default function AccountPage() {
               <div className="flex-1">
                 <h1 className="text-2xl font-bold">{user.name || "User"}</h1>
                 <p className="text-white/80">{user.email}</p>
-                <p className="text-sm text-white/60 mt-1">Member since {new Date().getFullYear()}</p>
+                <p className="text-sm text-white/60 mt-1">Member since {memberSince ?? "N/A"}</p>
               </div>
               <div className="flex gap-2">
                 <button 
