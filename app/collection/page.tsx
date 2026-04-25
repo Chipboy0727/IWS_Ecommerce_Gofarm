@@ -123,7 +123,21 @@ function ShareIcon({ className }: { className?: string }) {
   );
 }
 
-// Product Card Component
+// Toast Message
+function ToastMessage({ productName }: { productName: string }) {
+  return (
+    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
+      <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        <span>{productName} added to cart!</span>
+      </div>
+    </div>
+  );
+}
+
+// Product Card Component - Responsive
 function ProductCardComponent({ product, viewMode = "grid", onShare }: { 
   product: LocalProduct; 
   viewMode?: string;
@@ -135,6 +149,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastProductName, setToastProductName] = useState("");
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -145,7 +160,6 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsAdding(true);
-    
     try {
       await addToCart({
         id: product.id,
@@ -154,10 +168,9 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
         imageSrc: product.imageSrc,
         slug: product.slug,
       });
-      
+      setToastProductName(product.name);
       setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
-      
     } catch (error) {
       console.error("Failed to add to cart:", error);
     } finally {
@@ -183,25 +196,21 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
 
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (onShare) {
-      onShare(product);
-    }
+    if (onShare) onShare(product);
   };
 
-  // List view mode
+  // LIST VIEW
   if (viewMode === "list") {
     return (
       <>
-        <div className="flex gap-4 p-4 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
-          <div className="relative w-24 h-24 shrink-0">
+        <div className="flex gap-3 p-3 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
+          <div className="relative w-20 h-20 shrink-0">
             <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-cover rounded-lg" />
-            {product.discount && (
-              <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>
-            )}
+            {product.discount && <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <h3 className="font-semibold text-gofarm-black hover:text-gofarm-green">{product.name}</h3>
+              <h3 className="font-semibold text-gofarm-black hover:text-gofarm-green text-sm truncate">{product.name}</h3>
             </Link>
             <div className="flex items-center gap-1 mt-1">
               <div className="flex">
@@ -211,143 +220,89 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
               </div>
               <span className="text-xs text-gofarm-gray">({product.reviews})</span>
             </div>
-            <p className="text-sm text-gofarm-gray mt-1 line-clamp-1">{product.description}</p>
+            <p className="text-sm text-gofarm-gray mt-1 line-clamp-1 hidden sm:block">{product.description}</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-              {product.discount && (
-                <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
-              )}
-              <button
-                onClick={handleAddToCart}
-                disabled={isAdding}
-                className="ml-auto px-3 py-1 bg-gofarm-green text-white rounded-lg hover:bg-gofarm-light-green text-sm disabled:opacity-50"
-              >
-                {isAdding ? "..." : "Add to Cart"}
+              {product.discount && <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>}
+              <button onClick={handleAddToCart} disabled={isAdding} className="ml-auto px-3 py-1 bg-gofarm-green text-white rounded-lg text-sm disabled:opacity-50">
+                {isAdding ? "Adding..." : "Add to Cart"}
               </button>
             </div>
           </div>
         </div>
-        {showToast && <ToastMessage />}
+        {showToast && <ToastMessage productName={toastProductName} />}
         <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </>
     );
   }
 
-  // Grid view mode
+  // GRID VIEW
   return (
     <>
-      <div className="transform hover:scale-105 transition-transform duration-300" data-product-id={product.id}>
-        <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300">
-          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
-            <Link href={`/shop/${product.slug}`} className="block h-full w-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <img
-                src={product.imageSrc}
-                className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
-                alt={product.imageAlt}
-                loading="lazy"
-              />
+      <div className="transform hover:scale-105 transition-transform duration-300">
+        <article className="group relative border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+          
+          <div className="relative aspect-square overflow-hidden bg-white flex items-center justify-center p-3 sm:p-4">
+            <Link href={`/shop/${product.slug}`} className="block w-full h-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
+              <img src={product.imageSrc} className="w-full h-full object-contain transition-all duration-500 group-hover:scale-105" alt={product.imageAlt} loading="lazy" />
             </Link>
 
-            <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-              <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
-                {status}
-              </div>
-              {product.discount ? (
-                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
-                  -{product.discount}%
-                </div>
-              ) : null}
+            <div className="absolute top-2 left-2 flex flex-col gap-1">
+              <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">{status}</div>
+              {product.discount && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
             </div>
 
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-              <button
-                type="button"
-                onClick={handleWishlist}
-                className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
-                aria-label="Add to wishlist"
-              >
-                <HeartIcon className={`w-3 h-3 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+              <button onClick={handleWishlist} className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 bg-white/90 hover:bg-gofarm-green hover:text-white transition-all">
+                <HeartIcon className={`w-3 h-3 ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"}`} filled={isWishlisted} />
               </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
-                aria-label="Share product"
-              >
-                <ShareIcon className="w-3 h-3" />
+              <button onClick={handleShare} className="p-1.5 rounded-full shadow-lg border border-gofarm-green/20 bg-white/90 hover:bg-gofarm-green hover:text-white transition-all">
+                <ShareIcon className="w-3 h-3 text-gray-600 hover:text-white" />
               </button>
             </div>
           </div>
 
-          <div className="p-2 space-y-1">
+          <div className="p-2 sm:p-3 flex-1 flex flex-col">
             <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
-              <h2 className="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
+              <h2 className="text-xs sm:text-sm font-semibold line-clamp-2 mb-0.5 group-hover:text-gofarm-green transition-colors min-h-[32px] sm:min-h-[40px]">
                 {product.name}
               </h2>
             </Link>
 
-            <div className="flex items-center gap-1">
-              <div className="flex items-center">
+            <div className="flex items-center gap-1 mt-1">
+              <div className="flex">
                 {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className={`w-2.5 h-2.5 ${index < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
+                  <StarIcon key={index} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${index < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
-              <span className="text-[9px] text-gofarm-gray">({product.reviews})</span>
+              <span className="text-[10px] sm:text-xs text-gofarm-gray">({product.reviews})</span>
             </div>
 
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1 flex-wrap">
-                <span className="text-gofarm-green text-sm font-bold">{formatPrice(salePrice)}</span>
-                {product.discount ? (
-                  <span className="text-[10px] text-gray-400 line-through">{formatPrice(product.price)}</span>
-                ) : null}
-              </div>
+            <div className="flex items-center gap-1 mt-1 flex-wrap">
+              <span className="text-gofarm-green text-sm sm:text-base font-bold">{formatPrice(salePrice)}</span>
+              {product.discount && <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>}
             </div>
 
-            <button
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              className="w-full rounded-md bg-gofarm-green text-white px-2 py-1.5 text-[10px] font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50"
-            >
+            <button onClick={handleAddToCart} disabled={isAdding} className="w-full rounded-lg bg-gofarm-green text-white px-2 py-1.5 mt-2 text-xs sm:text-sm font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50">
               {isAdding ? "Adding..." : "Add to Cart"}
             </button>
           </div>
         </article>
       </div>
-      {showToast && <ToastMessage />}
+      {showToast && <ToastMessage productName={toastProductName} />}
       <ProductModal product={product} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
 
-function ToastMessage() {
-  return (
-    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
-      <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-        <span>Added to cart!</span>
-      </div>
-    </div>
-  );
-}
-
 function collectionSortToApi(sortBy: string) {
   switch (sortBy) {
-    case "name-desc":
-      return { sortBy: "name", sortOrder: "desc" as const };
-    case "price-asc":
-      return { sortBy: "price", sortOrder: "asc" as const };
-    case "price-desc":
-      return { sortBy: "price", sortOrder: "desc" as const };
-    case "rating":
-      return { sortBy: "rating", sortOrder: "desc" as const };
-    case "featured":
-      return { sortBy: "featured", sortOrder: "desc" as const };
-    case "name-asc":
-    default:
-      return { sortBy: "name", sortOrder: "asc" as const };
+    case "name-desc": return { sortBy: "name", sortOrder: "desc" as const };
+    case "price-asc": return { sortBy: "price", sortOrder: "asc" as const };
+    case "price-desc": return { sortBy: "price", sortOrder: "desc" as const };
+    case "rating": return { sortBy: "rating", sortOrder: "desc" as const };
+    case "featured": return { sortBy: "featured", sortOrder: "desc" as const };
+    default: return { sortBy: "name", sortOrder: "asc" as const };
   }
 }
 
@@ -369,9 +324,7 @@ export default function CollectionPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    import("@/app/share/share-modal").then((mod) => {
-      setShareModalComponent(() => mod.default);
-    });
+    import("@/app/share/share-modal").then((mod) => setShareModalComponent(() => mod.default));
   }, []);
 
   useEffect(() => {
@@ -402,16 +355,14 @@ export default function CollectionPage() {
         if (cancelled) return;
 
         const nextProducts = Array.isArray(data.products) ? data.products : [];
-        setProducts((current) => (isFirstPage ? nextProducts : [...current, ...nextProducts]));
+        setProducts((current) => isFirstPage ? nextProducts : [...current, ...nextProducts]);
         setMeta({
           total: Number(data.meta?.total ?? nextProducts.length),
           totalPages: Number(data.meta?.totalPages ?? 1),
           hasNextPage: Boolean(data.meta?.hasNextPage),
         });
       } catch (error) {
-        if (!cancelled) {
-          console.error("Failed to load products:", error);
-        }
+        console.error("Failed to load products:", error);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -421,19 +372,16 @@ export default function CollectionPage() {
     }
 
     loadProducts();
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
+    return () => { cancelled = true; controller.abort(); };
   }, [page, searchTerm, filterType, sortBy, priceRange.min, priceRange.max]);
 
   const getGridColsClass = () => {
     if (viewMode === "list") return "grid-cols-1";
     switch (gridCols) {
-      case 3: return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3";
-      case 4: return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4";
-      case 5: return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
-      default: return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4";
+      case 3: return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-3";
+      case 4: return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+      case 5: return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
+      default: return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
     }
   };
 
@@ -478,65 +426,69 @@ export default function CollectionPage() {
   if (loading && products.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gofarm-green" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gofarm-green" />
       </div>
     );
   }
 
   return (
     <>
-      <div className="bg-linear-to-b from-gofarm-light-green/5 via-gofarm-white to-gofarm-light-orange/5 min-h-screen">
+      <div className="bg-gradient-to-b from-gofarm-light-green/5 via-white to-gofarm-light-orange/5 min-h-screen">
         <main>
-          <div className="max-w-(--breakpoint-xl) mx-auto px-4 py-8 lg:py-12">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-3 mb-4">
-                <div className="h-1 w-12 bg-linear-to-r from-gofarm-light-green to-gofarm-green rounded-full" />
-                <SparklesIcon className="w-8 h-8 text-gofarm-green" />
-                <h1 className="text-3xl lg:text-5xl font-bold text-gofarm-black">Product Collection</h1>
-                <SparklesIcon className="w-8 h-8 text-gofarm-green" />
-                <div className="h-1 w-12 bg-linear-to-l from-gofarm-light-green to-gofarm-green rounded-full" />
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+            
+            {/* Header */}
+            <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                <div className="h-0.5 w-8 sm:w-12 bg-gradient-to-r from-gofarm-light-green to-gofarm-green rounded-full" />
+                <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gofarm-green" />
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gofarm-black">Product Collection</h1>
+                <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gofarm-green" />
+                <div className="h-0.5 w-8 sm:w-12 bg-gradient-to-l from-gofarm-light-green to-gofarm-green rounded-full" />
               </div>
-              <p className="text-gofarm-gray text-lg max-w-2xl mx-auto">Discover our curated collection of premium products</p>
-              <div className="mt-4 flex items-center justify-center gap-2">
-                <div className="inline-flex items-center rounded-md border font-semibold transition-colors shadow-sm bg-gofarm-light-green/20 text-gofarm-green border-gofarm-light-green/30 text-base px-4 py-2">
+              <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">Discover our curated collection of premium products</p>
+              <div className="mt-3 flex items-center justify-center gap-2">
+                <div className="inline-flex items-center rounded-md border font-semibold bg-gofarm-light-green/20 text-gofarm-green border-gofarm-light-green/30 text-sm px-3 py-1.5">
                   {totalCount} Products
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border bg-card text-card-foreground mb-4 border-gofarm-light-green/20 shadow-lg bg-linear-to-br from-gofarm-white via-gofarm-light-orange/5 to-gofarm-light-green/5">
-              <div className="p-6">
-                <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search and Filters Bar */}
+            <div className="rounded-xl border bg-white border-gofarm-light-green/20 shadow-lg mb-4">
+              <div className="p-3 sm:p-4 lg:p-5">
+                <div className="flex flex-col lg:flex-row gap-3">
+                  
                   <div className="flex-1 relative">
-                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gofarm-gray" />
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="w-full border bg-transparent pl-12 pr-4 py-3 text-base border-gofarm-light-green/30 focus:border-gofarm-green focus:ring-gofarm-green rounded-xl outline-none"
+                      className="w-full border bg-transparent pl-9 pr-3 py-2 text-sm border-gofarm-light-green/30 focus:border-gofarm-green focus:ring-gofarm-green rounded-lg outline-none"
                       placeholder="Search products..."
                     />
                   </div>
 
-                  <div className="flex gap-2">
-                    <button onClick={() => { setViewMode("grid"); setGridCols(3); }} className={`h-12 w-12 rounded-xl border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 inline-flex items-center justify-center ${viewMode === "grid" && gridCols === 3 ? "bg-gofarm-green text-white" : ""}`} title="3 columns">
-                      <Grid3x3Icon className="w-5 h-5" />
+                  <div className="flex gap-1.5">
+                    <button onClick={() => { setViewMode("grid"); setGridCols(3); }} className={`h-9 w-9 rounded-lg border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 flex items-center justify-center transition-colors ${viewMode === "grid" && gridCols === 3 ? "bg-gofarm-green text-white" : "bg-white"}`}>
+                      <Grid3x3Icon className="w-4 h-4" />
                     </button>
-                    <button onClick={() => { setViewMode("grid"); setGridCols(4); }} className={`h-12 w-12 rounded-xl border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 inline-flex items-center justify-center ${viewMode === "grid" && gridCols === 4 ? "bg-gofarm-green text-white" : ""}`} title="4 columns">
-                      <LayoutGridIcon className="w-5 h-5" />
+                    <button onClick={() => { setViewMode("grid"); setGridCols(4); }} className={`h-9 w-9 rounded-lg border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 flex items-center justify-center transition-colors ${viewMode === "grid" && gridCols === 4 ? "bg-gofarm-green text-white" : "bg-white"}`}>
+                      <LayoutGridIcon className="w-4 h-4" />
                     </button>
-                    <button onClick={() => { setViewMode("grid"); setGridCols(5); }} className={`h-12 w-12 rounded-xl border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 inline-flex items-center justify-center ${viewMode === "grid" && gridCols === 5 ? "bg-gofarm-green text-white" : ""}`} title="5 columns">
-                      <Grid5Icon className="w-5 h-5" />
+                    <button onClick={() => { setViewMode("grid"); setGridCols(5); }} className={`h-9 w-9 rounded-lg border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 flex items-center justify-center transition-colors ${viewMode === "grid" && gridCols === 5 ? "bg-gofarm-green text-white" : "bg-white"}`}>
+                      <Grid5Icon className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setViewMode("list")} className={`h-12 w-12 rounded-xl border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 inline-flex items-center justify-center ${viewMode === "list" ? "bg-gofarm-green text-white" : ""}`} title="List view">
-                      <ListIcon className="w-5 h-5" />
+                    <button onClick={() => setViewMode("list")} className={`h-9 w-9 rounded-lg border border-gofarm-light-green/30 hover:bg-gofarm-light-green/10 flex items-center justify-center transition-colors ${viewMode === "list" ? "bg-gofarm-green text-white" : "bg-white"}`}>
+                      <ListIcon className="w-4 h-4" />
                     </button>
                   </div>
 
                   <select
                     value={sortBy}
                     onChange={(e) => handleSortChange(e.target.value)}
-                    className="px-4 py-3 border border-gofarm-light-green/30 rounded-xl bg-gofarm-white text-gofarm-black focus:outline-none focus:border-gofarm-green"
+                    className="px-3 py-2 border border-gofarm-light-green/30 rounded-lg bg-white text-sm focus:outline-none focus:border-gofarm-green"
                   >
                     <option value="name-asc">Name: A-Z</option>
                     <option value="name-desc">Name: Z-A</option>
@@ -549,26 +501,41 @@ export default function CollectionPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border bg-card text-card-foreground mb-8 border-gofarm-light-green/20 shadow-lg bg-white">
-              <div className="p-4">
-                <div className="flex flex-wrap items-center gap-3">
+            {/* Filter Buttons */}
+            <div className="rounded-xl border bg-white border-gofarm-light-green/20 shadow-lg mb-6">
+              <div className="p-3 sm:p-4">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-gofarm-black">Filter by:</span>
-                  <button onClick={() => handleFilterType("all")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "all" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>All Products</button>
-                  <button onClick={() => handleFilterType("sale")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "sale" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>On Sale</button>
-                  <button onClick={() => handleFilterType("featured")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "featured" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Featured</button>
-                  <button onClick={() => handleFilterType("new")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "new" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>New Arrivals</button>
-                  <button onClick={() => handleFilterType("hot")} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterType === "hot" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>Hot Deals</button>
-                  <button onClick={() => setShowPriceFilter(!showPriceFilter)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${showPriceFilter ? "bg-gofarm-green text-white" : "bg-gray-100 text-gofarm-gray hover:bg-gofarm-light-green/20"}`}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                  
+                  <button onClick={() => handleFilterType("all")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "all" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    All
+                  </button>
+                  <button onClick={() => handleFilterType("sale")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "sale" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    Sale
+                  </button>
+                  <button onClick={() => handleFilterType("featured")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "featured" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    Featured
+                  </button>
+                  <button onClick={() => handleFilterType("new")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "new" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    New
+                  </button>
+                  <button onClick={() => handleFilterType("hot")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "hot" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    Hot
+                  </button>
+                  
+                  <button onClick={() => setShowPriceFilter(!showPriceFilter)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${showPriceFilter ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                     Price
                   </button>
                 </div>
 
                 {showPriceFilter && (
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-6 flex-wrap">
-                      <div className="flex-1 min-w-[200px]">
-                        <div className="flex justify-between text-sm text-gofarm-gray mb-2"><span>Price Range: ${priceRange.min} - ${priceRange.max}</span></div>
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                      <div className="flex-1 w-full sm:min-w-[200px]">
+                        <div className="flex justify-between text-sm text-gray-500 mb-2">
+                          <span>Price: ${priceRange.min} - ${priceRange.max}</span>
+                        </div>
                         <input
                           type="range"
                           min="0"
@@ -585,32 +552,34 @@ export default function CollectionPage() {
               </div>
             </div>
 
-            <div className={`grid ${getGridColsClass()} gap-4`}>
+            {/* Products Grid */}
+            <div className={`grid ${getGridColsClass()} gap-3 sm:gap-4`}>
               {products.map((product) => (
                 <ProductCardComponent key={product.id} product={product} viewMode={viewMode} onShare={handleShare} />
               ))}
             </div>
 
+            {/* Load More Button */}
             {hasMore && (
-              <div className="mt-14 text-center">
+              <div className="mt-8 text-center">
                 <button
-                  onClick={() => setPage((prev) => prev + 1)}
+                  onClick={() => setPage(prev => prev + 1)}
                   disabled={loadingMore}
-                  className="inline-flex items-center justify-center rounded-xl bg-gofarm-green px-12 py-4 text-white font-semibold shadow-lg shadow-gofarm-green/20 hover:bg-gofarm-light-green transition-colors disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-xl bg-gofarm-green px-6 py-2.5 text-white font-semibold shadow-lg shadow-gofarm-green/20 hover:bg-gofarm-light-green transition-colors disabled:opacity-50 text-sm"
                 >
-                  {loadingMore ? "Loading..." : "Load More Products"}
-                  <span className="ml-3 text-white/80">({productCount} of {totalCount})</span>
+                  {loadingMore ? "Loading..." : "Load More"}
+                  <span className="ml-2 text-white/80 text-xs">({productCount}/{totalCount})</span>
                 </button>
               </div>
             )}
 
-            <p className="mt-8 text-gofarm-gray text-lg text-center">
+            {/* Product Count */}
+            <p className="mt-6 text-gray-500 text-sm text-center">
               Showing <span className="font-bold text-gofarm-black">{productCount}</span> of{" "}
               <span className="font-bold text-gofarm-black">{totalCount}</span> products
             </p>
           </div>
         </main>
-        {/* Footer is rendered by root layout */}
       </div>
 
       {showShareModal && ShareModalComponent && selectedShareProduct && (

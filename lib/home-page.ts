@@ -64,6 +64,7 @@ export async function readOriginalHomeBody() {
   );
 }
 
+// Hàm tạo HTML cho product card - ĐÃ SỬA RESPONSIVE VÀ TOAST
 export function buildInteractiveProductCardHtml(product: LocalProduct) {
   const salePrice = product.discount && product.discount > 0
     ? Math.max(0, product.price - Math.round((product.price * product.discount) / 100))
@@ -72,76 +73,50 @@ export function buildInteractiveProductCardHtml(product: LocalProduct) {
   const formattedSalePrice = formatPrice(salePrice);
   const formattedPrice = formatPrice(product.price);
   const escapedName = product.name.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+  const rating = Math.round(product.rating);
+
+  // Tạo HTML cho 5 sao responsive
+  let starsHtml = '';
+  for (let i = 0; i < 5; i++) {
+    starsHtml += `<svg class="w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="${i < rating ? "currentColor" : "none"}" stroke="currentColor" strokeWidth="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>`;
+  }
 
   return `
-    <div class="transform hover:scale-105 transition-transform duration-300">
-      <article class="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id="${product.id}">
-        <a href="/shop/${product.slug}" class="block">
-          <div class="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
-            <img
-              src="${product.imageSrc}"
-              class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-all duration-500 group-hover:scale-105"
-              alt="${product.imageAlt || product.name}"
-              loading="lazy"
-            />
-
-            <div class="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-              <div class="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
-                ${status}
+    <div class="transform hover:scale-105 transition-transform duration-300 h-full">
+      <article class="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl h-full flex flex-col" data-product-id="${product.id}">
+        <div class="relative">
+          <a href="/shop/${product.slug}" class="block w-full text-left">
+            <div class="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
+              <div class="absolute left-2 sm:left-3 top-2 sm:top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
+                <span class="inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">${status}</span>
+                ${product.discount ? `<span class="inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">-${product.discount}%</span>` : ''}
               </div>
-              ${product.discount ? `
-                <div class="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
-                  -${product.discount}%
-                </div>
-              ` : ""}
+              <img src="${product.imageSrc}" class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105" alt="${product.imageAlt || product.name}" loading="lazy" />
             </div>
-
-            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
-              <button type="button" class="wishlist-btn p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}" aria-label="Add to wishlist">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" class="w-3 h-3">
-                  <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                </svg>
-              </button>
-              <button type="button" class="share-btn p-1.5 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-slug="${product.slug}" aria-label="Share product">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" class="w-3 h-3">
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
-                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
-                </svg>
-              </button>
-            </div>
+          </a>
+          <div class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 sm:gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+            <button type="button" class="wishlist-btn p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}" aria-label="Add to wishlist">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" /></svg>
+            </button>
+            <button type="button" class="share-btn p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-slug="${product.slug}" aria-label="Share product">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /><line x1="15.41" x2="8.59" y1="6.51" y2="10.49" /></svg>
+            </button>
           </div>
-
-          <div class="p-2 space-y-1">
-            <h2 class="text-xs font-semibold line-clamp-1 mb-0.5 group-hover:text-gofarm-green transition-colors">
-              ${product.name}
-            </h2>
-
-            <div class="flex items-center gap-1">
-              <div class="flex items-center">
-                ${Array.from({ length: 5 }, (_, index) => `
-                  <svg class="w-2.5 h-2.5 ${index < Math.round(product.rating) ? "text-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="${index < Math.round(product.rating) ? "currentColor" : "none"}" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                `).join("")}
-              </div>
-              <span class="text-[9px] text-gofarm-gray">(${product.reviews})</span>
-            </div>
-
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex items-center gap-1 flex-wrap">
-                <span class="text-gofarm-green text-sm font-bold">${formattedSalePrice}</span>
-                ${product.discount ? `<span class="text-[10px] text-gray-400 line-through">${formattedPrice}</span>` : ""}
-              </div>
-            </div>
+        </div>
+        <div class="flex-1 flex flex-col p-2.5 sm:p-3 md:p-4">
+          <a href="/shop/${product.slug}" class="block w-full text-left">
+            <h3 class="text-sm sm:text-base font-bold text-gofarm-black leading-tight hover:text-gofarm-green transition-colors line-clamp-2 min-h-[40px] sm:min-h-[48px]">${product.name}</h3>
+          </a>
+          <div class="mt-1 flex flex-wrap items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
+            ${starsHtml}
+            <span class="text-gray-500 ml-0.5 sm:ml-1">(${product.reviews})</span>
           </div>
-        </a>
-
-        <button class="add-to-cart-btn w-full rounded-md border border-gofarm-green bg-white px-2 py-1.5 text-[10px] font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white active:bg-gofarm-green active:text-white mx-2 mb-2" style="width: calc(100% - 16px)" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">
-          Add to Cart
-        </button>
+          <div class="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
+            <span class="text-base sm:text-lg font-bold text-gofarm-green">${formattedSalePrice}</span>
+            ${product.discount ? `<span class="text-xs sm:text-sm text-gray-400 line-through">${formattedPrice}</span><span class="inline-flex items-center rounded-md bg-red-50 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-medium text-red-500">-${product.discount}%</span>` : ''}
+          </div>
+          <button class="add-to-cart-btn mt-3 w-full rounded-lg border border-transparent bg-gofarm-green text-white px-2 py-1.5 text-[11px] sm:text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">Add to Cart</button>
+        </div>
       </article>
     </div>
   `;
@@ -198,7 +173,7 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
         </button>
 
         <div id="${carouselId}" class="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-20 pr-16">
-          <div class="pb-2" style="display:grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 64px) / 5); gap: 16px;">
+          <div class="pb-2 carousel-grid" style="display:grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 32px) / 2); gap: 12px;">
             ${items.map((product, index) => `
               <div id="${carouselId}-item-${index}" class="snap-start">
                 ${buildInteractiveProductCardHtml(product)}
@@ -309,6 +284,23 @@ export function transformHomeBody({
   transformedBody = `<style>
     section.py-16.lg\\:py-20.bg-linear-to-br.from-emerald-50.via-white.to-green-50.relative.overflow-hidden {
       display: none !important;
+    }
+    /* Responsive cho carousel grid */
+    @media (min-width: 640px) {
+      .carousel-grid {
+        grid-auto-columns: calc((100% - 48px) / 3) !important;
+        gap: 16px !important;
+      }
+    }
+    @media (min-width: 768px) {
+      .carousel-grid {
+        grid-auto-columns: calc((100% - 64px) / 4) !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .carousel-grid {
+        grid-auto-columns: calc((100% - 64px) / 5) !important;
+      }
     }
   </style>${transformedBody}`;
 

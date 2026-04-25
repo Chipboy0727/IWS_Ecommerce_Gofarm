@@ -5,31 +5,35 @@ import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import { ProductModal } from "@/components/product-modal";
 
+// Toast Component
+function ToastMessage({ productName, onClose }: { productName: string; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
+      <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        <span>{productName} added to cart!</span>
+      </div>
+    </div>
+  );
+}
+
 export function ProductGridClient({ products }: { products: any[] }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastProductName, setToastProductName] = useState("");
 
   useEffect(() => {
-    // Show toast notification
-    const showToast = (message: string) => {
-      const existingToast = document.querySelector('.product-toast');
-      if (existingToast) existingToast.remove();
-      
-      const toast = document.createElement('div');
-      toast.className = 'product-toast fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300';
-      toast.innerHTML = `
-        <div class="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          <span>${message}</span>
-        </div>
-      `;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    };
-
     // Update cart count on header
     const updateCartCount = () => {
       try {
@@ -45,7 +49,7 @@ export function ProductGridClient({ products }: { products: any[] }) {
     };
 
     // Handle Add to Cart
-    const handleAddToCart = (e: Event) => {
+    const handleAddToCart = async (e: Event) => {
       const target = e.target as HTMLElement;
       const btn = target.closest('.add-to-cart-btn') as HTMLElement;
       if (btn && btn.dataset.productId) {
@@ -53,20 +57,23 @@ export function ProductGridClient({ products }: { products: any[] }) {
         e.stopPropagation();
         
         const id = btn.dataset.productId;
-        const name = btn.dataset.productName;
+        const name = btn.dataset.productName || "Product";
         const price = parseFloat(btn.dataset.productPrice || '0');
         const imageSrc = btn.dataset.productImage;
         const slug = btn.dataset.productSlug;
         
         if (id && name && price && imageSrc && slug) {
-          addToCart({ id, name, price, imageSrc, slug });
-          showToast('Added to cart!');
-          setTimeout(() => updateCartCount(), 100);
+          await addToCart({ id, name, price, imageSrc, slug });
+          setToastProductName(name);
+          setShowToast(true);
+          setTimeout(() => {
+            updateCartCount();
+          }, 100);
         }
       }
     };
 
-    // Handle Wishlist toggle
+    // Handle Wishlist toggle - CHỈ ĐỔI MÀU TIM, VIỀN GIỮ NGUYÊN
     const handleWishlist = (e: Event) => {
       const target = e.target as HTMLElement;
       const btn = target.closest('.wishlist-btn') as HTMLElement;
@@ -83,23 +90,51 @@ export function ProductGridClient({ products }: { products: any[] }) {
         if (id && name && price && imageSrc && slug) {
           if (isInWishlist(id)) {
             removeFromWishlist(id);
-            showToast('Removed from wishlist!');
-            btn.style.backgroundColor = '';
-            btn.style.color = '';
-            btn.classList.remove('active');
+            // Bỏ chọn - tim xám, fill none
+            btn.classList.remove('active', 'wishlisted');
             const svg = btn.querySelector('svg');
-            if (svg) svg.style.fill = 'none';
+            if (svg) {
+              svg.style.fill = 'none';
+              svg.style.color = '#6b7280';
+              svg.style.stroke = '#6b7280';
+            }
           } else {
             addToWishlist({ id, name, price, imageSrc, slug });
-            showToast('Added to wishlist!');
-            btn.style.backgroundColor = '#dc2626';
-            btn.style.color = 'white';
-            btn.classList.add('active');
+            // Đã chọn - tim đỏ, fill đỏ
+            btn.classList.add('active', 'wishlisted');
             const svg = btn.querySelector('svg');
-            if (svg) svg.style.fill = 'currentColor';
+            if (svg) {
+              svg.style.fill = '#ef4444';
+              svg.style.color = '#ef4444';
+              svg.style.stroke = '#ef4444';
+            }
           }
         }
       }
+    };
+
+    // Khởi tạo trạng thái wishlist ban đầu cho các button
+    const initWishlistButtons = () => {
+      const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+      wishlistBtns.forEach((btn) => {
+        const id = btn.getAttribute('data-product-id');
+        if (id && isInWishlist(id)) {
+          btn.classList.add('wishlisted');
+          const svg = btn.querySelector('svg');
+          if (svg) {
+            svg.style.fill = '#ef4444';
+            svg.style.color = '#ef4444';
+            svg.style.stroke = '#ef4444';
+          }
+        } else {
+          const svg = btn.querySelector('svg');
+          if (svg) {
+            svg.style.fill = 'none';
+            svg.style.color = '#6b7280';
+            svg.style.stroke = '#6b7280';
+          }
+        }
+      });
     };
 
     // Handle Share
@@ -118,7 +153,7 @@ export function ProductGridClient({ products }: { products: any[] }) {
           navigator.share({ title: productName, url: url }).catch(() => {});
         } else {
           navigator.clipboard.writeText(url).then(() => {
-            showToast('Link copied to clipboard!');
+            alert('Link copied to clipboard!');
           }).catch(() => {
             alert('Share: ' + url);
           });
@@ -153,6 +188,9 @@ export function ProductGridClient({ products }: { products: any[] }) {
     document.addEventListener('click', handleWishlist);
     document.addEventListener('click', handleShare);
     document.addEventListener('click', handleQuickView);
+    
+    // Khởi tạo trạng thái ban đầu cho wishlist buttons
+    setTimeout(initWishlistButtons, 100);
 
     return () => {
       document.removeEventListener('click', handleAddToCart);
@@ -163,10 +201,15 @@ export function ProductGridClient({ products }: { products: any[] }) {
   }, [addToCart, addToWishlist, removeFromWishlist, isInWishlist, products]);
 
   return (
-    <ProductModal 
-      product={selectedProduct} 
-      isOpen={!!selectedProduct} 
-      onClose={() => setSelectedProduct(null)} 
-    />
+    <>
+      {showToast && (
+        <ToastMessage productName={toastProductName} onClose={() => setShowToast(false)} />
+      )}
+      <ProductModal 
+        product={selectedProduct} 
+        isOpen={!!selectedProduct} 
+        onClose={() => setSelectedProduct(null)} 
+      />
+    </>
   );
 }

@@ -165,7 +165,6 @@ export default function OrdersPage() {
       }
       
       setOrders([]);
-      // IMPORTANT: Dispatch orders-cleared instead of order-cancelled
       window.dispatchEvent(new Event("orders-cleared"));
       
       showNotificationMsg("All orders have been cleared", "success");
@@ -179,24 +178,24 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-gofarm-green" />
+        <div className="h-10 w-10 sm:h-12 sm:w-12 animate-spin rounded-full border-b-2 border-gofarm-green" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10 py-16">
-        <div className="mx-auto max-w-4xl px-4 text-center">
-          <div className="rounded-2xl bg-white p-12 shadow-xl">
-            <div className="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10 py-12 sm:py-16">
+        <div className="mx-auto max-w-4xl px-3 sm:px-4 text-center">
+          <div className="rounded-2xl bg-white p-8 sm:p-12 shadow-xl">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+              <svg className="w-8 h-8 sm:w-10 sm:h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h2 className="mb-2 text-2xl font-bold text-gray-900">Orders unavailable</h2>
-            <p className="mb-6 text-gray-500">{error}</p>
-            <Link href="/sign-in" className="inline-block rounded-lg bg-gofarm-green px-6 py-3 text-white transition-colors hover:bg-gofarm-light-green">
+            <h2 className="mb-2 text-xl sm:text-2xl font-bold text-gray-900">Orders unavailable</h2>
+            <p className="mb-5 sm:mb-6 text-sm sm:text-base text-gray-500">{error}</p>
+            <Link href="/sign-in" className="inline-block rounded-lg bg-gofarm-green px-5 sm:px-6 py-2.5 sm:py-3 text-white transition-colors hover:bg-gofarm-light-green text-sm sm:text-base">
               Sign In
             </Link>
           </div>
@@ -208,15 +207,15 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
       {notification.show && (
-        <div className="fixed right-4 top-24 z-50 animate-slideIn">
-          <div className={`flex items-center gap-2 rounded-lg px-6 py-3 shadow-lg ${notification.type === "success" ? "bg-gofarm-green text-white" : "bg-red-500 text-white"}`}>
+        <div className="fixed right-3 sm:right-4 top-20 sm:top-24 z-50 animate-slideIn">
+          <div className={`flex items-center gap-2 rounded-lg px-4 sm:px-6 py-2.5 sm:py-3 shadow-lg text-xs sm:text-sm ${notification.type === "success" ? "bg-gofarm-green text-white" : "bg-red-500 text-white"}`}>
             {notification.message}
           </div>
         </div>
       )}
 
-      <div className="mx-auto max-w-5xl px-4 pt-8">
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className="mx-auto max-w-5xl px-3 sm:px-4 pt-6 sm:pt-8">
+        <div className="mb-5 sm:mb-6 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Stat label="Active Orders" value={totalActiveOrders} tone="blue" />
           <Stat label="Delivered" value={deliveredOrders} tone="green" />
           <Stat label="Processing" value={pendingOrders} tone="yellow" />
@@ -246,15 +245,15 @@ export default function OrdersPage() {
         />
       )}
 
-      <div className="mx-auto max-w-5xl px-4 pb-12">
+      <div className="mx-auto max-w-5xl px-3 sm:px-4 pb-10 sm:pb-12">
         <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-6">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 border-b border-gray-200 p-4 sm:p-6">
             <div>
-              <h1 className="text-2xl font-bold text-gofarm-black">My Orders</h1>
-              <p className="mt-1 text-gofarm-gray">
+              <h1 className="text-xl sm:text-2xl font-bold text-gofarm-black">My Orders</h1>
+              <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-gofarm-gray">
                 Track and manage your orders
                 {cancelledOrders > 0 && (
-                  <span className="ml-2 text-sm text-red-500">
+                  <span className="ml-2 text-xs sm:text-sm text-red-500">
                     ({cancelledOrders} cancelled)
                   </span>
                 )}
@@ -263,9 +262,9 @@ export default function OrdersPage() {
             {orders.length > 0 && (
               <button
                 onClick={() => setShowClearAllConfirm(true)}
-                className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-600 transition-colors hover:bg-red-100"
+                className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-red-200 bg-red-50 px-3 sm:px-4 py-1.5 sm:py-2 text-red-600 transition-colors hover:bg-red-100 text-xs sm:text-sm"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Clear All Orders
@@ -274,15 +273,15 @@ export default function OrdersPage() {
           </div>
 
           {orders.length === 0 ? (
-            <div className="p-12 text-center">
-              <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-8 sm:p-12 text-center">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                <svg className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-gofarm-black">No orders yet</h3>
-              <p className="mb-4 text-gofarm-gray">Start shopping to see your orders here</p>
-              <Link href="/shop" className="inline-block rounded-lg bg-gofarm-green px-6 py-2 text-white transition-colors hover:bg-gofarm-light-green">
+              <h3 className="mb-1.5 sm:mb-2 text-base sm:text-lg font-semibold text-gofarm-black">No orders yet</h3>
+              <p className="mb-4 sm:mb-5 text-xs sm:text-sm text-gofarm-gray">Start shopping to see your orders here</p>
+              <Link href="/shop" className="inline-block rounded-lg bg-gofarm-green px-5 sm:px-6 py-2 sm:py-2.5 text-white transition-colors hover:bg-gofarm-light-green text-sm">
                 Start Shopping
               </Link>
             </div>
@@ -290,32 +289,32 @@ export default function OrdersPage() {
             <>
               <div className="divide-y divide-gray-200">
                 {orders.map((order) => (
-                  <div key={order.id} className="p-6 transition-colors hover:bg-gray-50">
-                    <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+                  <div key={order.id} className="p-4 sm:p-6 transition-colors hover:bg-gray-50">
+                    <div className="mb-3 sm:mb-4 flex flex-wrap items-center justify-between gap-3 sm:gap-4">
                       <div>
-                        <span className="font-semibold text-gofarm-black">Order #{order.id}</span>
-                        <p className="text-sm text-gofarm-gray">{order.date}</p>
+                        <span className="font-semibold text-gofarm-black text-sm sm:text-base">Order #{order.id}</span>
+                        <p className="text-xs sm:text-sm text-gofarm-gray">{order.date}</p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusColor(order.status)}`}>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <span className={`rounded-full border px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold ${getStatusColor(order.status)}`}>
                           {getStatusText(order.status)}
                         </span>
-                        <span className={`font-semibold ${order.status === "cancelled" ? "text-gray-400 line-through" : "text-gofarm-green"}`}>
+                        <span className={`font-semibold text-sm sm:text-base ${order.status === "cancelled" ? "text-gray-400 line-through" : "text-gofarm-green"}`}>
                           ${order.total.toFixed(2)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm text-gofarm-gray">{order.items} items</p>
-                      <div className="flex gap-3">
-                        <Link href={`/orders/${order.id}`} className="flex items-center gap-1 text-sm font-medium text-gofarm-green hover:underline">
+                    <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+                      <p className="text-xs sm:text-sm text-gofarm-gray">{order.items} items</p>
+                      <div className="flex gap-2 sm:gap-3">
+                        <Link href={`/orders/${order.id}`} className="flex items-center gap-1 text-xs sm:text-sm font-medium text-gofarm-green hover:underline">
                           View Details
                         </Link>
                         {canCancel(order.status) && (
                           <button
                             onClick={() => setShowCancelConfirm(order.id)}
                             disabled={isCancelling}
-                            className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600 disabled:opacity-50"
+                            className="flex items-center gap-1 text-xs sm:text-sm font-medium text-red-500 hover:text-red-600 disabled:opacity-50"
                           >
                             Cancel Order
                           </button>
@@ -326,8 +325,8 @@ export default function OrdersPage() {
                 ))}
               </div>
               
-              <div className="border-t border-gray-200 bg-gray-50 p-4">
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm">
+              <div className="border-t border-gray-200 bg-gray-50 p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] sm:text-sm">
                   <p className="text-gofarm-gray">
                     📦 Active orders: <span className="font-semibold text-gofarm-black">{totalActiveOrders}</span>
                   </p>
@@ -335,7 +334,7 @@ export default function OrdersPage() {
                     📋 Total orders (all time): <span className="font-semibold text-gofarm-black">{totalAllOrders}</span>
                   </p>
                   {cancelledOrders > 0 && (
-                    <p className="text-red-500">
+                    <p className="text-red-500 text-[10px] sm:text-xs">
                       ❌ Cancelled: {cancelledOrders}
                     </p>
                   )}
@@ -359,35 +358,35 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: "blu
   
   const icons = {
     blue: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
       </svg>
     ),
     green: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
     yellow: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
     red: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
   };
   
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+    <div className="rounded-xl border border-gray-100 bg-white p-3 sm:p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500">{label}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <p className="text-xs sm:text-sm text-gray-500">{label}</p>
+          <p className="text-lg sm:text-2xl font-bold text-gray-900">{value}</p>
         </div>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${styles[tone]}`}>
+        <div className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full ${styles[tone]}`}>
           {icons[tone]}
         </div>
       </div>
@@ -411,28 +410,28 @@ function ConfirmDialog({
   isProcessing: boolean;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
+      <div className="mx-3 sm:mx-4 w-full max-w-sm rounded-2xl bg-white p-5 sm:p-6 shadow-2xl">
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </div>
-          <h3 className="mb-2 text-xl font-bold text-gray-900">{title}</h3>
-          <p className="mb-6 text-sm text-gray-500">{description}</p>
-          <div className="flex gap-3">
+          <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-bold text-gray-900">{title}</h3>
+          <p className="mb-5 sm:mb-6 text-xs sm:text-sm text-gray-500">{description}</p>
+          <div className="flex gap-2 sm:gap-3">
             <button 
               onClick={onConfirm} 
               disabled={isProcessing}
-              className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-red-500 px-3 sm:px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:opacity-50 text-sm"
             >
               {confirmLabel}
             </button>
             <button 
               onClick={onCancel} 
               disabled={isProcessing}
-              className="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-gray-100 px-3 sm:px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200 disabled:opacity-50 text-sm"
             >
               Cancel
             </button>

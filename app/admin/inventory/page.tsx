@@ -78,46 +78,46 @@ export default function InventoryPage() {
         </>
       }
     >
-      <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-[1fr_1fr_1.1fr]">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1.1fr]">
           <StatCard label="Total SKU" value="1,284" delta="+12%" deltaTone="green" hint="current catalog" icon={<IconBox />} />
           <StatCard label="Critical Stock" value="12" delta="Alert" deltaTone="red" hint="needs restock" icon={<IconGear />} />
-          <div className="rounded-[20px] bg-[linear-gradient(180deg,#127d12_0%,#0f6f11_100%)] p-5 text-white shadow-sm ring-1 ring-black/5">
-            <div className="text-[12px] uppercase tracking-[0.2em] text-white/60">Inventory Growth</div>
-            <div className="mt-4 text-[44px] font-extrabold tracking-[-0.06em]">24.5%</div>
-            <div className="mt-1 text-[13px] text-white/74">Annual increase in variety</div>
+          <div className="rounded-xl sm:rounded-[20px] bg-[linear-gradient(180deg,#127d12_0%,#0f6f11_100%)] p-4 sm:p-5 text-white shadow-sm ring-1 ring-black/5">
+            <div className="text-[10px] sm:text-[12px] uppercase tracking-[0.2em] text-white/60">Inventory Growth</div>
+            <div className="mt-2 sm:mt-4 text-3xl sm:text-[44px] font-extrabold tracking-[-0.06em]">24.5%</div>
+            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[13px] text-white/74">Annual increase in variety</div>
           </div>
         </div>
 
         <SectionCard
           className="overflow-hidden"
           right={
-            <div className="flex gap-2">
-              <button className="rounded-full bg-[#eef4e7] px-4 py-2 text-[12px] font-semibold text-[#58715a]">Filter</button>
-              <button className="rounded-full bg-[#eef4e7] px-4 py-2 text-[12px] font-semibold text-[#58715a]">Sort</button>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#58715a]">Filter</button>
+              <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#58715a]">Sort</button>
             </div>
           }
           title="All Products"
           subtitle="Live inventory across core produce and supplies"
         >
-          <div className="flex flex-wrap items-center gap-2 pb-4">
-            <button className="rounded-full bg-[#0b7312] px-4 py-2 text-[12px] font-semibold text-white">All Products</button>
-            <button className="rounded-full bg-[#eef4e7] px-4 py-2 text-[12px] font-semibold text-[#536451]">Seeds</button>
-            <button className="rounded-full bg-[#eef4e7] px-4 py-2 text-[12px] font-semibold text-[#536451]">Fertilizers</button>
-            <button className="rounded-full bg-[#eef4e7] px-4 py-2 text-[12px] font-semibold text-[#536451]">Tools</button>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pb-3 sm:pb-4">
+            <button className="rounded-full bg-[#0b7312] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-white">All Products</button>
+            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Seeds</button>
+            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Fertilizers</button>
+            <button className="rounded-full bg-[#eef4e7] px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[12px] font-semibold text-[#536451]">Tools</button>
           </div>
 
-          <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5">
-            <table className="page-table min-w-full">
+          <div className="overflow-x-auto overflow-hidden rounded-xl sm:rounded-[18px] ring-1 ring-black/5">
+            <table className="page-table min-w-[800px] sm:min-w-full">
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>SKU</th>
-                  <th>Category</th>
-                  <th>Inventory</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Actions</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Product</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">SKU</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Category</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Inventory</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Price</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Status</th>
+                  <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px]">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,40 +125,40 @@ export default function InventoryPage() {
                   const width = stockWidth(product.stock, product.capacity);
                   return (
                     <tr key={product.sku}>
-                      <td>
-                        <div className="product-row">
-                          <img src={product.image} alt={product.name} className="product-thumb" />
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <div className="product-row flex items-center gap-2 sm:gap-3">
+                          <img src={product.image} alt={product.name} className="product-thumb w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover" />
                           <div>
-                            <div className="max-w-[190px] text-[13px] font-semibold leading-5 text-[#243322]">{product.name}</div>
-                            <div className="text-[12px] text-[#748171]">SKU: {product.sku}</div>
+                            <div className="max-w-[140px] sm:max-w-[190px] text-[12px] sm:text-[13px] font-semibold leading-4 sm:leading-5 text-[#243322]">{product.name}</div>
+                            <div className="text-[10px] sm:text-[12px] text-[#748171]">SKU: {product.sku}</div>
                           </div>
                         </div>
-                      </td>
-                      <td className="text-[13px] text-[#637162]">{product.sku}</td>
-                      <td>
+                       </td>
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-[#637162]">{product.sku}</td>
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                         <Pill tone={product.tone === "green" ? "green" : product.tone === "red" ? "red" : "amber"}>{product.category}</Pill>
                       </td>
-                      <td>
-                        <div className="flex items-center gap-3">
-                          <div className="progress">
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="progress w-16 sm:w-20">
                             <span
                               className={product.tone === "green" ? "status-green" : product.tone === "red" ? "status-red" : "status-amber"}
                               style={{ width: `${width}%` }}
                             />
                           </div>
-                          <div className="text-[13px] font-semibold text-[#243322]">{product.stock}/{product.capacity}</div>
+                          <div className="text-[11px] sm:text-[13px] font-semibold text-[#243322]">{product.stock}/{product.capacity}</div>
                         </div>
                       </td>
-                      <td className="table-amount">{formatMoney(product.price)}</td>
-                      <td>
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3 table-amount text-[12px] sm:text-[13px]">{formatMoney(product.price)}</td>
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                         <Pill tone={product.tone}>{product.status.toUpperCase()}</Pill>
                       </td>
-                      <td>
-                        <div className="icon-actions">
-                          <button type="button" aria-label={`Edit ${product.name}`}>
+                      <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                        <div className="icon-actions flex gap-1 sm:gap-2">
+                          <button type="button" className="p-1 hover:bg-gray-100 rounded" aria-label={`Edit ${product.name}`}>
                             <IconPen />
                           </button>
-                          <button type="button" aria-label={`Delete ${product.name}`}>
+                          <button type="button" className="p-1 hover:bg-gray-100 rounded" aria-label={`Delete ${product.name}`}>
                             <IconTrash />
                           </button>
                         </div>
@@ -170,33 +170,33 @@ export default function InventoryPage() {
             </table>
           </div>
 
-          <div className="flex items-center justify-between px-2 pt-4 text-[12px] text-[#6f7b6d]">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 pt-4 text-[11px] sm:text-[12px] text-[#6f7b6d]">
             <div>Showing 1-4 of 1,284 entries</div>
-            <div className="flex items-center gap-2">
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">‹</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
-              <span className="px-1 text-[#919d90]">…</span>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">321</button>
-              <button className="grid h-9 w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">›</button>
+            <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">‹</button>
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#0b7312] text-white">1</button>
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">2</button>
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">3</button>
+              <span className="px-0.5 sm:px-1 text-[#919d90]">…</span>
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-white ring-1 ring-black/10">321</button>
+              <button className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d]">›</button>
             </div>
           </div>
         </SectionCard>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
           <SectionCard className="bg-[#e8f6dd]" title="Restock Velocity" subtitle="Based on current sales data, you should reorder soon.">
-            <div className="text-[13px] leading-6 text-[#60705f]">
+            <div className="text-[12px] sm:text-[13px] leading-5 sm:leading-6 text-[#60705f]">
               Reorder Bio-Active Growth Booster within the next 48 hours to avoid out-of-stock status.
             </div>
           </SectionCard>
           <SectionCard title="Warehouse Cap." subtitle="Operational load">
-            <div className="text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">68%</div>
-            <div className="mt-1 text-[12px] text-[#657364]">Utilized</div>
+            <div className="text-2xl sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">68%</div>
+            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#657364]">Utilized</div>
           </SectionCard>
           <SectionCard title="Compliance" subtitle="ISO and inspection status">
-            <div className="text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">Active</div>
-            <div className="mt-1 text-[12px] text-[#657364]">ISO 22000</div>
+            <div className="text-2xl sm:text-[34px] font-extrabold tracking-[-0.05em] text-[#1f2f1d]">Active</div>
+            <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#657364]">ISO 22000</div>
           </SectionCard>
         </div>
       </div>
@@ -206,7 +206,7 @@ export default function InventoryPage() {
 
 function IconPen() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+    <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 sm:h-4 sm:w-4">
       <path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       <path d="m13 6 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
@@ -215,7 +215,7 @@ function IconPen() {
 
 function IconTrash() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+    <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5 sm:h-4 sm:w-4">
       <path d="M5 7h14M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.6a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );

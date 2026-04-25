@@ -13,7 +13,7 @@ export default function StoreListPage() {
     <div className="min-h-screen bg-linear-to-b from-gofarm-light-green/5 via-white to-gofarm-light-orange/10">
       {/* Header is rendered by root layout */}
       <main>
-        <div className="mx-auto max-w-(--breakpoint-xl) px-4 py-8 lg:py-12">
+        <div className="mx-auto max-w-(--breakpoint-xl) px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
           <StoreListBrowser stores={storeItems} />
         </div>
       </main>

@@ -21,6 +21,27 @@ function salePriceFor(product: LocalProduct) {
     : product.price;
 }
 
+// Toast Message Component
+function ToastMessage({ productName, onClose }: { productName: string; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
+      <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        <span>{productName} added to cart!</span>
+      </div>
+    </div>
+  );
+}
+
 function StarIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -89,6 +110,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [isAdding, setIsAdding] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastProductName, setToastProductName] = useState("");
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -101,21 +123,27 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
     setIsModalOpen(true);
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     setIsAdding(true);
     
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: salePrice,
-      imageSrc: product.imageSrc,
-      slug: product.slug,
-    });
-    
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-    setIsAdding(false);
+    try {
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: salePrice,
+        imageSrc: product.imageSrc,
+        slug: product.slug,
+      });
+      
+      setToastProductName(product.name);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -152,7 +180,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
     <>
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-lg overflow-hidden bg-white hover:shadow-lg transition-all duration-300" data-product-id={product.id}>
-          <div className="relative h-52 overflow-hidden bg-white flex items-center justify-center p-4">
+          <div className="relative h-40 sm:h-44 md:h-52 overflow-hidden bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
             <button type="button" onClick={handleQuickView} className="block h-full w-full">
               <img
                 src={product.imageSrc}
@@ -162,61 +190,61 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
               />
             </button>
 
-            <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-semibold">
+            <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
                 {status}
               </div>
               {product.discount ? (
-                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] px-2 py-0.5 shadow-md font-bold">
+                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-bold">
                   -{product.discount}%
                 </div>
               ) : null}
             </div>
 
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 sm:gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out z-10">
               <button
                 type="button"
                 onClick={handleWishlist}
-                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
+                className="p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm hover:scale-110 transition-all duration-300 bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white"
                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <HeartIcon className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
+                <HeartIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} filled={isWishlisted} />
               </button>
               <button
                 type="button"
                 onClick={handleShare}
-                className="p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
+                className="p-1.5 sm:p-2 rounded-full shadow-lg border border-gofarm-green/20 backdrop-blur-sm bg-white/90 text-gofarm-gray hover:bg-gofarm-green hover:text-white hover:scale-110 transition-all duration-300"
                 title="Share product"
                 aria-label="Share product"
               >
-                <ShareIcon className="w-4 h-4" />
+                <ShareIcon className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
 
-          <div className="p-3 space-y-2">
+          <div className="p-2 sm:p-3 space-y-1.5 sm:space-y-2">
             <Link href={`/shop/${product.slug}`} onClick={handleProductClick} className="block w-full text-left">
-              <h2 className="text-sm font-semibold line-clamp-1 mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
+              <h2 className="text-xs sm:text-sm font-semibold line-clamp-1 mb-0.5 sm:mb-1 group-hover:text-gofarm-green transition-colors leading-tight">
                 {product.name}
               </h2>
             </Link>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
               <div className="flex items-center">
                 {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className={`w-3 h-3 ${index < Math.round(product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
+                  <StarIcon key={index} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${index < Math.round(product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
-              <span className="text-[10px] text-gofarm-gray">({product.reviews})</span>
+              <span className="text-[8px] sm:text-[10px] text-gofarm-gray">({product.reviews})</span>
             </div>
 
-            <div className="flex items-center justify-between gap-5">
-              <div className="flex items-center gap-2">
-                <span className="text-gofarm-green text-base font-bold">{formatPrice(salePrice)}</span>
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-5">
+              <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                <span className="text-gofarm-green text-xs sm:text-base font-bold">{formatPrice(salePrice)}</span>
                 {product.discount ? (
-                  <div className="flex items-center gap-1">
-                    <span className="line-through text-zinc-500 text-base font-bold">{formatPrice(product.price)}</span>
-                    <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="line-through text-zinc-500 text-[10px] sm:text-base font-bold">{formatPrice(product.price)}</span>
+                    <span className="text-[8px] sm:text-xs bg-red-100 text-red-600 px-1 sm:px-1.5 py-0.5 rounded font-medium">
                       -{product.discount}%
                     </span>
                   </div>
@@ -227,7 +255,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
             <button
               onClick={handleAddToCart}
               disabled={isAdding}
-              className="w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-3 py-2 text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-md border border-gofarm-green/20 bg-gofarm-green text-white px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAdding ? "Adding..." : "Add to Cart"}
             </button>
@@ -236,15 +264,12 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
       </div>
 
       {showToast && (
-        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
-          <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Added to cart!</span>
-          </div>
-        </div>
+        <ToastMessage 
+          productName={toastProductName} 
+          onClose={() => setShowToast(false)} 
+        />
       )}
+      
       <ProductModal
         product={product}
         isOpen={isModalOpen}
