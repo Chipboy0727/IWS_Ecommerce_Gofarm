@@ -11,7 +11,7 @@ export default function StoreListPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-white to-gray-50/30">
       <main>
-        <div className="mx-auto max-w-7xl px-4 py-6 lg:py-8">
+        <div className="mx-auto max-w-7xl px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
           <StoreListBrowser stores={storeItems} />
         </div>
       </main>

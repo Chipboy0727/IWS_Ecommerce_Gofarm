@@ -888,94 +888,6 @@
   ],
   "orders": [
     {
-      "id": "ORD-1777111791001",
-      "date": "2026-04-25",
-      "total": 517,
-      "status": "pending",
-      "items": 3,
-      "products": [
-        {
-          "id": "d9b6f58c-5abc-4d47-b9c0-2e6290563f3e-1 Bottle",
-          "name": "Dandy (1 Bottle)",
-          "price": 11,
-          "quantity": 3,
-          "imageSrc": "/images/98a43d1422997e1afb569bdbad7f0bad87d77ebf-750x750.webp",
-          "slug": "dandy"
-        },
-        {
-          "id": "a36d4b88-3484-47f0-9467-7ba0024cf4e3",
-          "name": "Pistachio",
-          "price": 44,
-          "quantity": 5,
-          "imageSrc": "/images/6df699a5a14720d75316a12c4dd3d46408fb1f0f-1024x1024.png",
-          "slug": "pistachio"
-        },
-        {
-          "id": "8fcfaf45-15f1-4c73-9b09-68d059ec6a3a",
-          "name": "Almond",
-          "price": 31,
-          "quantity": 7,
-          "imageSrc": "/images/1d19d0adbefedbdfce77186a46186f0f8be34b5e-1024x1024.png",
-          "slug": "almond"
-        }
-      ],
-      "shippingAddress": "aaaaaa, Hanoi, Vietnam 10000",
-      "customerName": "Test User",
-      "customerEmail": "user@gofarm.local",
-      "customerPhone": "",
-      "paymentMethod": "Cash on Delivery",
-      "createdAt": "2026-04-25T10:09:51.026Z",
-      "updatedAt": "2026-04-25T10:09:51.026Z"
-    },
-    {
-      "id": "ORD-1777039881346",
-      "date": "2026-04-24",
-      "total": 85.8,
-      "status": "cancelled",
-      "items": 4,
-      "products": [
-        {
-          "id": "fb977d77-3d77-4dca-b255-e803d98fd903",
-          "name": "Tiramisu  Cake Mix",
-          "price": 25,
-          "quantity": 1,
-          "imageSrc": "/images/6db96590adea127f7520a20ff293de280717186c-1024x1024.jpg",
-          "slug": "tiramisu-cake-mix"
-        },
-        {
-          "id": "b150f289-a657-4b35-9e96-2849b75385c3",
-          "name": "Yellow pear",
-          "price": 14,
-          "quantity": 1,
-          "imageSrc": "/images/6d5d0759516661f123d043ac1d413250885d59ed-1024x1024.jpg",
-          "slug": "yellow-pear"
-        },
-        {
-          "id": "0fd41d93-3994-4ff4-9f8e-5f9941f46b06",
-          "name": "Waffle HomeStyle",
-          "price": 25,
-          "quantity": 1,
-          "imageSrc": "/images/03033db010e8c9a397fd6d11383b5cf915f7afa2-1024x1024.jpg",
-          "slug": "waffle-homestyle"
-        },
-        {
-          "id": "7364eeb3-48f2-402e-a4c2-4cf9b3995259",
-          "name": "Pomegranates",
-          "price": 14,
-          "quantity": 1,
-          "imageSrc": "/images/2331e8445d442162b44cbef66fd50a4d6955c6e9-1024x1024.jpg",
-          "slug": "pomegranates"
-        }
-      ],
-      "shippingAddress": "Nguyễn Xiển, Hà Nội , Hoàng Mai 12345",
-      "customerName": "thủy",
-      "customerEmail": "thuthuy205.hanu@gmail.com",
-      "customerPhone": "",
-      "paymentMethod": "Cash on Delivery",
-      "createdAt": "2026-04-24T14:11:21.371Z",
-      "updatedAt": "2026-04-24T14:11:33.535Z"
-    },
-    {
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
@@ -1114,6 +1026,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-25T10:09:51.027Z"
+    "updatedAt": "2026-04-25T18:06:48.392Z"
   }
 }

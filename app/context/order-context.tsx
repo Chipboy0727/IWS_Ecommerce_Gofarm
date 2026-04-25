@@ -30,7 +30,9 @@ export function OrderProvider({ children }: { children: ReactNode }) {
     if (saved) {
       try {
         setOrders(JSON.parse(saved));
-      } catch (e) {}
+      } catch (e) {
+        console.error("Failed to parse orders:", e);
+      }
     }
   }, []);
 

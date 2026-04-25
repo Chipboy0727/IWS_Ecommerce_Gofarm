@@ -25,52 +25,52 @@ export default async function StoresPage() {
       userLabel="GoFarm Central"
       actions={<AdminActionButton tone="primary">Register New Store</AdminActionButton>}
     >
-      <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_1fr]">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 xl:grid-cols-[minmax(0,1.4fr)_1fr]">
           <SectionCard className="overflow-hidden p-0">
-            <div className="relative h-[300px] overflow-hidden rounded-[24px] bg-[#081007] p-5">
+            <div className="relative h-[260px] sm:h-[300px] overflow-hidden rounded-xl sm:rounded-[24px] bg-[#081007] p-3 sm:p-5">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_38%_28%,rgba(34,119,51,0.7),transparent_28%),radial-gradient(circle_at_75%_65%,rgba(29,137,66,0.45),transparent_24%),linear-gradient(135deg,#0a1609_0%,#165a23_45%,#081007_100%)]" />
               <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:28px_28px]" />
-              <div className="absolute left-5 top-5 rounded-[12px] bg-white/88 px-4 py-3 text-[#224028] shadow">
-                <div className="text-[15px] font-bold">Network Distribution</div>
-                <div className="mt-1 text-[12px] text-[#6a7669]">{activeStores} Active Regions • {maintenanceStores} Maintenance</div>
+              <div className="absolute left-3 sm:left-5 top-3 sm:top-5 rounded-xl sm:rounded-[12px] bg-white/88 px-3 sm:px-4 py-2 sm:py-3 text-[#224028] shadow">
+                <div className="text-[13px] sm:text-[15px] font-bold">Network Distribution</div>
+                <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#6a7669]">{activeStores} Active Regions • {maintenanceStores} Maintenance</div>
               </div>
-              <div className="absolute left-[38%] top-[30%] h-4 w-4 rounded-full bg-[#0d8b11] shadow-[0_0_0_8px_rgba(13,139,17,0.16)]" />
-              <div className="absolute left-[63%] top-[55%] h-4 w-4 rounded-full bg-[#d31d7d] shadow-[0_0_0_8px_rgba(211,29,125,0.16)]" />
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[12px] text-white/70">
+              <div className="absolute left-[38%] top-[30%] h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-[#0d8b11] shadow-[0_0_0_6px_sm:shadow-[0_0_0_8px_rgba(13,139,17,0.16)]" />
+              <div className="absolute left-[63%] top-[55%] h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-[#d31d7d] shadow-[0_0_0_6px_sm:shadow-[0_0_0_8px_rgba(211,29,125,0.16)]" />
+              <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between text-[10px] sm:text-[12px] text-white/70">
                 <span>Regional store network</span>
                 <span>Live telemetry</span>
               </div>
             </div>
           </SectionCard>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-2">
             <StatCard label="Total Inventory Value" value={`$${Math.round(db.products.reduce((sum, product) => sum + product.price, 0) / 1000)}k`} delta="Live" deltaTone="green" hint="across locations" />
             <StatCard label="Deliveries in Transit" value={`${db.orders.filter((order) => order.status === "processing" || order.status === "shipped").length}`} delta="Live" deltaTone="green" hint="active routes" />
           </div>
         </div>
 
-        <SectionCard title="Regional Storefronts" subtitle="Manage physical locations and maintenance schedules." right={<div className="text-[12px] font-semibold text-[#0b7312]">View All</div>}>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <SectionCard title="Regional Storefronts" subtitle="Manage physical locations and maintenance schedules." right={<div className="text-[11px] sm:text-[12px] font-semibold text-[#0b7312]">View All</div>}>
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
             {stores.map((store) => (
-              <article key={store.id} className="overflow-hidden rounded-[18px] bg-[#fafcf7] ring-1 ring-black/5">
-                <div className="relative h-[222px] overflow-hidden">
+              <article key={store.id} className="overflow-hidden rounded-xl sm:rounded-[18px] bg-[#fafcf7] ring-1 ring-black/5">
+                <div className="relative h-[180px] sm:h-[222px] overflow-hidden">
                   <img src={store.imageSrc} alt={store.name} className="h-full w-full object-cover" />
-                  <div className="absolute left-3 top-3">
+                  <div className="absolute left-2 sm:left-3 top-2 sm:top-3">
                     <Pill tone={store.tint}>{store.status}</Pill>
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="text-[17px] font-bold tracking-[-0.03em] text-[#243322]">{store.name}</h3>
-                  <div className="mt-2 text-[13px] text-[#72806f]">{store.address}</div>
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-[12px]">
+                <div className="p-3 sm:p-4">
+                  <h3 className="text-[15px] sm:text-[17px] font-bold tracking-[-0.03em] text-[#243322]">{store.name}</h3>
+                  <div className="mt-1.5 sm:mt-2 text-[11px] sm:text-[13px] text-[#72806f] break-words">{store.address}</div>
+                  <div className="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-3 text-[11px] sm:text-[12px]">
                     <div>
                       <div className="text-[#9aa795]">Manager</div>
-                      <div className="mt-1 font-semibold text-[#243322]">{store.manager}</div>
+                      <div className="mt-0.5 sm:mt-1 font-semibold text-[#243322] text-[12px] sm:text-[13px]">{store.manager}</div>
                     </div>
                     <div>
                       <div className="text-[#9aa795]">Contact</div>
-                      <div className="mt-1 font-semibold text-[#243322]">{store.contact}</div>
+                      <div className="mt-0.5 sm:mt-1 font-semibold text-[#243322] text-[12px] sm:text-[13px]">{store.contact}</div>
                     </div>
                   </div>
                 </div>
@@ -79,12 +79,12 @@ export default async function StoresPage() {
           </div>
         </SectionCard>
 
-        <div className="rounded-[18px] bg-[#eaf5db] px-5 py-4 text-[13px] text-[#60705f] ring-1 ring-black/5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-xl sm:rounded-[18px] bg-[#eaf5db] px-3 sm:px-5 py-3 sm:py-4 text-[12px] sm:text-[13px] text-[#60705f] ring-1 ring-black/5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>Maintenance window scheduled for Salem Facility tomorrow at 02:00 AM PST.</div>
             <div className="flex gap-2">
-              <button className="rounded-md bg-white px-4 py-2 font-semibold text-[#40503f]">Dismiss</button>
-              <button className="rounded-md bg-[#0f9716] px-4 py-2 font-semibold text-white">View Schedule</button>
+              <button className="rounded-md bg-white px-3 sm:px-4 py-1.5 sm:py-2 font-semibold text-[#40503f] text-[12px] sm:text-[13px]">Dismiss</button>
+              <button className="rounded-md bg-[#0f9716] px-3 sm:px-4 py-1.5 sm:py-2 font-semibold text-white text-[12px] sm:text-[13px]">View Schedule</button>
             </div>
           </div>
         </div>

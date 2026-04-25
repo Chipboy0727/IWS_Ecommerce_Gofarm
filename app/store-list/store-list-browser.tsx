@@ -115,55 +115,55 @@ function StoreCard({ store }: { store: StoreItem }) {
     <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-gofarm-green/0 via-gofarm-green/10 to-gofarm-green/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
-      <div className="relative p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gofarm-green/15 to-gofarm-light-green/10">
-            <IconStore className="h-6 w-6 text-gofarm-green" />
+      <div className="relative p-4 sm:p-5">
+        <div className="mb-3 sm:mb-4 flex items-center justify-between">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gofarm-green/15 to-gofarm-light-green/10">
+            <IconStore className="h-5 w-5 sm:h-6 sm:w-6 text-gofarm-green" />
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <IconStar key={i} className={`h-3 w-3 ${i < 4 ? "text-yellow-400" : "text-gray-200"}`} />
+                <IconStar key={i} className={`h-2.5 w-2.5 sm:h-3 sm:w-3 ${i < 4 ? "text-yellow-400" : "text-gray-200"}`} />
               ))}
             </div>
-            <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+            <span className="rounded-full bg-green-100 px-1.5 sm:px-2 py-0.5 text-[8px] sm:text-[10px] font-medium text-green-700">
               Open
             </span>
           </div>
         </div>
         
-        <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-gofarm-green transition-colors line-clamp-1">
+        <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-0.5 sm:mb-1 group-hover:text-gofarm-green transition-colors line-clamp-1">
           {store.name}
         </h3>
-        <div className="flex items-center gap-1 mb-3">
-          <IconMapPin className="h-3 w-3 text-gray-400" />
-          <p className="text-xs text-gray-500">{store.city}, {store.country}</p>
+        <div className="flex items-center gap-1 mb-2 sm:mb-3">
+          <IconMapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-400" />
+          <p className="text-[10px] sm:text-xs text-gray-500">{store.city}, {store.country}</p>
         </div>
         
-        <div className="space-y-2 text-sm border-t border-gray-100 pt-3">
-          <div className="flex items-start gap-2 text-gray-600">
-            <IconMapPin className="h-3.5 w-3.5 mt-0.5 shrink-0 text-gofarm-green" />
-            <span className="text-xs line-clamp-2">{store.address}</span>
+        <div className="space-y-1.5 sm:space-y-2 text-sm border-t border-gray-100 pt-2.5 sm:pt-3">
+          <div className="flex items-start gap-1.5 sm:gap-2 text-gray-600">
+            <IconMapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 mt-0.5 shrink-0 text-gofarm-green" />
+            <span className="text-[10px] sm:text-xs line-clamp-2">{store.address}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <IconPhone className="h-3.5 w-3.5 shrink-0 text-gofarm-green" />
-            <a href={`tel:${store.phone}`} className="text-xs hover:text-gofarm-green transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-gray-600">
+            <IconPhone className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gofarm-green" />
+            <a href={`tel:${store.phone}`} className="text-[10px] sm:text-xs hover:text-gofarm-green transition-colors">
               {store.phone}
             </a>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <IconClock className="h-3.5 w-3.5 shrink-0 text-gofarm-green" />
-            <span className="text-xs line-clamp-1">{store.hours}</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-gray-600">
+            <IconClock className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gofarm-green" />
+            <span className="text-[10px] sm:text-xs line-clamp-1">{store.hours}</span>
           </div>
         </div>
         
         <button
           onClick={openGoogleMaps}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white transition-all hover:bg-gofarm-green hover:gap-3"
+          className="mt-3 sm:mt-4 flex w-full items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gray-900 px-2.5 sm:px-3 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold text-white transition-all hover:bg-gofarm-green hover:gap-2 sm:hover:gap-3"
         >
-          <IconMapPin className="h-3.5 w-3.5" />
+          <IconMapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
           Get Directions
-          <IconExternal className="h-3 w-3 opacity-70" />
+          <IconExternal className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-70" />
         </button>
       </div>
     </div>
@@ -186,34 +186,34 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-lg">
-      <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gofarm-green/10">
-            <IconGlobe className="h-4 w-4 text-gofarm-green" />
+      <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-4 sm:px-5 py-3 sm:py-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gofarm-green/10">
+            <IconGlobe className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gofarm-green" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-gray-900">Store Locations Map</h2>
-            <p className="text-xs text-gray-500">{stores.length} stores available</p>
+            <h2 className="text-sm sm:text-base font-bold text-gray-900">Store Locations Map</h2>
+            <p className="text-[10px] sm:text-xs text-gray-500">{stores.length} stores available</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        <div className="border-r border-gray-100 bg-gray-50/30 max-h-96 overflow-y-auto">
-          <div className="p-3">
-            <div className="space-y-1.5">
+      <div className="flex flex-col md:flex-row">
+        <div className="border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/30 max-h-64 md:max-h-96 overflow-y-auto">
+          <div className="p-2 sm:p-3">
+            <div className="space-y-1 sm:space-y-1.5">
               {stores.map((store, idx) => (
                 <button
                   key={store.id}
                   onClick={() => setSelectedStore(store)}
-                  className={`w-full text-left rounded-xl p-3 transition-all duration-200 ${
+                  className={`w-full text-left rounded-xl p-2.5 sm:p-3 transition-all duration-200 ${
                     selectedStore?.id === store.id
                       ? "bg-gofarm-green text-white shadow-md"
                       : "bg-white hover:bg-gofarm-green/5 border border-gray-100 hover:border-gofarm-green/30"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg text-[10px] sm:text-xs font-bold ${
                       selectedStore?.id === store.id
                         ? "bg-white/20 text-white"
                         : "bg-gofarm-green/10 text-gofarm-green"
@@ -221,10 +221,10 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
                       {idx + 1}
                     </div>
                     <div className="flex-1 text-left">
-                      <p className={`font-semibold text-sm ${selectedStore?.id === store.id ? "text-white" : "text-gray-900"}`}>
+                      <p className={`font-semibold text-xs sm:text-sm ${selectedStore?.id === store.id ? "text-white" : "text-gray-900"}`}>
                         {store.name}
                       </p>
-                      <p className={`text-xs ${selectedStore?.id === store.id ? "text-white/70" : "text-gray-500"}`}>
+                      <p className={`text-[10px] sm:text-xs ${selectedStore?.id === store.id ? "text-white/70" : "text-gray-500"}`}>
                         {store.city}
                       </p>
                     </div>
@@ -235,30 +235,30 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
           </div>
         </div>
 
-        <div className="bg-white p-5">
+        <div className="bg-white p-4 sm:p-5 flex-1">
           {selectedStore ? (
             <div className="text-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gofarm-green/10 mx-auto">
-                <IconStore className="h-8 w-8 text-gofarm-green" />
+              <div className="mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gofarm-green/10 mx-auto">
+                <IconStore className="h-7 w-7 sm:h-8 sm:w-8 text-gofarm-green" />
               </div>
               
-              <h3 className="text-lg font-bold text-gray-900 mb-1">{selectedStore.name}</h3>
-              <p className="text-xs text-gray-500 mb-4">{selectedStore.address}</p>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-0.5 sm:mb-1">{selectedStore.name}</h3>
+              <p className="text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 break-words">{selectedStore.address}</p>
 
-              <div className="flex flex-col gap-2 mb-4">
+              <div className="flex flex-col gap-2 mb-3 sm:mb-4">
                 <button
                   onClick={() => openGoogleMaps(selectedStore)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gofarm-green px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gofarm-green px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green"
                 >
-                  <IconMapPin className="h-4 w-4" />
+                  <IconMapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   Open in Google Maps
-                  <IconExternal className="h-3 w-3" />
+                  <IconExternal className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                 </button>
                 <button
                   onClick={() => getDirections(selectedStore)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gofarm-green bg-white px-4 py-2.5 text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl border-2 border-gofarm-green bg-white px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white"
                 >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -266,31 +266,31 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
                 </button>
               </div>
 
-              <div className="border-t border-gray-100 pt-4 mt-2">
-                <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="border-t border-gray-100 pt-3 sm:pt-4 mt-1 sm:mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs">
                   <div className="text-left">
                     <p className="text-gray-400 mb-0.5">📞 Phone</p>
-                    <a href={`tel:${selectedStore.phone}`} className="text-gofarm-green hover:underline text-xs">
+                    <a href={`tel:${selectedStore.phone}`} className="text-gofarm-green hover:underline text-[10px] sm:text-xs break-words">
                       {selectedStore.phone}
                     </a>
                   </div>
                   <div className="text-left">
                     <p className="text-gray-400 mb-0.5">✉️ Email</p>
-                    <a href={`mailto:${selectedStore.email}`} className="text-gofarm-green hover:underline text-xs truncate block">
+                    <a href={`mailto:${selectedStore.email}`} className="text-gofarm-green hover:underline text-[10px] sm:text-xs truncate block">
                       {selectedStore.email}
                     </a>
                   </div>
-                  <div className="col-span-2 text-left">
+                  <div className="sm:col-span-2 text-left">
                     <p className="text-gray-400 mb-0.5">🕒 Hours</p>
-                    <p className="text-gray-600 text-xs">{selectedStore.hours}</p>
+                    <p className="text-gray-600 text-[10px] sm:text-xs break-words">{selectedStore.hours}</p>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <IconMapPin className="h-12 w-12 text-gray-300 mb-3" />
-              <p className="text-sm text-gray-500">Select a store to view details</p>
+            <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center">
+              <IconMapPin className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mb-2 sm:mb-3" />
+              <p className="text-xs sm:text-sm text-gray-500">Select a store to view details</p>
             </div>
           )}
         </div>
@@ -326,133 +326,139 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
   const hasFilters = searchQuery !== "" || selectedCountry !== "all";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white">
-      {/* Hero Section */}
-      <div className="mb-10 text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-gofarm-green shadow-md">
-          <IconMapPin className="h-4 w-4" />
-          Find your nearest store
-        </div>
-        <h1 className="mb-3 text-4xl font-bold text-gray-900 lg:text-5xl">
-          Store Locations
-        </h1>
-        <p className="mx-auto max-w-md text-gray-500">
-          Visit us at any of our locations across the country
-        </p>
-      </div>
-
-      {/* Search and Filter Bar */}
-      <div className="mb-8">
-        <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-md sm:flex-row">
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-              <IconSearch className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by store name or city..."
-              className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-12 pr-10 text-base outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-              >
-                <IconX className="h-5 w-5" />
-              </button>
-            )}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white pb-8 sm:pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        
+        {/* Hero Section */}
+        <div className="mb-6 sm:mb-8 md:mb-10 text-center">
+          <div className="mb-3 sm:mb-4 inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-white px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gofarm-green shadow-md">
+            <IconMapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+            Find your nearest store
           </div>
-
-          {/* Extra left padding keeps the leading icon clear of the select text. */}
-          <div className="relative w-full sm:w-56">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-              <IconGlobe className="h-5 w-5 text-gray-400" />
-            </div>
-            <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className="h-12 w-full appearance-none rounded-xl border border-gray-200 bg-white pl-12 pr-10 text-base outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
-            >
-              {countries.map(country => (
-                <option key={country} value={country}>
-                  {country === "all" ? " All Countries" : ` ${country}`}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <IconChevronDown className="h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-
-          {/* Clear Button */}
-          {hasFilters && (
-            <button
-              onClick={clearFilters}
-              className="flex h-12 items-center gap-2 rounded-xl border border-gray-200 px-5 text-sm font-medium text-gray-500 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
-            >
-              <IconX className="h-4 w-4" />
-              Clear
-            </button>
-          )}
-        </div>
-
-        {/* Result count */}
-        <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Found <span className="font-semibold text-gofarm-green">{filteredStores.length}</span> stores
+          <h1 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
+            Store Locations
+          </h1>
+          <p className="mx-auto max-w-md text-xs sm:text-sm text-gray-500 px-3">
+            Visit us at any of our locations across the country
           </p>
         </div>
-      </div>
 
-      {/* Results */}
-      {filteredStores.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center shadow-sm">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <IconStore className="h-8 w-8 text-gray-400" />
+        {/* Search and Filter Bar - ĐÃ SỬA LỖI ĐÈ CHỮ */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-md">
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <IconSearch className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by store name or city..."
+                  className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-10 text-sm outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                  >
+                    <IconX className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Country Select - ĐÃ SỬA LỖI ĐÈ CHỮ */}
+              <div className="relative w-full sm:w-48">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <IconGlobe className="h-4 w-4 text-gray-400" />
+                </div>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className="h-11 w-full appearance-none rounded-xl border border-gray-200 bg-white pl-10 pr-8 text-sm outline-none transition-all focus:border-gofarm-green focus:ring-2 focus:ring-gofarm-green/20"
+                >
+                  {countries.map(country => (
+                    <option key={country} value={country}>
+                      {country === "all" ? "All Countries" : country}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <IconChevronDown className="h-4 w-4 text-gray-400" />
+                </div>
+              </div>
+
+              {/* Clear Button */}
+              {hasFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-gray-200 px-4 text-sm font-medium text-gray-500 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                >
+                  <IconX className="h-3.5 w-3.5" />
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
-          <h3 className="mb-2 text-xl font-semibold text-gray-900">No stores found</h3>
-          <p className="mb-6 text-gray-500">Try adjusting your search or filter criteria</p>
-          <button
-            onClick={clearFilters}
-            className="rounded-xl bg-gofarm-green px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gofarm-light-green"
-          >
-            Clear all filters
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="mb-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredStores.map((store) => (
-              <StoreCard key={store.id} store={store} />
-            ))}
-          </div>
-          <MapPanel stores={filteredStores} />
-        </>
-      )}
 
-      {/* CTA Section */}
-      <div className="mt-10 rounded-2xl bg-gradient-to-r from-gofarm-green/5 via-white to-gofarm-light-green/5 p-6 text-center">
-        <h3 className="text-lg font-bold text-gray-900">Need help finding a store?</h3>
-        <p className="mt-1 text-sm text-gray-500">Contact us and we'll point you to the nearest location.</p>
-        <div className="mt-4 flex justify-center gap-3">
-          <Link
-            href="/contact"
-            className="rounded-xl bg-gofarm-green px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green hover:scale-105"
-          >
-            Contact Support
-          </Link>
-          <Link
-            href="/shop"
-            className="rounded-xl border-2 border-gofarm-green bg-white px-5 py-2 text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white hover:scale-105"
-          >
-            Shop Online
-          </Link>
+          {/* Result count */}
+          <div className="mt-3 flex items-center justify-between">
+            <p className="text-xs text-gray-500">
+              Found <span className="font-semibold text-gofarm-green">{filteredStores.length}</span> stores
+            </p>
+          </div>
+        </div>
+
+        {/* Results */}
+        {filteredStores.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-12 sm:py-16 text-center shadow-sm">
+            <div className="mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gray-100">
+              <IconStore className="h-7 w-7 sm:h-8 sm:w-8 text-gray-400" />
+            </div>
+            <h3 className="mb-1.5 sm:mb-2 text-lg sm:text-xl font-semibold text-gray-900">No stores found</h3>
+            <p className="mb-4 sm:mb-6 text-xs sm:text-sm text-gray-500 px-3">Try adjusting your search or filter criteria</p>
+            <button
+              onClick={clearFilters}
+              className="rounded-xl bg-gofarm-green px-5 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white transition-colors hover:bg-gofarm-light-green"
+            >
+              Clear all filters
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-6 sm:mb-8 grid gap-3 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredStores.map((store) => (
+                <StoreCard key={store.id} store={store} />
+              ))}
+            </div>
+            <MapPanel stores={filteredStores} />
+          </>
+        )}
+
+        {/* CTA Section */}
+        <div className="mt-8 sm:mt-10 rounded-2xl bg-gradient-to-r from-gofarm-green/5 via-white to-gofarm-light-green/5 p-5 sm:p-6 text-center">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">Need help finding a store?</h3>
+          <p className="mt-1 text-xs sm:text-sm text-gray-500">Contact us and we'll point you to the nearest location.</p>
+          <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row justify-center gap-2 sm:gap-3">
+            <Link
+              href="/contact"
+              className="rounded-xl bg-gofarm-green px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-gofarm-light-green hover:scale-105"
+            >
+              Contact Support
+            </Link>
+            <Link
+              href="/shop"
+              className="rounded-xl border-2 border-gofarm-green bg-white px-4 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gofarm-green transition-all hover:bg-gofarm-green hover:text-white hover:scale-105"
+            >
+              Shop Online
+            </Link>
+          </div>
         </div>
       </div>
-
     </div>
   );
 }

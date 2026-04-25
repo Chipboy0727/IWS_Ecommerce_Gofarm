@@ -9,15 +9,15 @@ export default function PrivacyPage() {
   return (
     <>
       <main className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
-        <div className="max-w-4xl mx-auto px-4 py-12 md:py-16">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-12 md:py-16">
           
 
           {/* Header */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gofarm-black mb-2">Privacy Policy</h1>
-          <p className="text-gray-600 mb-12">Last updated: April 23, 2026</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gofarm-black mb-1.5 sm:mb-2">Privacy Policy</h1>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600 mb-8 sm:mb-10 md:mb-12">Last updated: April 23, 2026</p>
 
           {/* Content */}
-          <div className="bg-white rounded-2xl p-8 md:p-12 shadow-lg space-y-8">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 lg:p-12 shadow-lg space-y-5 sm:space-y-6 md:space-y-8">
             <Section
               title="1. Information We Collect"
               content="We collect information you provide directly, such as name, email address, shipping address, and payment information. We also automatically collect certain information about your device and how you interact with our website, including IP address and browsing activity."
@@ -73,8 +73,8 @@ export default function PrivacyPage() {
 function Section({ title, content }: { title: string; content: string }) {
   return (
     <div>
-      <h2 className="text-xl font-bold text-gofarm-black mb-3">{title}</h2>
-      <p className="text-gray-600 leading-relaxed">{content}</p>
+      <h2 className="text-base sm:text-lg md:text-xl font-bold text-gofarm-black mb-1.5 sm:mb-2 md:mb-3">{title}</h2>
+      <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">{content}</p>
     </div>
   );
 }
