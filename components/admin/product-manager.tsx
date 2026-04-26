@@ -79,6 +79,11 @@ export default function ProductManager() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [stockFilter, setStockFilter] = useState("All");
+  const pageSize = 10;
   const [isOpen, setIsOpen] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [form, setForm] = useState<ProductFormState>(emptyForm());
@@ -228,6 +233,48 @@ export default function ProductManager() {
     }
   };
 
+  const handleExport = () => {
+    const headers = ["SKU", "Name", "Category", "Stock", "Status", "Price"];
+    const rows = filteredProducts.map(p => [
+      p.slug.toUpperCase(),
+      `"${p.name.replace(/"/g, '""')}"`,
+      `"${p.categoryTitle || 'Uncategorized'}"`,
+      p.stock || 0,
+      (p.status || "ACTIVE").toUpperCase(),
+      p.price.toFixed(2)
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "products_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const filteredProducts = products.filter((p) => {
+    const term = search.toLowerCase();
+    const matchesSearch = !search || (
+      p.name.toLowerCase().includes(term) ||
+      p.slug.toLowerCase().includes(term) ||
+      (p.categoryTitle && p.categoryTitle.toLowerCase().includes(term))
+    );
+    const matchesCategory = categoryFilter === "All" || p.categoryId === categoryFilter;
+    
+    let matchesStock = true;
+    const stock = p.stock || 0;
+    if (stockFilter === "Low") matchesStock = stock <= 25;
+    else if (stockFilter === "Medium") matchesStock = stock > 25 && stock <= 100;
+    else if (stockFilter === "High") matchesStock = stock > 100;
+    
+    return matchesSearch && matchesCategory && matchesStock;
+  });
+
+  const pageCount = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <>
       <SectionCard
@@ -242,11 +289,57 @@ export default function ProductManager() {
         <div className="mb-4 flex flex-wrap items-center gap-3 rounded-[18px] border border-[#edf1e5] bg-white px-4 py-4">
           <div className="flex min-w-[320px] flex-1 items-center gap-3 rounded-[14px] bg-[#e9f0db] px-4 py-3 text-[#6f7b6d]">
             <IconSearch />
-            <span className="text-[13px]">Search products, SKU or category...</span>
+            <input 
+              type="text" 
+              placeholder="Search products, SKU or category..." 
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="bg-transparent border-none outline-none w-full text-[13px] text-[#243322] placeholder-[#6f7b6d]"
+            />
           </div>
-          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Category</button>
-          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Stock Level</button>
-          <button className="rounded-[10px] bg-[#eef4e7] px-4 py-3 text-[13px] font-medium text-[#536451]">Export</button>
+          <div className="relative flex items-center">
+            <select 
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setPage(1);
+              }}
+              className="rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] pl-4 pr-10 py-3 text-[13px] font-bold text-[#536451] outline-none appearance-none cursor-pointer border-none transition-colors"
+            >
+              <option value="All">All Categories</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+            </select>
+            <div className="pointer-events-none absolute right-3 text-[#536451]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          
+          <div className="relative flex items-center">
+            <select 
+              value={stockFilter}
+              onChange={(e) => {
+                setStockFilter(e.target.value);
+                setPage(1);
+              }}
+              className="rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] pl-4 pr-10 py-3 text-[13px] font-bold text-[#536451] outline-none appearance-none cursor-pointer border-none transition-colors"
+            >
+              <option value="All">All Stock Levels</option>
+              <option value="Low">Low Stock (≤ 25)</option>
+              <option value="Medium">Medium Stock (26-100)</option>
+              <option value="High">High Stock (&gt; 100)</option>
+            </select>
+            <div className="pointer-events-none absolute right-3 text-[#536451]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+
+          <button onClick={handleExport} className="flex items-center gap-2 rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] px-4 py-3 text-[13px] font-bold text-[#536451] transition-colors">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export CSV
+          </button>
         </div>
 
         {error ? (
@@ -277,11 +370,11 @@ export default function ProductManager() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product, index) => {
+                  {paginatedProducts.map((product, index) => {
                     const stock = typeof product.stock === "number" ? product.stock : 0;
                     const tone = stockTone(stock);
                     return (
-                      <tr key={product.id} className={index === products.length - 1 ? "" : "border-b border-[#edf1e5]"}>
+                      <tr key={product.id} className={index === paginatedProducts.length - 1 ? "" : "border-b border-[#edf1e5]"}>
                         <td className="px-5 py-4 text-[13px] font-medium text-[#748171]">
                           {product.slug.toUpperCase()}
                         </td>
@@ -334,6 +427,52 @@ export default function ProductManager() {
             </div>
           </div>
 
+            {/* Pagination */}
+            {filteredProducts.length > 0 && (
+              <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#6f7b6d] px-2">
+                <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredProducts.length)} of {filteredProducts.length} products</div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
+                    let pageNum = i + 1;
+                    if (pageCount > 5) {
+                      if (page > 3 && page < pageCount - 2) pageNum = page - 2 + i;
+                      else if (page >= pageCount - 2) pageNum = pageCount - 4 + i;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPage(pageNum)}
+                        style={{
+                          backgroundColor: page === pageNum ? '#0b7312' : '',
+                          color: page === pageNum ? '#ffffff' : ''
+                        }}
+                        className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                          page !== pageNum 
+                            ? "bg-white ring-1 ring-black/10 hover:bg-black/5 text-[#243322]" 
+                            : "font-bold"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                  <button 
+                    onClick={() => setPage(Math.min(pageCount, page + 1))}
+                    disabled={page === pageCount}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </SectionCard>
@@ -482,8 +621,7 @@ export default function ProductManager() {
               <button
                 type="button"
                 onClick={closeModal}
-                style={{ backgroundColor: "#0f9716", color: "#ffffff" }}
-                className="rounded-xl px-8 py-3 text-[14px] font-bold shadow-lg shadow-green-100 transition-all hover:bg-[#0d8213] active:scale-95"
+                className="rounded-xl px-8 py-3 text-[14px] font-bold text-[#5b6658] transition-all hover:bg-[#f0f5e4] active:scale-95"
               >
                 Cancel
               </button>
