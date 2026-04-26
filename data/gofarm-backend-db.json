@@ -884,6 +884,15 @@
       "role": "user",
       "createdAt": "2026-04-25T10:00:00.000Z",
       "updatedAt": "2026-04-25T10:00:00.000Z"
+    },
+    {
+      "id": "61fe7a32-4135-492c-8cc5-de1eac8ae971",
+      "name": "Quemich",
+      "email": "quemichnq@gmail.com",
+      "passwordHash": "3946f2ffaf57fb38ab52521daa9da194:8e7d21293a1a62eef08daf967a0ce1b4747c3f29fdb6d0b3c57bd66a4a2a1d65",
+      "role": "admin",
+      "createdAt": "2026-04-26T07:48:09.843Z",
+      "updatedAt": "2026-04-26T07:48:09.843Z"
     }
   ],
   "orders": [
@@ -1026,6 +1035,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-25T18:39:12.677Z"
+    "updatedAt": "2026-04-26T07:48:09.853Z"
   }
 }
