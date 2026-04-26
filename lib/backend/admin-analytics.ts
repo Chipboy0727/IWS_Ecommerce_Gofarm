@@ -218,8 +218,8 @@ export function buildCustomerRows(users: BackendUser[]) {
     email: user.email,
     role: user.role === "admin" ? "Admin" : "Customer",
     joinDate: user.createdAt,
-    status: user.role === "admin" ? "Active" : "Active",
-    tone: "green" as const,
+    status: (user as any).status || "Active",
+    tone: ((user as any).status === "Banned" ? "red" : "green") as const,
     avatar: user.name
       .split(" ")
       .slice(0, 2)

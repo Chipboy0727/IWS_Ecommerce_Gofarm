@@ -104,6 +104,7 @@ function rowToUser(row: Record<string, unknown>): BackendUser {
       row.resetTokenExpiresAt === null || row.resetTokenExpiresAt === undefined
         ? null
         : String(row.resetTokenExpiresAt),
+    status: String(row.status ?? "Active"),
   };
 }
 
@@ -213,6 +214,12 @@ async function ensureMysqlSchema() {
       resetTokenExpiresAt VARCHAR(32) NULL
     )
   `);
+
+  try {
+    await pool.execute("ALTER TABLE users ADD status VARCHAR(32) DEFAULT 'Active'");
+  } catch {
+    // column already exists
+  }
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS orders (
@@ -432,8 +439,8 @@ async function persistMysqlState(state: BackendDb) {
       await connection.execute(
         `
           INSERT INTO users (
-            id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            id, name, email, passwordHash, role, createdAt, updatedAt, resetTokenHash, resetTokenExpiresAt, status
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
           user.id,
@@ -445,6 +452,7 @@ async function persistMysqlState(state: BackendDb) {
           user.updatedAt ?? nowIso(),
           user.resetTokenHash ?? null,
           user.resetTokenExpiresAt ?? null,
+          user.status ?? "Active",
         ]
       );
     }

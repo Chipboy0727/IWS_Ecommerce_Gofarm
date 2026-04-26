@@ -73,3 +73,62 @@ export async function GET(request: NextRequest) {
     },
   });
 }
+
+export async function POST(request: NextRequest) {
+  const admin = await requireAdmin(request);
+  if (!admin) return jsonError("Unauthorized", 401);
+
+  const body = await request.json().catch(() => ({}));
+  const name = sanitizeOptionalString(body.name);
+  const email = sanitizeOptionalString(body.email);
+  const password = sanitizeOptionalString(body.password);
+  const role = sanitizeOptionalString(body.role) === "admin" ? "admin" : "user";
+
+  if (!name || !email || !password) {
+    return jsonError("Name, email, and password are required", 400);
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return jsonError("Invalid email format", 400);
+  }
+
+  const { hashPassword } = await import("@/lib/backend/auth");
+  const { updateDb, cloneDb } = await import("@/lib/backend/db");
+  const { randomUUID } = await import("node:crypto");
+
+  try {
+    const newUser = await updateDb((db) => {
+      const next = cloneDb(db);
+      if (next.users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+        throw new Error("Email already in use");
+      }
+      
+      const now = new Date().toISOString();
+      const user = {
+        id: randomUUID(),
+        name,
+        email: email.toLowerCase(),
+        passwordHash: hashPassword(password),
+        role,
+        createdAt: now,
+        updatedAt: now,
+      };
+      
+      next.users.push(user);
+      return next;
+    });
+    
+    const user = newUser.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+    return NextResponse.json({
+      id: user?.id,
+      name: user?.name,
+      email: user?.email,
+      role: user?.role,
+      createdAt: user?.createdAt,
+      updatedAt: user?.updatedAt,
+    });
+  } catch (error: any) {
+    return jsonError(error.message, 400);
+  }
+}

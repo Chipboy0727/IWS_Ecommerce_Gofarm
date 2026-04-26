@@ -20,6 +20,10 @@ export async function POST(request: NextRequest) {
     return jsonError("Invalid email or password", 401);
   }
 
+  if ((user as any).status === "Banned") {
+    return jsonError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.", 403);
+  }
+
   const token = createSessionToken({ id: user.id, email: user.email, role: user.role });
   const response = NextResponse.json({
     user: { 

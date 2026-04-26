@@ -11,7 +11,7 @@ export async function getAuthenticatedUser(request: NextRequest) {
   if (!payload) return null;
 
   const db = await readDb();
-  return db.users.find((item) => item.id === payload.sub && item.email === payload.email) ?? null;
+  return db.users.find((item) => item.id === payload.sub && item.email === payload.email && (item as any).status !== "Banned") ?? null;
 }
 
 /** Require admin role. Returns the admin user or null if unauthorized. */
