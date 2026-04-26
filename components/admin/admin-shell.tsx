@@ -952,15 +952,17 @@ export function SectionCard({
   children,
   right,
   className = "",
+  style,
 }: {
   title?: string;
   subtitle?: string;
   children: ReactNode;
   right?: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <section className={`card ${className}`.trim()}>
+    <section className={`card ${className}`.trim()} style={style}>
       {title || subtitle || right ? (
         <div className="card-header">
           <div>
