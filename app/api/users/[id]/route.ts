@@ -7,11 +7,11 @@ import type { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin(request);
   if (!admin) return jsonError("Unauthorized", 401);
 
-  const { id } = params;
+  const { id } = await params;
   if (!id) return jsonError("User ID required", 400);
 
   const body = await request.json().catch(() => ({}));
@@ -78,11 +78,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const admin = await requireAdmin(request);
   if (!admin) return jsonError("Unauthorized", 401);
 
-  const { id } = params;
+  const { id } = await params;
   if (!id) return jsonError("User ID required", 400);
   
   if (admin.sub === id) {
