@@ -180,7 +180,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center mb-6">
         <input 
           type="text" 
-          placeholder="Tìm kiếm tên hoặc email..." 
+          placeholder="Search name or email..." 
           className="px-4 py-2 border rounded-md text-sm w-full sm:w-80 outline-none focus:ring-2 focus:ring-[#0b7312]"
           value={search}
           onChange={(e) => {
@@ -193,7 +193,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
           style={{ backgroundColor: '#0b7312', color: 'white' }}
           className="rounded-md px-4 py-2 text-sm font-semibold shadow-sm hover:bg-[#0a6610] transition-colors whitespace-nowrap"
         >
-          + Tạo Tài Khoản
+          + Create Account
         </button>
       </div>
 
@@ -294,13 +294,13 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
 
       {/* Pagination */}
       {filteredUsers.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 pt-4 text-[11px] sm:text-[12px] text-[#6f7b6d]">
-          <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredUsers.length)} of {filteredUsers.length.toLocaleString("en-US")} users</div>
-          <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#6f7b6d] px-2">
+          <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredUsers.length)} of {filteredUsers.length} users</div>
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d] hover:bg-[#e4ebd8] disabled:opacity-50"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
             >
               ‹
             </button>
@@ -314,10 +314,14 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                 <button
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
-                  className={`grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md ${
-                    page === pageNum 
-                      ? "bg-[#0b7312] text-white" 
-                      : "bg-white ring-1 ring-black/10 hover:bg-black/5"
+                  style={{
+                    backgroundColor: page === pageNum ? '#0b7312' : '',
+                    color: page === pageNum ? '#ffffff' : ''
+                  }}
+                  className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                    page !== pageNum 
+                      ? "bg-white ring-1 ring-black/10 hover:bg-black/5 text-[#243322]" 
+                      : "font-bold"
                   }`}
                 >
                   {pageNum}
@@ -327,7 +331,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
             <button 
               onClick={() => setPage(Math.min(pageCount, page + 1))}
               disabled={page === pageCount}
-              className="grid h-7 w-7 sm:h-9 sm:w-9 place-items-center rounded-md bg-[#f2f6ea] text-[#7f8d7d] hover:bg-[#e4ebd8] disabled:opacity-50"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
             >
               ›
             </button>

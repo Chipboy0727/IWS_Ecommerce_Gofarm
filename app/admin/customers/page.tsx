@@ -26,16 +26,9 @@ export default async function CustomersPage() {
       userLabel="GoFarm Central"
     >
       <div className="space-y-4 sm:space-y-6">
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-[260px_260px_1fr]">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
           <StatCard label="Total Active Users" value={stats.userCount.toLocaleString("en-US")} delta="Live" deltaTone="green" hint="backend users" />
           <StatCard label="Staff-to-Customer Ratio" value={`1:${Math.max(1, Math.round(stats.userCount / Math.max(1, stats.newCustomers)))}`} delta={`${adminCount} Staff`} deltaTone="pink" hint="staff-to-customer ratio" />
-          <div className="rounded-xl sm:rounded-[20px] bg-[linear-gradient(180deg,#0f7d17_0%,#0d6512_100%)] p-4 sm:p-5 text-white shadow-sm ring-1 ring-black/5">
-            <div className="text-[10px] sm:text-[12px] uppercase tracking-[0.2em] text-white/60">System Health</div>
-            <div className="mt-1 sm:mt-2 text-2xl sm:text-[28px] font-extrabold tracking-[-0.05em]">Operational</div>
-            <div className="mt-3 sm:mt-5 h-1.5 w-full rounded-full bg-white/18">
-              <div className="h-1.5 w-[76%] rounded-full bg-white" />
-            </div>
-          </div>
         </div>
 
         <SectionCard
@@ -45,15 +38,6 @@ export default async function CustomersPage() {
         >
           <CustomersTableClient initialUsers={users} />
         </SectionCard>
-
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 xl:grid-cols-2">
-          <SectionCard title="Growth Forecast" subtitle="Based on your current retention rate, you are on track to hit 3,000 active customers by mid-next month.">
-            <div className="text-[12px] sm:text-[13px] leading-5 sm:leading-6 text-[#60705f]">Projected customer growth is stable and supported by recent engagement in store and product management.</div>
-          </SectionCard>
-          <SectionCard title="Audit Tip" subtitle="There are 3 staff members who haven't logged in for 30+ days.">
-            <div className="text-[12px] sm:text-[13px] leading-5 sm:leading-6 text-[#60705f]">Consider reviewing their access permissions and revalidating device history this week.</div>
-          </SectionCard>
-        </div>
       </div>
     </AdminShell>
   );

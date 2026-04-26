@@ -1,25 +1,6 @@
 {
   "products": [
     {
-      "id": "9d2051b8-a2e2-4af8-907b-119cdcc657e9",
-      "name": "Onion",
-      "slug": "onion",
-      "imageSrc": "/images/85ac88e07f70e96e5fa9000e705353fd4e6f7bc6-750x750.webp",
-      "imageAlt": "Onion",
-      "price": 7,
-      "discount": 10,
-      "brand": "Brand",
-      "categoryId": "ac18b9f2-2d6d-4772-8f19-2f692d720f90",
-      "categoryTitle": "Fruits",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis aliquid architecto molestiae voluptas odio earum fugit amet, at corporis doloremque nobis officia sint illo consequuntur iure rerum eaque autem ut.",
-      "rating": 5,
-      "reviews": 1,
-      "stock": 28,
-      "status": "new",
-      "createdAt": "2026-04-21T16:17:06.895Z",
-      "updatedAt": "2026-04-24T03:06:38.498Z"
-    },
-    {
       "id": "976cd1bb-277c-4ebe-b1b6-5d6dd3275706",
       "name": "Tomato Juices",
       "slug": "tomato-juices",
@@ -859,13 +840,13 @@
   "users": [
     {
       "id": "7e023e76-157f-4651-90ae-93e19ebe2cda",
-      "name": "Admin",
+      "name": "Admin1",
       "email": "admin@gofarm.local",
       "passwordHash": "43ae2010e13654cb7e5b80f5534b0569:48ffec71309806b159044e4d2bd6b917595219d0a08da218dc3ab3b7bc565e72",
       "role": "admin",
       "redirectTo": "/admin",
       "createdAt": "2026-04-21T16:17:06.895Z",
-      "updatedAt": "2026-04-21T16:17:06.895Z"
+      "updatedAt": "2026-04-26T13:56:27.448Z"
     },
     {
       "id": "36f0aa9f-b968-4151-a09d-28ad9d32877f",
@@ -887,12 +868,21 @@
     },
     {
       "id": "61fe7a32-4135-492c-8cc5-de1eac8ae971",
-      "name": "Quemich1",
+      "name": "Quemich2",
       "email": "quemichnq@gmail.com",
-      "passwordHash": "3946f2ffaf57fb38ab52521daa9da194:8e7d21293a1a62eef08daf967a0ce1b4747c3f29fdb6d0b3c57bd66a4a2a1d65",
+      "passwordHash": "deedc8c83c50c5da016af6a578b2f65d:ee1005d27977ecc6ecdd8021a032badc4bfc8a339a84b2fd627a013264c3ba39",
       "role": "admin",
       "createdAt": "2026-04-26T07:48:09.843Z",
-      "updatedAt": "2026-04-26T08:39:13.271Z"
+      "updatedAt": "2026-04-26T14:06:58.107Z"
+    },
+    {
+      "id": "9086c16e-01b4-430c-a361-a2a26de381df",
+      "name": "test1",
+      "email": "test1@gofarm.local",
+      "passwordHash": "a7db17d061ae164cacb02fcc25e90e3a:f3099725c537af214a58f813e9e6c308de2882d2e9c8e91e2010ef20e2d6f302",
+      "role": "user",
+      "createdAt": "2026-04-26T14:06:48.413Z",
+      "updatedAt": "2026-04-26T14:06:48.413Z"
     }
   ],
   "orders": [
@@ -1035,6 +1025,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-26T08:39:13.271Z"
+    "updatedAt": "2026-04-26T14:06:58.128Z"
   }
 }

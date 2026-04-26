@@ -26,7 +26,7 @@ const navItems: AdminNavItem[] = [
   { href: "/admin/inventory", label: "Inventory", icon: <IconBox /> },
   { href: "/admin/orders", label: "Orders", icon: <IconCart /> },
   { href: "/admin/stores", label: "Stores", icon: <IconStore /> },
-  { href: "/admin/customers", label: "Customers", icon: <IconUsers /> },
+  { href: "/admin/customers", label: "Users", icon: <IconUsers /> },
   { href: "/admin/products", label: "Products", icon: <IconPackage /> },
   { href: "/admin/analytics", label: "Analytics", icon: <IconChart /> },
 ];
@@ -86,6 +86,7 @@ export function AdminShell({
   userLabel = "GOFARM CENTRAL",
 }: AdminShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const hideElements = ["/admin/customers", "/admin/products", "/admin/analytics", "/admin/settings"].includes(activeHref);
 
   const css = `
     .admin-root {
@@ -880,27 +881,33 @@ export function AdminShell({
             <div className="page-shell">
               <header className="topbar">
                 <div className="topbar-row">
-                  <div className="searchbox">
-                    <IconSearch className="h-4 w-4" />
-                    <span>{searchPlaceholder}</span>
-                  </div>
+                  {!hideElements && (
+                    <div className="searchbox">
+                      <IconSearch className="h-4 w-4" />
+                      <span>{searchPlaceholder}</span>
+                    </div>
+                  )}
                   <div className="spacer" />
-                  <button className="icon-btn" type="button" aria-label="Notifications">
-                    <IconBell className="h-4 w-4" />
-                  </button>
-                  <button className="icon-btn" type="button" aria-label="Apps">
-                    <IconGridDots className="h-4 w-4" />
-                  </button>
-                  <div className="userchip">
-                    <div className="user-text">
-                      <div className="user-name">{userName}</div>
-                      <div className="user-role">{userRole}</div>
-                      {userLabel ? <div className="user-label">{userLabel}</div> : null}
-                    </div>
-                    <div className="avatar">
-                      <IconAvatar className="h-5 w-5" />
-                    </div>
-                  </div>
+                  {!hideElements && (
+                    <>
+                      <button className="icon-btn" type="button" aria-label="Notifications">
+                        <IconBell className="h-4 w-4" />
+                      </button>
+                      <button className="icon-btn" type="button" aria-label="Apps">
+                        <IconGridDots className="h-4 w-4" />
+                      </button>
+                      <div className="userchip">
+                        <div className="user-text">
+                          <div className="user-name">{userName}</div>
+                          <div className="user-role">{userRole}</div>
+                          {userLabel ? <div className="user-label">{userLabel}</div> : null}
+                        </div>
+                        <div className="avatar">
+                          <IconAvatar className="h-5 w-5" />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="heading-row">
