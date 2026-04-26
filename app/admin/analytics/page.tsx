@@ -4,6 +4,8 @@ import { SalesPerformanceCard } from "@/components/admin/sales-performance";
 import { buildDashboardStats, buildSalesSeries } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
 
+import { ExportAnalyticsButton } from "@/components/admin/export-analytics-button";
+
 export const metadata: Metadata = {
   title: "Analytics | GoFarm",
   description: "Analytics screen for GoFarm admin.",
@@ -21,11 +23,15 @@ export default async function AnalyticsPage() {
       title="Analytics"
       subtitle="Deep insight into traffic, stock health, and order performance."
       searchPlaceholder="Search orders, farmers, or metrics..."
-      userName="Alex Thompson"
+      userName="Admin"
       userRole="Senior Admin"
       userLabel="Agricultural Hub"
-      actions={<AdminActionButton tone="primary">Export Report</AdminActionButton>}
+      actions={<ExportAnalyticsButton data={stats} />}
     >
+      <style dangerouslySetInnerHTML={{__html: `
+        .ai-forecast-card .card-title { color: #ffffff !important; }
+        .ai-forecast-card .card-subtitle { color: rgba(255, 255, 255, 0.7) !important; }
+      `}} />
       <div className="space-y-4 sm:space-y-5">
         <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
           <StatCard label="Daily Traffic" value={stats.activeOrders.toLocaleString("en-US")} delta="Live" hint="current orders" />
@@ -36,9 +42,14 @@ export default async function AnalyticsPage() {
 
         <div className="grid gap-4 lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px]">
           <SalesPerformanceCard series={series} title="Traffic Overview" subtitle="Daily sessions and purchase intent" />
-          <SectionCard className="bg-[linear-gradient(180deg,#127d12_0%,#0d6f0f_100%)] text-white" title="AI Market Forecast" subtitle="Model confidence and supply signals">
+          <SectionCard 
+            className="text-white ai-forecast-card" 
+            style={{ background: 'linear-gradient(180deg, #127d12 0%, #0d6f0f 100%)', border: 'none' }}
+            title="AI Market Forecast" 
+            subtitle="Model confidence and supply signals"
+          >
             <div className="space-y-3 sm:space-y-4">
-              <div className="text-xl sm:text-2xl md:text-[28px] font-extrabold tracking-[-0.05em] leading-[1.2] sm:leading-[1.06]">
+              <div className="text-xl sm:text-2xl md:text-[28px] font-extrabold tracking-[-0.05em] leading-[1.2] sm:leading-[1.06] text-white">
                 Revenue is tracking at {stats.revenueGrowth >= 0 ? "+" : ""}{stats.revenueGrowth.toFixed(1)}% month over month
               </div>
               <div className="text-xs sm:text-[13px] leading-5 sm:leading-6 text-white/72">
