@@ -13,7 +13,7 @@ const periods: { key: SalesPeriod; label: string }[] = [
 export function SalesPerformanceCard({
   series,
   title = "Sales Performance",
-  subtitle = "Visualizing yield vs. revenue across Q3",
+  subtitle,
 }: {
   series: SalesSeries;
   title?: string;
