@@ -206,18 +206,18 @@ export default function StoresLiveView({
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_260px]">
           <section className="rounded-[24px] border border-black/5 bg-white p-2 shadow-[0_16px_34px_rgba(34,58,27,0.08)]">
-            <div className="relative h-[320px] overflow-hidden rounded-[20px] bg-[#73cdd8]">
+            <div style={{ backgroundColor: '#73cdd8' }} className="relative h-[320px] overflow-hidden rounded-[20px]">
               <iframe title="Live store map" src={mapUrl} className="absolute inset-0 h-full w-full border-0" loading="lazy" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(115,205,216,0.04),rgba(115,205,216,0.12))]" />
+              <div style={{ background: 'linear-gradient(180deg, rgba(115,205,216,0.04), rgba(115,205,216,0.12))' }} className="absolute inset-0" />
               <div className="absolute left-4 top-4 rounded-[16px] bg-white/96 px-4 py-3 shadow-[0_12px_28px_rgba(26,55,29,0.12)]">
                 <div className="text-[14px] font-bold text-[#2d3a2b]">Regional Coverage</div>
                 <div className="mt-1 text-[10px] text-[#7a8575]">
                   {activeStores} Active Nodes | {maintenanceStores} Pending
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-[11px] font-semibold text-[#61705d]">
-                  <span className="h-3 w-3 rounded-full bg-[#1aa71f]" />
-                  <span className="h-3 w-3 rounded-full bg-[#a4ef95]" />
-                  <span className="h-3 w-3 rounded-full bg-[#f68ab7]" />
+                  <span style={{ backgroundColor: '#1aa71f' }} className="h-3 w-3 rounded-full" />
+                  <span style={{ backgroundColor: '#a4ef95' }} className="h-3 w-3 rounded-full" />
+                  <span style={{ backgroundColor: '#f68ab7' }} className="h-3 w-3 rounded-full" />
                   <span className="ml-1">{coords[selectedStore?.id ?? ""] ? "Live mapping" : "Locating..."}</span>
                 </div>
               </div>
@@ -254,13 +254,13 @@ export default function StoresLiveView({
           </section>
 
           <div className="grid gap-4">
-            <section className="rounded-[22px] bg-[linear-gradient(180deg,#08b50f_0%,#07a60d_100%)] p-5 text-white shadow-[0_16px_32px_rgba(7,162,13,0.22)]">
+            <section style={{ background: 'linear-gradient(180deg, #08b50f 0%, #07a60d 100%)' }} className="rounded-[22px] p-5 text-white shadow-[0_16px_32px_rgba(7,162,13,0.22)]">
               <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/72">Weekly Footfall</div>
               <div className="mt-2 text-[38px] font-extrabold leading-none tracking-[-0.08em]">{weeklyFootfallLabel}</div>
               <div className="mt-2 text-[11px] text-white/72">Calculated from real 7-day order volume</div>
             </section>
 
-            <section className="rounded-[22px] bg-[linear-gradient(180deg,#f4f7ee_0%,#edf2e5_100%)] p-5 shadow-[0_16px_32px_rgba(42,65,30,0.05)] ring-1 ring-black/5">
+            <section style={{ background: 'linear-gradient(180deg, #f4f7ee 0%, #edf2e5 100%)' }} className="rounded-[22px] p-5 shadow-[0_16px_32px_rgba(42,65,30,0.05)] ring-1 ring-black/5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-white text-[#5c7858] shadow-sm">
                   <IconBell className="h-5 w-5" />
@@ -274,8 +274,8 @@ export default function StoresLiveView({
                 </div>
                 <div className="pb-1 text-[13px] font-semibold text-[#5e6d5b]">Urgent</div>
               </div>
-              <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-[#d7e0cf]">
-                <div className="h-full w-[68%] rounded-full bg-[#16981d]" />
+              <div style={{ backgroundColor: '#d7e0cf' }} className="mt-5 h-1.5 overflow-hidden rounded-full">
+                <div style={{ backgroundColor: '#16981d' }} className="h-full w-[68%] rounded-full" />
               </div>
             </section>
           </div>
@@ -294,7 +294,7 @@ export default function StoresLiveView({
               <article key={store.id} className="rounded-[20px] border border-[#e9eee1] bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
-                    <div className="h-12 w-12 overflow-hidden rounded-[14px] bg-[#eef4e7]">
+                    <div style={{ backgroundColor: '#eef4e7' }} className="h-12 w-12 overflow-hidden rounded-[14px]">
                       <img src={store.imageSrc} alt={store.name} className="h-full w-full object-cover" />
                     </div>
                     <div>
@@ -313,7 +313,8 @@ export default function StoresLiveView({
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name}, ${store.address}`)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf4df] text-[#15981d]"
+                    style={{ backgroundColor: '#eaf4df' }}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-[#15981d]"
                   >
                     +
                   </a>
@@ -333,7 +334,7 @@ export default function StoresLiveView({
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              <thead className="bg-[#f6f9f2]">
+              <thead style={{ backgroundColor: '#f6f9f2' }}>
                 <tr className="text-left text-[10px] font-semibold uppercase tracking-[0.16em] text-[#95a08f]">
                   <th className="px-5 py-4">Store Identity</th>
                   <th className="px-5 py-4">Contact Point</th>
@@ -359,8 +360,9 @@ export default function StoresLiveView({
                       <td className="px-5 py-5">
                         <div className="flex items-center gap-3">
                           <div
+                            style={{ backgroundColor: store.tint === "green" ? "#e6f7de" : "#fde3df" }}
                             className={`flex h-10 w-10 items-center justify-center rounded-[12px] ${
-                              store.tint === "green" ? "bg-[#e6f7de] text-[#159720]" : "bg-[#fde3df] text-[#d6524a]"
+                              store.tint === "green" ? "text-[#159720]" : "text-[#d6524a]"
                             }`}
                           >
                             <IconStore className="h-4 w-4" />
