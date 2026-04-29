@@ -7,7 +7,7 @@ import { loadSeedCatalog, type BackendOrder, type BackendStore, type BackendUser
 import { normalizeProductCategories } from "@/lib/backend/products";
 import { getMysqlPool } from "@/lib/backend/mysql";
 
-export type { BackendUser };
+export type { BackendUser, BackendStore };
 export type BackendDb = SeedCatalog;
 
 const LEGACY_JSON_PATH = path.resolve(process.cwd(), "data", "gofarm-backend-db.json");

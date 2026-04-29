@@ -88,7 +88,7 @@ export function AdminShell({
   userLabel = "GOFARM CENTRAL",
 }: AdminShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const hideElements = ["/admin/customers", "/admin/products", "/admin/analytics", "/admin/settings"].includes(activeHref);
+  const hideElements = true;
 
   const css = `
     .admin-root {
@@ -272,7 +272,7 @@ export function AdminShell({
     }
     .admin-main {
       min-width: 0;
-      padding: 14px 16px 16px 0;
+      padding: 32px;
     }
     .main-shell {
       min-height: 100%;

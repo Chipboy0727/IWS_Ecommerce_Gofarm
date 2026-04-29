@@ -1021,10 +1021,28 @@
       "status": "Active",
       "createdAt": "2026-04-24T02:51:37.970Z",
       "updatedAt": "2026-04-24T02:51:37.970Z"
+    },
+    {
+      "id": "a1e0cf6b-c65c-4b7c-bdcf-b9469b04374d",
+      "name": "ThanhHoa",
+      "address": "Sầm Sơn Thanh Hoá",
+      "phone": "0123456789",
+      "email": "",
+      "country": "",
+      "hours": "",
+      "city": "Thanh Hoá",
+      "pinX": 0,
+      "pinY": 0,
+      "manager": "Tuấn",
+      "contact": "",
+      "imageSrc": "/images/logo.svg",
+      "status": "Active",
+      "createdAt": "2026-04-29T17:38:45.857Z",
+      "updatedAt": "2026-04-29T17:38:45.857Z"
     }
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-26T14:06:58.128Z"
+    "updatedAt": "2026-04-29T17:38:45.857Z"
   }
 }
