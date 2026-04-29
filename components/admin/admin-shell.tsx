@@ -16,6 +16,7 @@ type AdminShellProps = {
   children: ReactNode;
   actions?: ReactNode;
   searchPlaceholder?: string;
+  hideHeading?: boolean;
   userName?: string;
   userRole?: string;
   userLabel?: string;
@@ -81,6 +82,7 @@ export function AdminShell({
   children,
   actions,
   searchPlaceholder = "Search...",
+  hideHeading = false,
   userName = "Admin User",
   userRole = "Super Admin",
   userLabel = "GOFARM CENTRAL",
@@ -910,13 +912,15 @@ export function AdminShell({
                   )}
                 </div>
 
-                <div className="heading-row">
-                  <div>
-                    <h1 className="page-title">{title}</h1>
-                    <p className="page-subtitle">{subtitle}</p>
+                {!hideHeading ? (
+                  <div className="heading-row">
+                    <div>
+                      <h1 className="page-title">{title}</h1>
+                      <p className="page-subtitle">{subtitle}</p>
+                    </div>
+                    {actions ? <div className="actions">{actions}</div> : null}
                   </div>
-                  {actions ? <div className="actions">{actions}</div> : null}
-                </div>
+                ) : null}
               </header>
 
               <div className="content">{children}</div>

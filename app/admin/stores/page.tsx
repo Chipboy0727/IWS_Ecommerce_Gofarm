@@ -1,94 +1,131 @@
 import type { Metadata } from "next";
-import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard } from "@/components/admin/admin-shell";
-import { buildStoreRows } from "@/lib/backend/admin-analytics";
+import StoresLiveView, { type LiveAuditRow, type LiveStoreRow } from "@/components/admin/stores-live-view";
+import { buildDashboardStats, buildStoreRows } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
 
 export const metadata: Metadata = {
   title: "Store Management | GoFarm",
-  description: "Store management screen for GoFarm admin.",
+  description: "Operational hub for GoFarm storefronts and regional outlets.",
 };
 
-export default async function StoresPage() {
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function compactMetric(value: number) {
+  if (value >= 1000) {
+    return `${(value / 1000).toFixed(1)}k`;
+  }
+  return value.toLocaleString("en-US");
+}
+
+function toDate(value: string) {
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? new Date(parsed) : new Date();
+}
+
+function startOfDay(date: Date) {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function normalizeText(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function formatDelta(current: number, previous: number) {
+  if (previous <= 0) {
+    return current > 0 ? "+100%" : "0%";
+  }
+  const delta = ((current - previous) / previous) * 100;
+  const rounded = Math.round(delta);
+  return `${rounded >= 0 ? "+" : ""}${rounded}%`;
+}
+
+export default async function AdminStoresPage() {
   const db = await readDb();
+  const stats = buildDashboardStats(db);
   const stores = buildStoreRows(db.stores);
+  const activeOrders = db.orders.filter((order) => order.status !== "cancelled");
   const activeStores = stores.filter((store) => store.status === "Active").length;
-  const maintenanceStores = stores.filter((store) => store.status === "Maintenance").length;
+  const maintenanceStores = stores.length - activeStores;
+  const restockAlerts = stats.lowStockCount + maintenanceStores;
+
+  const latestOrderDate = activeOrders.reduce((latest, order) => {
+    const date = toDate(order.date).getTime();
+    return date > latest ? date : latest;
+  }, 0);
+  const anchorDate = latestOrderDate > 0 ? new Date(latestOrderDate) : new Date();
+  const currentWindowStart = addDays(startOfDay(anchorDate), -6);
+  const previousWindowStart = addDays(currentWindowStart, -7);
+
+  const inCurrentWindow = (value: string) => {
+    const date = startOfDay(toDate(value));
+    return date >= currentWindowStart && date <= startOfDay(anchorDate);
+  };
+
+  const inPreviousWindow = (value: string) => {
+    const date = startOfDay(toDate(value));
+    return date >= previousWindowStart && date < currentWindowStart;
+  };
+
+  const weeklyFootfall = activeOrders
+    .filter((order) => inCurrentWindow(order.date))
+    .reduce((sum, order) => sum + order.items, 0);
+
+  const liveStores: LiveStoreRow[] = stores.map((store) => ({
+    id: store.id,
+    name: store.name,
+    address: store.address,
+    city: store.city,
+    country: store.country,
+    manager: store.manager,
+    contact: store.contact || store.phone,
+    imageSrc: store.imageSrc,
+    status: store.status,
+    tint: store.tint,
+    updatedAt: store.updatedAt,
+  }));
+
+  const auditRows: LiveAuditRow[] = stores.map((store) => {
+    const cityKey = normalizeText(store.city);
+    const storeKey = normalizeText(store.name);
+    const storeOrders = activeOrders.filter((order) => {
+      const address = normalizeText(order.shippingAddress);
+      return address.includes(cityKey) || address.includes(storeKey);
+    });
+
+    const currentTraffic = storeOrders
+      .filter((order) => inCurrentWindow(order.date))
+      .reduce((sum, order) => sum + order.items, 0);
+    const previousTraffic = storeOrders
+      .filter((order) => inPreviousWindow(order.date))
+      .reduce((sum, order) => sum + order.items, 0);
+
+    return {
+      id: store.id,
+      manager: store.manager,
+      traffic: currentTraffic.toLocaleString("en-US"),
+      delta: formatDelta(currentTraffic, previousTraffic),
+      deltaTone: currentTraffic >= previousTraffic ? "text-[#309a37]" : "text-[#d95b57]",
+      lastAudit: store.updatedAt,
+    };
+  });
 
   return (
-    <AdminShell
-      activeHref="/admin/stores"
-      title="Store Management"
-      subtitle="Manage physical locations and maintenance schedules."
-      searchPlaceholder="Search locations..."
-      userName="Admin User"
-      userRole="Regional Manager"
-      userLabel="GoFarm Central"
-      actions={<AdminActionButton tone="primary">Register New Store</AdminActionButton>}
-    >
-      <div className="space-y-4 sm:space-y-6">
-        <div className="grid gap-3 sm:gap-4 grid-cols-1 xl:grid-cols-[minmax(0,1.4fr)_1fr]">
-          <SectionCard className="overflow-hidden p-0">
-            <div className="relative h-[260px] sm:h-[300px] overflow-hidden rounded-xl sm:rounded-[24px] bg-[#081007] p-3 sm:p-5">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_38%_28%,rgba(34,119,51,0.7),transparent_28%),radial-gradient(circle_at_75%_65%,rgba(29,137,66,0.45),transparent_24%),linear-gradient(135deg,#0a1609_0%,#165a23_45%,#081007_100%)]" />
-              <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:28px_28px]" />
-              <div className="absolute left-3 sm:left-5 top-3 sm:top-5 rounded-xl sm:rounded-[12px] bg-white/88 px-3 sm:px-4 py-2 sm:py-3 text-[#224028] shadow">
-                <div className="text-[13px] sm:text-[15px] font-bold">Network Distribution</div>
-                <div className="mt-0.5 sm:mt-1 text-[11px] sm:text-[12px] text-[#6a7669]">{activeStores} Active Regions • {maintenanceStores} Maintenance</div>
-              </div>
-              <div className="absolute left-[38%] top-[30%] h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-[#0d8b11] shadow-[0_0_0_6px_sm:shadow-[0_0_0_8px_rgba(13,139,17,0.16)]" />
-              <div className="absolute left-[63%] top-[55%] h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-[#d31d7d] shadow-[0_0_0_6px_sm:shadow-[0_0_0_8px_rgba(211,29,125,0.16)]" />
-              <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 flex items-center justify-between text-[10px] sm:text-[12px] text-white/70">
-                <span>Regional store network</span>
-                <span>Live telemetry</span>
-              </div>
-            </div>
-          </SectionCard>
-
-          <div className="grid gap-3 sm:gap-4 grid-cols-2">
-            <StatCard label="Total Inventory Value" value={`$${Math.round(db.products.reduce((sum, product) => sum + product.price, 0) / 1000)}k`} delta="Live" deltaTone="green" hint="across locations" />
-            <StatCard label="Deliveries in Transit" value={`${db.orders.filter((order) => order.status === "processing" || order.status === "shipped").length}`} delta="Live" deltaTone="green" hint="active routes" />
-          </div>
-        </div>
-
-        <SectionCard title="Regional Storefronts" subtitle="Manage physical locations and maintenance schedules." right={<div className="text-[11px] sm:text-[12px] font-semibold text-[#0b7312]">View All</div>}>
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-            {stores.map((store) => (
-              <article key={store.id} className="overflow-hidden rounded-xl sm:rounded-[18px] bg-[#fafcf7] ring-1 ring-black/5">
-                <div className="relative h-[180px] sm:h-[222px] overflow-hidden">
-                  <img src={store.imageSrc} alt={store.name} className="h-full w-full object-cover" />
-                  <div className="absolute left-2 sm:left-3 top-2 sm:top-3">
-                    <Pill tone={store.tint}>{store.status}</Pill>
-                  </div>
-                </div>
-                <div className="p-3 sm:p-4">
-                  <h3 className="text-[15px] sm:text-[17px] font-bold tracking-[-0.03em] text-[#243322]">{store.name}</h3>
-                  <div className="mt-1.5 sm:mt-2 text-[11px] sm:text-[13px] text-[#72806f] break-words">{store.address}</div>
-                  <div className="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-3 text-[11px] sm:text-[12px]">
-                    <div>
-                      <div className="text-[#9aa795]">Manager</div>
-                      <div className="mt-0.5 sm:mt-1 font-semibold text-[#243322] text-[12px] sm:text-[13px]">{store.manager}</div>
-                    </div>
-                    <div>
-                      <div className="text-[#9aa795]">Contact</div>
-                      <div className="mt-0.5 sm:mt-1 font-semibold text-[#243322] text-[12px] sm:text-[13px]">{store.contact}</div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </SectionCard>
-
-        <div className="rounded-xl sm:rounded-[18px] bg-[#eaf5db] px-3 sm:px-5 py-3 sm:py-4 text-[12px] sm:text-[13px] text-[#60705f] ring-1 ring-black/5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>Maintenance window scheduled for Salem Facility tomorrow at 02:00 AM PST.</div>
-            <div className="flex gap-2">
-              <button className="rounded-md bg-white px-3 sm:px-4 py-1.5 sm:py-2 font-semibold text-[#40503f] text-[12px] sm:text-[13px]">Dismiss</button>
-              <button className="rounded-md bg-[#0f9716] px-3 sm:px-4 py-1.5 sm:py-2 font-semibold text-white text-[12px] sm:text-[13px]">View Schedule</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </AdminShell>
+    <StoresLiveView
+      stores={liveStores}
+      auditRows={auditRows}
+      weeklyFootfallLabel={compactMetric(weeklyFootfall)}
+      restockAlerts={restockAlerts}
+      activeStores={activeStores}
+      maintenanceStores={maintenanceStores}
+    />
   );
 }
