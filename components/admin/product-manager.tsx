@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { AdminActionButton, Pill, SectionCard } from "@/components/admin/admin-shell";
@@ -89,6 +89,8 @@ export default function ProductManager() {
   const [form, setForm] = useState<ProductFormState>(emptyForm());
   const [imageMode, setImageMode] = useState<"url" | "upload">("url");
   const [uploading, setUploading] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<null | "category" | "stock">(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -113,6 +115,23 @@ export default function ProductManager() {
 
   useEffect(() => {
     loadData();
+  }, []);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!dropdownRef.current?.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenDropdown(null);
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   const openCreate = () => {
@@ -286,8 +305,8 @@ export default function ProductManager() {
           </div>
         }
       >
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-[18px] border border-[#edf1e5] bg-white px-4 py-4">
-          <div className="flex min-w-[320px] flex-1 items-center gap-3 rounded-[14px] bg-[#e9f0db] px-4 py-3 text-[#6f7b6d]">
+        <div className="pm-toolbar">
+          <label className="pm-search">
             <IconSearch />
             <input 
               type="text" 
@@ -297,48 +316,83 @@ export default function ProductManager() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="bg-transparent border-none outline-none w-full text-[13px] text-[#243322] placeholder-[#6f7b6d]"
+              className="pm-input"
             />
-          </div>
-          <div className="relative flex items-center">
-            <select 
-              value={categoryFilter}
-              onChange={(e) => {
-                setCategoryFilter(e.target.value);
-                setPage(1);
-              }}
-              className="rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] pl-4 pr-10 py-3 text-[13px] font-bold text-[#536451] outline-none appearance-none cursor-pointer border-none transition-colors"
-            >
-              <option value="All">All Categories</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-            </select>
-            <div className="pointer-events-none absolute right-3 text-[#536451]">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </label>
+
+          <div className="pm-dropdown-group" ref={dropdownRef}>
+            <div className="pm-filter-wrap">
+              <button
+                type="button"
+                className={`pm-filter pm-filter-select${openDropdown === "category" ? " is-open" : ""}`}
+                onClick={() => setOpenDropdown((c) => (c === "category" ? null : "category"))}
+              >
+                <IconFilter />
+                <span>{categoryFilter === "All" ? "Category" : categories.find(c => c.id === categoryFilter)?.title || categoryFilter}</span>
+                <span className="pm-select-arrow" aria-hidden="true">
+                  <IconChevronDown />
+                </span>
+              </button>
+              {openDropdown === "category" ? (
+                <div className="pm-menu">
+                  <button
+                    type="button"
+                    className={`pm-menu-item${categoryFilter === "All" ? " active" : ""}`}
+                    onClick={() => { setCategoryFilter("All"); setPage(1); setOpenDropdown(null); }}
+                  >
+                    All Categories
+                  </button>
+                  {categories.map(c => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      className={`pm-menu-item${categoryFilter === c.id ? " active" : ""}`}
+                      onClick={() => { setCategoryFilter(c.id); setPage(1); setOpenDropdown(null); }}
+                    >
+                      {c.title}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
-          </div>
-          
-          <div className="relative flex items-center">
-            <select 
-              value={stockFilter}
-              onChange={(e) => {
-                setStockFilter(e.target.value);
-                setPage(1);
-              }}
-              className="rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] pl-4 pr-10 py-3 text-[13px] font-bold text-[#536451] outline-none appearance-none cursor-pointer border-none transition-colors"
-            >
-              <option value="All">All Stock Levels</option>
-              <option value="Low">Low Stock (≤ 25)</option>
-              <option value="Medium">Medium Stock (26-100)</option>
-              <option value="High">High Stock (&gt; 100)</option>
-            </select>
-            <div className="pointer-events-none absolute right-3 text-[#536451]">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+
+            <div className="pm-filter-wrap">
+              <button
+                type="button"
+                className={`pm-filter pm-filter-select${openDropdown === "stock" ? " is-open" : ""}`}
+                onClick={() => setOpenDropdown((c) => (c === "stock" ? null : "stock"))}
+              >
+                <IconFilter />
+                <span>{stockFilter === "All" ? "Stock Level" : stockFilter === "Low" ? "Low Stock" : stockFilter === "Medium" ? "Medium Stock" : "High Stock"}</span>
+                <span className="pm-select-arrow" aria-hidden="true">
+                  <IconChevronDown />
+                </span>
+              </button>
+              {openDropdown === "stock" ? (
+                <div className="pm-menu">
+                  {[
+                    ["All", "All Levels"],
+                    ["Low", "Low Stock (≤ 25)"],
+                    ["Medium", "Medium Stock (26-100)"],
+                    ["High", "High Stock (> 100)"],
+                  ].map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      className={`pm-menu-item${stockFilter === value ? " active" : ""}`}
+                      onClick={() => { setStockFilter(value); setPage(1); setOpenDropdown(null); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
 
-          <button onClick={handleExport} className="flex items-center gap-2 rounded-[10px] bg-[#eef4e7] hover:bg-[#e4ebd8] px-4 py-3 text-[13px] font-bold text-[#536451] transition-colors">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            Export CSV
+          <button type="button" className="pm-filter pm-filter-button" onClick={handleExport}>
+            <IconExport />
+            <span>Export</span>
           </button>
         </div>
 
@@ -662,6 +716,175 @@ export default function ProductManager() {
         .input:hover:not(:focus) {
           border-color: #b5c4a7;
         }
+        .pm-toolbar {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 0 0 16px;
+        }
+        .pm-search {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-height: 52px;
+          padding: 0 16px;
+          border-radius: 8px;
+          background: linear-gradient(180deg, #e8f0dc 0%, #e2ecd3 100%);
+          color: #6f7d6c;
+          font-size: 17px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 8px 16px rgba(112, 137, 83, 0.06);
+          transition: box-shadow 0.18s ease, transform 0.18s ease;
+          cursor: text;
+        }
+        .pm-search:focus-within {
+          box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
+        }
+        .pm-input {
+          width: 100%;
+          border: 0;
+          outline: 0;
+          background: transparent;
+          color: #4f5f4b;
+          font-size: 16px;
+        }
+        .pm-input::placeholder {
+          color: #7a8677;
+        }
+        .pm-dropdown-group {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .pm-filter-wrap {
+          position: relative;
+          flex: 0 0 auto;
+        }
+        .pm-filter {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 48px;
+          padding: 0 14px;
+          border-radius: 12px;
+          background: linear-gradient(180deg, #f4f8ed 0%, #eaf2de 100%);
+          color: #4f604b;
+          font-size: 15px;
+          text-decoration: none;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 10px 18px rgba(117, 139, 89, 0.08);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+        .pm-filter:hover {
+          transform: translateY(-1px);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 22px rgba(98, 125, 69, 0.12);
+          background: linear-gradient(180deg, #f7fbf0 0%, #edf5e2 100%);
+        }
+        .pm-filter:focus-within {
+          box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.22), 0 12px 22px rgba(98, 125, 69, 0.12);
+        }
+        .pm-filter-select {
+          min-width: 190px;
+          position: relative;
+          justify-content: space-between;
+          border: 1px solid transparent;
+          padding-right: 40px;
+        }
+        .pm-filter-select.is-open {
+          border-color: rgba(47, 151, 42, 0.24);
+          background: linear-gradient(180deg, #f8fcf3 0%, #eef7e5 100%);
+          box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.08), 0 16px 28px rgba(98, 125, 69, 0.14);
+        }
+        .pm-filter-button {
+          border: 0;
+          cursor: pointer;
+          font-weight: 700;
+        }
+        .pm-select-arrow {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #73916c;
+          pointer-events: none;
+          transition: transform 0.18s ease, color 0.18s ease;
+        }
+        .pm-filter-select.is-open .pm-select-arrow {
+          transform: translateY(-50%) rotate(180deg);
+          color: #2d8c2f;
+        }
+        .pm-menu {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          width: 100%;
+          min-width: 190px;
+          padding: 6px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.98);
+          border: 1px solid rgba(173, 191, 152, 0.55);
+          box-shadow: 0 14px 24px rgba(93, 118, 67, 0.12), 0 4px 10px rgba(93, 118, 67, 0.06);
+          backdrop-filter: blur(16px);
+          overflow: hidden;
+          box-sizing: border-box;
+          z-index: 20;
+          animation: pmMenuIn 0.18s ease;
+        }
+        .pm-menu-item {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          border: 0;
+          background: transparent;
+          border-radius: 9px;
+          padding: 9px 12px;
+          color: #4d6247;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 1.25;
+          text-align: left;
+          cursor: pointer;
+          transition: background 0.16s ease, color 0.16s ease;
+        }
+        .pm-menu-item:hover {
+          background: linear-gradient(180deg, #f3f9ea 0%, #ebf5df 100%);
+          color: #24752a;
+        }
+        .pm-menu-item.active {
+          background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
+          color: #fff;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        @keyframes pmMenuIn {
+          from {
+            opacity: 0;
+            transform: translateY(-6px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        @media (max-width: 1200px) {
+          .pm-toolbar {
+            flex-wrap: wrap;
+          }
+          .pm-dropdown-group {
+            width: 100%;
+            flex-wrap: wrap;
+          }
+          .pm-filter-wrap {
+            flex: 1 1 calc(50% - 8px);
+          }
+          .pm-filter-select,
+          .pm-menu {
+            width: 100%;
+            min-width: 0;
+          }
+          .pm-search {
+            width: 100%;
+            flex: 1 1 100%;
+          }
+        }
       `}</style>
     </>
   );
@@ -688,9 +911,34 @@ function Field({
 
 function IconSearch() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
       <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.8" />
       <path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconFilter() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M5 7h14M8 12h8m-5 5h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconExport() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+      <path d="M12 5v9m0 0-3-3m3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 16.5V18a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconChevronDown() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

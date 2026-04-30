@@ -112,7 +112,7 @@ export function AdminShell({
     .admin-layout.is-collapsed {
       grid-template-columns: 1fr;
     }
-    .admin-layout.is-collapsed .admin-sidebar {
+    .admin-sidebar.desktop-hidden {
       display: none;
     }
     .admin-layout.is-collapsed .admin-main {
@@ -797,26 +797,77 @@ export function AdminShell({
       display: block;
       margin-bottom: 4px;
     }
+    .mobile-hamburger {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 45;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      color: #4f5c4c;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(34, 56, 29, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+      backdrop-filter: blur(8px);
+    }
+    .mobile-hamburger:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .sidebar-overlay {
+      display: none;
+    }
     @media (max-width: 1200px) {
-      .admin-layout {
-        grid-template-columns: 1fr;
+      .mobile-hamburger {
+        display: flex;
       }
-      .admin-root {
-        --sidebar-width: 1fr;
+      .admin-layout {
+        grid-template-columns: 1fr !important;
+      }
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 272px;
+        height: 100vh;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        border-right: 1px solid rgba(36, 49, 31, 0.08);
+        box-shadow: none;
+      }
+      .admin-sidebar.is-mobile-open {
+        transform: translateX(0);
+        box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
+      }
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 49;
+        background: rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.28s ease;
+      }
+      .sidebar-overlay.is-visible {
+        opacity: 1;
+        pointer-events: auto;
       }
       .sidebar-toggle {
         display: none;
       }
-      .admin-sidebar {
-        padding-right: 14px;
-        border-right: 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      }
-      .sidebar-inner {
-        padding: 0;
+      .sidebar-open-btn {
+        display: none !important;
       }
       .admin-main {
         padding: 0 14px 14px;
+        padding-top: 64px;
       }
       .page-shell {
         width: 100%;
@@ -840,7 +891,7 @@ export function AdminShell({
         grid-template-columns: 1fr;
       }
       .page-title {
-        font-size: 32px;
+        font-size: 28px;
       }
       .topbar-row {
         flex-wrap: wrap;
@@ -848,35 +899,57 @@ export function AdminShell({
       .heading-row {
         flex-direction: column;
       }
+      .admin-main {
+        padding: 0 10px 10px;
+        padding-top: 58px;
+      }
     }
   `;
+
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="admin-root" data-sidebar-collapsed={sidebarCollapsed ? "true" : "false"}>
       <style>{css}</style>
+
+      {/* Mobile hamburger button */}
+      <button
+        type="button"
+        className="mobile-hamburger"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open menu"
+      >
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
+
+      {/* Mobile overlay backdrop */}
+      <div
+        className={`sidebar-overlay${mobileOpen ? " is-visible" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
       <div className={`admin-layout${sidebarCollapsed ? " is-collapsed" : ""}`}>
-        {!sidebarCollapsed ? (
-          <aside className="admin-sidebar">
-            <div className="sidebar-inner">
-              <div className="brand">
-                <div className="brand-copy">
-                  <img src="/images/gofarmnamelogo.png" alt="GoFarm Logo" style={{ height: "32px", width: "auto", display: "block" }} />
-                  <div className="brand-subtitle" style={{ marginTop: "4px" }}>Agricultural Admin</div>
-                </div>
-                <button
-                  type="button"
-                  className="sidebar-toggle"
-                  onClick={() => setSidebarCollapsed(true)}
-                  aria-label="Hide sidebar"
-                  aria-pressed={sidebarCollapsed}
-                >
-                  <IconSidebarCollapse className="h-4 w-4" />
-                </button>
+        <aside className={`admin-sidebar${mobileOpen ? " is-mobile-open" : ""}${sidebarCollapsed ? " desktop-hidden" : ""}`}>
+          <div className="sidebar-inner">
+            <div className="brand">
+              <div className="brand-copy">
+                <img src="/images/gofarmnamelogo.png" alt="GoFarm Logo" style={{ height: "32px", width: "auto", display: "block" }} />
+                <div className="brand-subtitle" style={{ marginTop: "4px" }}>Agricultural Admin</div>
               </div>
-              <AdminSidebarNav activeHref={activeHref} />
+              <button
+                type="button"
+                className="sidebar-toggle"
+                onClick={() => { setSidebarCollapsed(true); setMobileOpen(false); }}
+                aria-label="Hide sidebar"
+              >
+                <IconSidebarCollapse className="h-4 w-4" />
+              </button>
             </div>
-          </aside>
-        ) : null}
+            <AdminSidebarNav activeHref={activeHref} />
+          </div>
+        </aside>
 
         <main className="admin-main">
           <div className="main-shell">

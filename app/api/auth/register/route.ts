@@ -31,6 +31,12 @@ export async function POST(request: NextRequest) {
     email,
     passwordHash: hashPassword(password),
     role: "user" as const,
+    phone: sanitizeString(body.phone),
+    address: sanitizeString(body.address),
+    city: sanitizeString(body.city),
+    state: sanitizeString(body.state),
+    zipCode: sanitizeString(body.zipCode),
+    status: "Active",
     createdAt: now,
     updatedAt: now,
   };

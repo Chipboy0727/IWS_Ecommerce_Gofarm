@@ -4,6 +4,8 @@ import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconChart, 
 import { SalesPerformanceCard } from "@/components/admin/sales-performance";
 import { buildDashboardStats, buildRecentOrders, buildSalesSeries } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | GoFarm",
@@ -15,7 +17,15 @@ function formatMoney(value: number) {
 }
 
 export default async function AdminDashboardPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Senior Admin" : "Staff";
+
   const stats = buildDashboardStats(db);
   const series = buildSalesSeries(db.orders);
   const transactions = buildRecentOrders(db);
@@ -58,17 +68,12 @@ export default async function AdminDashboardPage() {
     <AdminShell
       activeHref="/admin"
       title="Dashboard Overview"
-      subtitle="Welcome back, Alex. Your agricultural ecosystem is growing today."
+      subtitle={`Welcome back, ${adminName}. Your agricultural ecosystem is growing today.`}
       searchPlaceholder="Search orders, farmers, or metrics..."
-      userName="Alex Thompson"
-      userRole="Senior Admin"
+      userName={adminName}
+      userRole={adminRole}
       userLabel="GoFarm Central"
-      actions={
-        <>
-          <AdminActionButton tone="secondary">Export CSV</AdminActionButton>
-          <AdminActionButton tone="primary">Create Entry</AdminActionButton>
-        </>
-      }
+      actions={null}
     >
       <div className="space-y-6">
         <div className="grid gap-4 xl:grid-cols-4">

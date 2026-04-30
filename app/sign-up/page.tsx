@@ -104,23 +104,37 @@ export default function SignUpPage() {
     }
 
     setLoading(true);
+    setError("");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode,
+        }),
+      });
 
-      const userData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.zipCode,
-        registeredAt: new Date().toISOString(),
-      };
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed");
+      }
       
-      localStorage.setItem("user", JSON.stringify(userData));
+      // Update local storage with real user data from API
+      localStorage.setItem("user", JSON.stringify(data.user));
       
+      // Notify other components about auth change
+      window.dispatchEvent(new Event("auth-changed"));
+      
+      // Redirect to home
       router.push("/");
       router.refresh();
     } catch (err: any) {

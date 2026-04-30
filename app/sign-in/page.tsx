@@ -34,16 +34,29 @@ function SignInForm() {
   }, [searchParams]);
 
   // If already logged in, redirect away
+  // BUT: if we came here from a redirect (e.g. session expired but localStorage remains), 
+  // we should clear localStorage and let the user log in again.
   useEffect(() => {
+    const hasRedirectParam = searchParams.get("redirect");
     const user = localStorage.getItem("user");
+    
     if (user) {
-      try {
-        const userData = JSON.parse(user);
-        const finalRedirect = getRedirectPath(userData.role, userData.redirectTo || redirectTo);
-        router.push(finalRedirect);
-      } catch (e) {}
+      if (hasRedirectParam) {
+        // Stale session, clear it
+        localStorage.removeItem("user");
+        window.dispatchEvent(new Event("auth-changed"));
+      } else {
+        // Genuine logged in user, redirect away
+        try {
+          const userData = JSON.parse(user);
+          const finalRedirect = getRedirectPath(userData.role, userData.redirectTo || redirectTo);
+          router.push(finalRedirect);
+        } catch (e) {
+          localStorage.removeItem("user");
+        }
+      }
     }
-  }, [router, redirectTo]);
+  }, [router, redirectTo, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
