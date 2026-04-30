@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const { id } = await params;
   const nextStatus = sanitizeString(body.status).toLowerCase();
 
-  if (!["pending", "processing", "shipped", "delivered", "cancelled", "awaiting_payment"].includes(nextStatus)) {
+  if (!["pending", "processing", "preparing", "shipped", "delivered", "cancelled", "awaiting_payment"].includes(nextStatus)) {
     return jsonError("Invalid status", 400);
   }
 

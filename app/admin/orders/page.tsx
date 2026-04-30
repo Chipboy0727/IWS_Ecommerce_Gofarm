@@ -28,6 +28,7 @@ function buildRows(db: Awaited<ReturnType<typeof readDb>>): OrderAdminRow[] {
       id: order.id,
       customer: order.customerName,
       email: order.customerEmail,
+      phone: order.customerPhone || "N/A",
       date: order.date,
       amount: new Intl.NumberFormat("en-US", {
         style: "currency",
@@ -39,6 +40,7 @@ function buildRows(db: Awaited<ReturnType<typeof readDb>>): OrderAdminRow[] {
       items: order.items,
       shippingAddress: order.shippingAddress,
       paymentMethod: order.paymentMethod,
+      products: order.products || [],
     }));
 }
 
@@ -342,11 +344,12 @@ export default async function OrdersPage() {
       font-weight: 800;
       letter-spacing: 0.02em;
     }
-    .orders-status-pill.shipped { background: #afe58e; color: #33772b; }
-    .orders-status-pill.processing { background: #c9f0a7; color: #2d7d26; }
-    .orders-status-pill.delivered { background: #e7eddf; color: #5d6858; }
-    .orders-status-pill.cancelled { background: #ffd9d5; color: #c43f35; }
-    .orders-status-pill.pending { background: #fff0bf; color: #976a08; }
+    .orders-status-pill.pending { background: #fef08a; color: #854d0e; }
+    .orders-status-pill.processing { background: #bfdbfe; color: #1e3a8a; }
+    .orders-status-pill.preparing { background: #e9d5ff; color: #6b21a8; }
+    .orders-status-pill.shipped { background: #fed7aa; color: #9a3412; }
+    .orders-status-pill.delivered { background: #bbf7d0; color: #166534; }
+    .orders-status-pill.cancelled { background: #fecaca; color: #991b1b; }
     .orders-status-pill.awaiting_payment { background: #ffe5b8; color: #9d6810; }
     .orders-row-actions {
       position: relative;

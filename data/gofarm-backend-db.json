@@ -887,10 +887,74 @@
   ],
   "orders": [
     {
+      "id": "ORD-1777538951609",
+      "date": "2026-04-30",
+      "total": 14.790000000000001,
+      "status": "processing",
+      "items": 1,
+      "products": [
+        {
+          "id": "7240688b-393f-40d2-9990-1ad21f572296",
+          "name": "Orange",
+          "price": 8,
+          "quantity": 1,
+          "imageSrc": "/images/d23af3456cee2df6ecb5336e5cecff456e6f8b0b-750x750.webp",
+          "slug": "orange"
+        }
+      ],
+      "shippingAddress": "30, CT12C, Kim Văn Kim Lũ, Quận Hoàng Mai, Thành phố Hà Nội 123123",
+      "customerName": "Admin1",
+      "customerEmail": "admin@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-30T08:49:11.636Z",
+      "updatedAt": "2026-04-30T09:50:09.986Z"
+    },
+    {
+      "id": "ORD-1777538912919",
+      "date": "2026-04-30",
+      "total": 59.89,
+      "status": "shipped",
+      "items": 3,
+      "products": [
+        {
+          "id": "976cd1bb-277c-4ebe-b1b6-5d6dd3275706-1 kg",
+          "name": "Tomato Juices (1 kg)",
+          "price": 13,
+          "quantity": 1,
+          "imageSrc": "/images/3c7db86fd76d8fca08104d95fda225f19f791dc6-1024x1024.jpg",
+          "slug": "tomato-juices"
+        },
+        {
+          "id": "0fd41d93-3994-4ff4-9f8e-5f9941f46b06",
+          "name": "Waffle HomeStyle",
+          "price": 25,
+          "quantity": 1,
+          "imageSrc": "/images/03033db010e8c9a397fd6d11383b5cf915f7afa2-1024x1024.jpg",
+          "slug": "waffle-homestyle"
+        },
+        {
+          "id": "1ba25f79-c611-48b5-8c4a-0b69ef08be8c",
+          "name": "Raspberry \bjuice",
+          "price": 11,
+          "quantity": 1,
+          "imageSrc": "/images/54cf822a03d12e5a334d0a3c8d1d14b3d2652a06-1024x1024.jpg",
+          "slug": "raspberry-juice"
+        }
+      ],
+      "shippingAddress": "30, CT12C, Kim Văn Kim Lũ, Quận Hoàng Mai, Thành phố Hà Nội 123123",
+      "customerName": "Admin1",
+      "customerEmail": "admin@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "QR Code (VIETQR)",
+      "createdAt": "2026-04-30T08:48:32.932Z",
+      "updatedAt": "2026-04-30T09:35:09.217Z"
+    },
+    {
       "id": "ORD-1777537202332",
       "date": "2026-04-30",
       "total": 135.3,
-      "status": "pending",
+      "status": "delivered",
       "items": 4,
       "products": [
         {
@@ -932,13 +996,13 @@
       "customerPhone": "",
       "paymentMethod": "Cash on Delivery",
       "createdAt": "2026-04-30T08:20:02.348Z",
-      "updatedAt": "2026-04-30T08:20:02.348Z"
+      "updatedAt": "2026-04-30T08:46:47.335Z"
     },
     {
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
-      "status": "pending",
+      "status": "delivered",
       "items": 8,
       "products": [
         {
@@ -1012,7 +1076,7 @@
       "customerPhone": "",
       "paymentMethod": "Cash on Delivery",
       "createdAt": "2026-04-24T04:15:46.411Z",
-      "updatedAt": "2026-04-24T04:15:46.411Z"
+      "updatedAt": "2026-04-30T08:46:48.327Z"
     }
   ],
   "stores": [
@@ -1109,6 +1173,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-30T08:20:02.349Z"
+    "updatedAt": "2026-04-30T09:50:09.986Z"
   }
 }

@@ -7,6 +7,7 @@ export type OrderAdminRow = {
   id: string;
   customer: string;
   email: string;
+  phone: string;
   date: string;
   amount: string;
   amountValue: number;
@@ -14,6 +15,13 @@ export type OrderAdminRow = {
   items: number;
   shippingAddress: string;
   paymentMethod: string;
+  products: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    imageSrc: string;
+  }[];
 };
 
 function toCsv(rows: OrderAdminRow[]) {
@@ -44,6 +52,12 @@ function matchesDate(rowDate: string, selectedDate: string) {
 }
 
 function statusLabel(status: string) {
+  if (status === "pending") return "Pending";
+  if (status === "processing") return "Processing";
+  if (status === "preparing") return "Preparing";
+  if (status === "shipped") return "Shipped";
+  if (status === "delivered") return "Delivered";
+  if (status === "cancelled") return "Cancelled";
   if (status === "awaiting_payment") return "Awaiting Payment";
   return status.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -80,12 +94,20 @@ export default function OrdersTableClient({
   initialRows: OrderAdminRow[];
   totalCount: number;
 }) {
+  const [rows, setRows] = useState(initialRows);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [date, setDate] = useState("");
   const [page, setPage] = useState(1);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeRowId, setActiveRowId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderAdminRow | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [confirmModal, setConfirmModal] = useState<{ id: string; status: string; title: string; message: string } | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ title: string; message: string } | null>(null);
+  const [failedOrderModal, setFailedOrderModal] = useState<string | null>(null);
+
   const filterRef = useRef<HTMLDivElement | null>(null);
   const rowMenuRef = useRef<HTMLDivElement | null>(null);
   const pageSize = 4;
@@ -101,7 +123,7 @@ export default function OrdersTableClient({
   }, []);
 
   const filteredRows = useMemo(() => {
-    return initialRows.filter((row) => {
+    return rows.filter((row) => {
       const matchesSearch =
         !search ||
         row.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -110,7 +132,7 @@ export default function OrdersTableClient({
       const matchesStatus = status === "all" || row.status === status;
       return matchesSearch && matchesStatus && matchesDate(row.date, date);
     });
-  }, [initialRows, search, status, date]);
+  }, [rows, search, status, date]);
 
   const pageCount = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const currentPage = Math.min(page, pageCount);
@@ -122,6 +144,204 @@ export default function OrdersTableClient({
     setDate("");
     setPage(1);
     setMenuOpen(false);
+  };
+
+  const requestUpdateStatus = (id: string, newStatus: string, title: string, message: string) => {
+    setConfirmModal({ id, status: newStatus, title, message });
+  };
+
+  const handleUpdateStatus = async (orderId: string, newStatus: string) => {
+    setIsUpdating(true);
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!res.ok) throw new Error("Failed to update status");
+      
+      const { order } = await res.json();
+      setRows((current) => current.map((r) => (r.id === orderId ? { ...r, status: order.status } : r)));
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder((prev) => prev ? { ...prev, status: order.status } : null);
+      }
+      setToastMessage({ title: "Success", message: "Order status updated successfully." });
+      setTimeout(() => setToastMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while updating the order status.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const commitUpdateStatus = async () => {
+    if (!confirmModal) return;
+    await handleUpdateStatus(confirmModal.id, confirmModal.status);
+    setConfirmModal(null);
+  };
+
+  const renderActions = (row: OrderAdminRow) => {
+    const btnDetails = (
+      <button
+        type="button"
+        onClick={() => setSelectedOrder(row)}
+        className="px-1.5 py-[2px] rounded-sm border font-medium text-[9px] transition-colors whitespace-nowrap"
+        style={{ borderColor: '#a2c2e8', color: '#86abda' }}
+      >
+        Details
+      </button>
+    );
+
+    if (row.status === "pending") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Order", "Are you sure you want to confirm this order?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#3b82f6', color: '#ffffff' }}
+          >
+            Confirm
+          </button>
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "cancelled", "Reject Order", "Are you sure you want to reject this order?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+          >
+            Reject
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "processing") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "preparing", "Prepare Goods", "Change order status to Preparing?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#a855f7', color: '#ffffff' }}
+          >
+            Prepare
+          </button>
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+          >
+            Cancel
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "preparing") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "shipped", "Hand over to Shipper", "Change order status to Shipped?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#f97316', color: '#ffffff' }}
+          >
+            Ship
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "shipped") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "delivered", "Mark Delivered", "Confirm this order has been successfully delivered?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#22c55e', color: '#ffffff' }}
+          >
+            Deliver
+          </button>
+          <button
+            type="button"
+            onClick={() => setFailedOrderModal(row.id)}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#6b7280', color: '#ffffff' }}
+          >
+            Failed
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "delivered") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#6366f1', color: '#ffffff' }}
+          >
+            Print
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "cancelled") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => alert("Cancel Reason: Customer changed their mind or delivery failed.")}
+            className="px-1.5 py-[2px] rounded-sm border font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}
+          >
+            Reason
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    if (row.status === "awaiting_payment") {
+      return (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Payment", "Change order status to Processing?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+          >
+            Paid
+          </button>
+          <button
+            type="button"
+            onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
+            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
+            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+          >
+            Cancel
+          </button>
+          {btnDetails}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        {btnDetails}
+      </div>
+    );
   };
 
   return (
@@ -144,6 +364,7 @@ export default function OrdersTableClient({
                   ["all", "All Statuses"],
                   ["pending", "Pending"],
                   ["processing", "Processing"],
+                  ["preparing", "Preparing"],
                   ["shipped", "Shipped"],
                   ["delivered", "Delivered"],
                   ["cancelled", "Cancelled"],
@@ -233,40 +454,7 @@ export default function OrdersTableClient({
                     <span className={`orders-status-pill ${row.status}`}>{statusLabel(row.status).toUpperCase()}</span>
                   </td>
                   <td>
-                    <div className="orders-row-actions" ref={activeRowId === row.id ? rowMenuRef : undefined}>
-                      <button
-                        type="button"
-                        className="orders-more-button"
-                        aria-label={`Open actions for ${row.id}`}
-                        onClick={() => setActiveRowId((current) => (current === row.id ? null : row.id))}
-                      >
-                        <IconMore />
-                      </button>
-                      {activeRowId === row.id ? (
-                        <div className="orders-row-menu">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              window.alert(
-                                `Order ${row.id}\nCustomer: ${row.customer}\nItems: ${row.items}\nPayment: ${row.paymentMethod}\nAddress: ${row.shippingAddress}`
-                              );
-                              setActiveRowId(null);
-                            }}
-                          >
-                            View Details
-                          </button>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              await navigator.clipboard.writeText(row.id);
-                              setActiveRowId(null);
-                            }}
-                          >
-                            Copy ID
-                          </button>
-                        </div>
-                      ) : null}
-                    </div>
+                    {renderActions(row)}
                   </td>
                 </tr>
               );
@@ -312,6 +500,239 @@ export default function OrdersTableClient({
           </button>
         </div>
       </div>
+
+      {selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setSelectedOrder(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
+                <p className="text-sm text-gray-500 font-medium mt-1">ID: {selectedOrder.id}</p>
+              </div>
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
+              >
+                <IconClose />
+              </button>
+            </div>
+            
+            <div className="overflow-y-auto p-6 flex-1 bg-white">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Customer Info</h3>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gofarm-light-green/20 text-gofarm-green flex items-center justify-center font-bold text-sm">
+                        {selectedOrder.customer.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">{selectedOrder.customer}</p>
+                        <p className="text-sm text-gray-500">{selectedOrder.email}</p>
+                        <p className="text-sm text-gray-500">{selectedOrder.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Shipping Address</h3>
+                    <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-100">{selectedOrder.shippingAddress || "No address provided"}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Order Notes</h3>
+                    <p className="text-sm text-gray-700 bg-orange-50 p-3 rounded-lg border border-orange-100 italic">No notes from customer.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Order Summary</h3>
+                    <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Date</span>
+                        <span className="font-medium text-gray-900">{formatDateCell(selectedOrder.date).top}, {formatDateCell(selectedOrder.date).bottom}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Payment Method</span>
+                        <span className="font-medium text-gray-900 capitalize">{selectedOrder.paymentMethod}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Total Amount</span>
+                        <span className="font-bold text-gofarm-green">{selectedOrder.amount}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Order Status</h3>
+                    <select
+                      className={`w-full p-2.5 rounded-lg border text-sm font-semibold transition-colors focus:ring-2 outline-none
+                        ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}
+                        ${selectedOrder.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-500/20' : ''}
+                        ${selectedOrder.status === 'processing' ? 'bg-blue-50 text-blue-700 border-blue-200 focus:ring-blue-500/20' : ''}
+                        ${selectedOrder.status === 'shipped' ? 'bg-indigo-50 text-indigo-700 border-indigo-200 focus:ring-indigo-500/20' : ''}
+                        ${selectedOrder.status === 'delivered' ? 'bg-green-50 text-green-700 border-green-200 focus:ring-green-500/20' : ''}
+                        ${selectedOrder.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200 focus:ring-red-500/20' : ''}
+                        ${selectedOrder.status === 'awaiting_payment' ? 'bg-orange-50 text-orange-700 border-orange-200 focus:ring-orange-500/20' : ''}
+                      `}
+                      value={selectedOrder.status}
+                      disabled={isUpdating}
+                      onChange={(e) => handleUpdateStatus(selectedOrder.id, e.target.value)}
+                    >
+                      <option value="pending">Chờ xác nhận</option>
+                      <option value="processing">Đã xác nhận (Đang xử lý)</option>
+                      <option value="shipped">Đã gửi hàng</option>
+                      <option value="delivered">Đã giao đơn</option>
+                      <option value="cancelled">Từ chối (Huỷ đơn)</option>
+                      <option value="awaiting_payment">Chờ thanh toán</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Order Items ({selectedOrder.items})</h3>
+                <div className="border border-gray-100 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 border-b border-gray-100">
+                      <tr>
+                        <th className="px-4 py-3 font-semibold text-gray-500">Product</th>
+                        <th className="px-4 py-3 font-semibold text-gray-500 text-right">Price</th>
+                        <th className="px-4 py-3 font-semibold text-gray-500 text-center">Qty</th>
+                        <th className="px-4 py-3 font-semibold text-gray-500 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {selectedOrder.products && selectedOrder.products.length > 0 ? (
+                        selectedOrder.products.map((item, idx) => (
+                          <tr key={idx} className="hover:bg-gray-50/50">
+                            <td className="px-4 py-3 flex items-center gap-3">
+                              <img src={item.imageSrc} alt={item.name} className="w-10 h-10 object-cover rounded-md border border-gray-200" />
+                              <span className="font-medium text-gray-900">{item.name}</span>
+                            </td>
+                            <td className="px-4 py-3 text-right text-gray-600">${item.price.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-center text-gray-900 font-medium">{item.quantity}</td>
+                            <td className="px-4 py-3 text-right font-semibold text-gray-900">${(item.price * item.quantity).toFixed(2)}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="px-4 py-6 text-center text-gray-500">No items data available.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                Close Window
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{confirmModal.title}</h3>
+              <p className="text-sm text-gray-600">{confirmModal.message}</p>
+            </div>
+            <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                className="px-3 py-1.5 rounded-md text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors"
+                disabled={isUpdating}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={commitUpdateStatus}
+                className="px-3 py-1.5 rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[70px]"
+                style={{ backgroundColor: '#16a34a', color: '#ffffff' }}
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  "Confirm"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {failedOrderModal && (
+        <div className="fixed inset-0 z-[65] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Delivery Failed</h3>
+              <p className="text-sm text-gray-600 mb-4">How do you want to handle this order?</p>
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleUpdateStatus(failedOrderModal, "preparing");
+                    setFailedOrderModal(null);
+                  }}
+                  className="w-full px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                  style={{ backgroundColor: '#9333ea', color: '#ffffff' }}
+                >
+                  Return to Preparing (Retry Delivery)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleUpdateStatus(failedOrderModal, "cancelled");
+                    setFailedOrderModal(null);
+                  }}
+                  className="w-full px-3 py-2 rounded-md text-sm font-semibold transition-colors"
+                  style={{ backgroundColor: '#dc2626', color: '#ffffff' }}
+                >
+                  Cancel this order
+                </button>
+              </div>
+            </div>
+            <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setFailedOrderModal(null)}
+                className="px-3 py-1.5 rounded-md text-sm font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors"
+              >
+                Close Window
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-[70] animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <div className="px-6 py-4 rounded-lg shadow-xl flex items-center gap-3" style={{ backgroundColor: '#16a34a', color: '#ffffff' }}>
+            <div className="rounded-full p-1" style={{ backgroundColor: '#22c55e' }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-sm">{toastMessage.title}</p>
+              <p className="text-xs text-[#dcfce7] mt-0.5">{toastMessage.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -373,12 +794,12 @@ function IconChevronRight() {
   );
 }
 
-function IconMore() {
+
+
+function IconClose() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <circle cx="12" cy="5" r="1.6" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-      <circle cx="12" cy="19" r="1.6" fill="currentColor" />
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
