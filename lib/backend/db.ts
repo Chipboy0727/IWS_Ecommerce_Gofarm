@@ -26,7 +26,9 @@ function normalizeProduct(product: LocalProduct): LocalProduct {
     id: product.id || product.slug || randomUUID(),
     slug: product.slug || `product-${randomUUID().slice(0, 8)}`,
     name: product.name || "Unnamed product",
-    imageSrc: product.imageSrc || "/images/logo.svg",
+    imageSrc: (product.imageSrc || "/images/logo.svg").includes("/")
+      ? (product.imageSrc || "/images/logo.svg")
+      : `/images/${product.imageSrc}`,
     imageAlt: product.imageAlt || product.name || "Product image",
     price: typeof product.price === "number" ? product.price : 0,
     discount: typeof product.discount === "number" ? product.discount : null,
@@ -61,7 +63,9 @@ function rowToProduct(row: Record<string, unknown>): LocalProduct {
     id: String(row.id ?? ""),
     name: String(row.name ?? ""),
     slug: String(row.slug ?? ""),
-    imageSrc: String(row.imageSrc ?? "/images/logo.svg"),
+    imageSrc: String(row.imageSrc ?? "/images/logo.svg").includes("/") 
+      ? String(row.imageSrc ?? "/images/logo.svg") 
+      : `/images/${row.imageSrc}`,
     imageAlt: String(row.imageAlt ?? row.name ?? "Product image"),
     price: Number(row.price ?? 0),
     discount: row.discount === null || row.discount === undefined ? null : Number(row.discount),

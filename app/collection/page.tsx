@@ -207,7 +207,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
         <div className="flex gap-3 p-3 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
           <div className="relative w-20 h-20 shrink-0">
             <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-cover rounded-lg" />
-            {product.discount && <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
+            {(product.discount ?? 0) > 0 && <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
           </div>
           <div className="flex-1 min-w-0">
             <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
@@ -224,7 +224,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             <p className="text-sm text-gofarm-gray mt-1 line-clamp-1 hidden sm:block">{product.description}</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-              {product.discount && <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>}
+              {(product.discount ?? 0) > 0 && <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>}
               <button onClick={handleAddToCart} disabled={isAdding} className="ml-auto px-3 py-1 bg-gofarm-green text-white rounded-lg text-sm disabled:opacity-50">
                 {isAdding ? "Adding..." : "Add to Cart"}
               </button>
@@ -250,7 +250,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
 
             <div className="absolute top-2 left-2 flex flex-col gap-1">
               <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">{status}</div>
-              {product.discount && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
+              {(product.discount ?? 0) > 0 && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
             </div>
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
@@ -281,7 +281,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
 
             <div className="flex items-center gap-1 mt-1 flex-wrap">
               <span className="text-gofarm-green text-sm sm:text-base font-bold">{formatPrice(salePrice)}</span>
-              {product.discount && <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>}
+              {(product.discount ?? 0) > 0 && <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>}
             </div>
 
             <button onClick={handleAddToCart} disabled={isAdding} className="w-full rounded-lg bg-gofarm-green text-white px-2 py-1.5 mt-2 text-xs sm:text-sm font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50">
