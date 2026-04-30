@@ -202,23 +202,16 @@ export default function HelpPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
-        <section className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green text-white py-12 sm:py-16 lg:py-20">
-          <div className="max-w-4xl mx-auto px-3 sm:px-4 text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 md:mb-4">How can we help?</h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 px-2">Find answers, request support, or get in touch with our team</p>
-          </div>
-        </section>
-
-        <section className="py-10 sm:py-12 md:py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4">
-            <div className="text-center mb-8 sm:mb-10 md:mb-12">
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-gofarm-green/10 text-gofarm-green px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-sm font-semibold mb-3 sm:mb-4 backdrop-blur-sm">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white">
+        <section className="py-4 sm:py-6 lg:py-8">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+            <div className="text-center mt-6 sm:mt-10 lg:mt-12 mb-6 sm:mb-8 lg:mb-10">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-gofarm-green/10 text-gofarm-green px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-sm font-semibold mb-4 sm:mb-5 backdrop-blur-sm">
                 <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 24/7 Support
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gofarm-black mb-2 sm:mb-3 md:mb-4">Help Center</h2>
-              <p className="text-gofarm-gray max-w-2xl mx-auto text-sm sm:text-base md:text-lg px-2">Find answers, get support, and resolve issues quickly. We're here to help you have the best shopping experience.</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gofarm-black mb-3 sm:mb-4 md:mb-5">Help Center</h1>
+              <p className="text-gofarm-gray max-w-2xl mx-auto text-sm sm:text-base md:text-lg px-2 leading-relaxed">Find answers, get support, and resolve issues quickly. We're here to help you have the best shopping experience.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
               {helpCategories.map((category) => (

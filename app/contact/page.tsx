@@ -175,7 +175,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white overflow-x-hidden">
       {/* Success Popup */}
       <AnimatePresence>
         {showSuccess && (
@@ -210,8 +210,8 @@ export default function ContactPage() {
             <div className="mb-4 sm:mb-6 inline-flex items-center rounded-md border border-white/30 bg-white/20 px-2 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-semibold text-white shadow-sm transition-colors hover:bg-white/30">
               We're Here to Help
             </div>
-            <h1 className="mb-4 sm:mb-6 text-3xl sm:text-4xl lg:text-6xl font-bold">Contact Us</h1>
-            <p className="mx-auto max-w-3xl text-base sm:text-xl lg:text-2xl leading-relaxed text-white/90 px-2">
+            <h1 className="mb-3 sm:mb-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">Contact Us</h1>
+            <p className="mx-auto max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed text-white/90 px-2">
               Have questions about our products or need assistance? We'd love to hear from you. Our team is here to help with any inquiries you may have.
             </p>
           </div>
@@ -221,7 +221,7 @@ export default function ContactPage() {
       <main className="mx-auto max-w-(--breakpoint-xl) px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3 lg:gap-12">
           <section className="lg:col-span-1">
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 lg:p-8 shadow-lg">
+            <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 lg:p-8 shadow-lg h-full">
               <h2 className="mb-5 sm:mb-6 text-xl sm:text-2xl font-bold text-gofarm-green">Contact Information</h2>
               <div className="space-y-5 sm:space-y-6">
                 {contactItems.map((item) => (
@@ -259,9 +259,9 @@ export default function ContactPage() {
           </section>
 
           <section className="lg:col-span-2">
-            <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 lg:p-8 shadow-lg">
+            <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 lg:p-8 shadow-lg h-full flex flex-col">
               <h2 className="mb-5 sm:mb-6 text-xl sm:text-2xl font-bold text-gofarm-green">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 flex-1 flex flex-col">
                 <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
                   <div className="space-y-1.5 sm:space-y-2">
                     <label htmlFor="name" className="text-xs sm:text-sm font-medium text-gofarm-green">
@@ -303,7 +303,7 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <div className="space-y-1.5 sm:space-y-2">
+                <div className="space-y-1.5 sm:space-y-2 flex-1 flex flex-col">
                   <label htmlFor="message" className="text-xs sm:text-sm font-medium text-gofarm-green">
                     Message *
                   </label>
@@ -313,7 +313,7 @@ export default function ContactPage() {
                     required
                     rows={5}
                     placeholder="Please provide detailed information about your inquiry..."
-                    className="flex min-h-[80px] sm:min-h-[100px] w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm sm:text-base shadow-xs placeholder:text-muted-foreground focus:border-gofarm-light-green focus:ring-1 focus:ring-gofarm-light-green/20"
+                    className="flex min-h-[120px] w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm sm:text-base shadow-xs placeholder:text-muted-foreground focus:border-gofarm-light-green focus:ring-1 focus:ring-gofarm-light-green/20 flex-1"
                   />
                 </div>
 

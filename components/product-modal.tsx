@@ -340,8 +340,8 @@ export function ProductModal({
                 {activeTab === "additional information" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex border-b border-gray-100 py-3">
-                      <span className="w-1/3 font-bold text-gray-900">Brand</span>
-                      <span className="text-gray-600">{product.brand || "Unbranded"}</span>
+                      <span className="w-1/3 font-bold text-gray-900">Origin</span>
+                      <span className="text-gray-600">{product.origin || "Unknown"}</span>
                     </div>
                     <div className="flex border-b border-gray-100 py-3">
                       <span className="w-1/3 font-bold text-gray-900">Category</span>

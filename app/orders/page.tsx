@@ -214,7 +214,7 @@ export default function OrdersPage() {
         </div>
       )}
 
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 pt-6 sm:pt-8">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 pt-6 sm:pt-8">
         <div className="mb-5 sm:mb-6 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Stat label="Active Orders" value={totalActiveOrders} tone="blue" />
           <Stat label="Delivered" value={deliveredOrders} tone="green" />
@@ -245,7 +245,7 @@ export default function OrdersPage() {
         />
       )}
 
-      <div className="mx-auto max-w-5xl px-3 sm:px-4 pb-10 sm:pb-12">
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 pb-10 sm:pb-12">
         <div className="overflow-hidden rounded-2xl bg-white shadow-xl">
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 border-b border-gray-200 p-4 sm:p-6">
             <div>

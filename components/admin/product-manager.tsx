@@ -11,7 +11,7 @@ type ProductFormState = {
   imageAlt: string;
   price: string;
   discount: string;
-  brand: string;
+  origin: string;
   categoryId: string;
   categoryTitle: string;
   description: string;
@@ -29,7 +29,7 @@ function emptyForm(): ProductFormState {
     imageAlt: "",
     price: "0",
     discount: "",
-    brand: "",
+    origin: "",
     categoryId: "",
     categoryTitle: "",
     description: "",
@@ -48,7 +48,7 @@ function toForm(product: LocalProduct): ProductFormState {
     imageAlt: product.imageAlt,
     price: String(product.price),
     discount: product.discount === null ? "" : String(product.discount),
-    brand: product.brand ?? "",
+    origin: product.origin ?? "",
     categoryId: product.categoryId ?? "",
     categoryTitle: product.categoryTitle ?? "",
     description: product.description ?? "",
@@ -605,8 +605,8 @@ export default function ProductManager() {
                         {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
                       </select>
                     </Field>
-                    <Field label="Brand">
-                      <input value={form.brand} onChange={(e) => updateField("brand", e.target.value)} className="input" placeholder="Brand..." />
+                    <Field label="Origin">
+                      <input value={form.origin} onChange={(e) => updateField("origin", e.target.value)} className="input" placeholder="Origin..." />
                     </Field>
                     <Field label="Initial Rating">
                       <input type="number" step="0.1" value={form.rating} onChange={(e) => updateField("rating", e.target.value)} className="input" placeholder="0-5" />

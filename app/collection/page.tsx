@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
@@ -296,6 +296,106 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
   );
 }
 
+// Dual Range Slider Component
+const PRICE_GLOBAL_MIN = 0;
+const PRICE_GLOBAL_MAX = 200;
+
+function DualRangeSlider({
+  min, max, globalMin, globalMax, onChange
+}: {
+  min: number; max: number;
+  globalMin: number; globalMax: number;
+  onChange: (min: number, max: number) => void;
+}) {
+  const rangeRef = useRef<HTMLDivElement>(null);
+  const isDraggingMin = useRef(false);
+  const isDraggingMax = useRef(false);
+
+  const pct = (v: number) =>
+    ((v - globalMin) / (globalMax - globalMin)) * 100;
+
+  const valueFromPct = (p: number) =>
+    Math.round(globalMin + (p / 100) * (globalMax - globalMin));
+
+  const getPctFromEvent = (e: MouseEvent | TouchEvent) => {
+    if (!rangeRef.current) return 0;
+    const rect = rangeRef.current.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+  };
+
+  const startDragMin = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    isDraggingMin.current = true;
+    const move = (ev: MouseEvent | TouchEvent) => {
+      const p = getPctFromEvent(ev);
+      const newMin = Math.min(valueFromPct(p), max - 1);
+      onChange(newMin, max);
+    };
+    const up = () => {
+      isDraggingMin.current = false;
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("mouseup", up);
+      window.removeEventListener("touchend", up);
+    };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("touchmove", move);
+    window.addEventListener("mouseup", up);
+    window.addEventListener("touchend", up);
+  };
+
+  const startDragMax = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    isDraggingMax.current = true;
+    const move = (ev: MouseEvent | TouchEvent) => {
+      const p = getPctFromEvent(ev);
+      const newMax = Math.max(valueFromPct(p), min + 1);
+      onChange(min, newMax);
+    };
+    const up = () => {
+      isDraggingMax.current = false;
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("mouseup", up);
+      window.removeEventListener("touchend", up);
+    };
+    window.addEventListener("mousemove", move);
+    window.addEventListener("touchmove", move);
+    window.addEventListener("mouseup", up);
+    window.addEventListener("touchend", up);
+  };
+
+  const minPct = pct(min);
+  const maxPct = pct(max);
+
+  return (
+    <div className="py-2">
+      <div ref={rangeRef} className="relative h-2 bg-gray-200 rounded-full cursor-pointer select-none">
+        {/* Active track */}
+        <div
+          className="absolute h-2 bg-gofarm-green rounded-full"
+          style={{ left: `${minPct}%`, width: `${maxPct - minPct}%` }}
+        />
+        {/* Min thumb */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white border-2 border-gofarm-green rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10"
+          style={{ left: `${minPct}%` }}
+          onMouseDown={startDragMin}
+          onTouchStart={startDragMin}
+        />
+        {/* Max thumb */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white border-2 border-gofarm-green rounded-full shadow-md cursor-grab active:cursor-grabbing hover:scale-110 transition-transform z-10"
+          style={{ left: `${maxPct}%` }}
+          onMouseDown={startDragMax}
+          onTouchStart={startDragMax}
+        />
+      </div>
+    </div>
+  );
+}
+
 function collectionSortToApi(sortBy: string) {
   switch (sortBy) {
     case "name-desc": return { sortBy: "name", sortOrder: "desc" as const };
@@ -318,6 +418,9 @@ export default function CollectionPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [gridCols, setGridCols] = useState(4);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 200 });
+  // dragRange is updated immediately during drag; priceRange is debounced for API calls
+  const [dragRange, setDragRange] = useState({ min: 0, max: 200 });
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const [showPriceFilter, setShowPriceFilter] = useState(false);
   const [selectedShareProduct, setSelectedShareProduct] = useState<LocalProduct | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -376,6 +479,16 @@ export default function CollectionPage() {
     return () => { cancelled = true; controller.abort(); };
   }, [page, searchTerm, filterType, sortBy, priceRange.min, priceRange.max]);
 
+  const handleDragRange = useCallback((min: number, max: number) => {
+    setDragRange({ min, max });
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setPriceRange({ min, max });
+      setProducts([]);
+      setPage(1);
+    }, 120);
+  }, []);
+
   const getGridColsClass = () => {
     if (viewMode === "list") return "grid-cols-1";
     switch (gridCols) {
@@ -416,6 +529,7 @@ export default function CollectionPage() {
   };
 
   const handlePriceChange = (nextRange: { min: number; max: number }) => {
+    setDragRange(nextRange);
     setPriceRange(nextRange);
     resetQuery();
   };
@@ -439,7 +553,7 @@ export default function CollectionPage() {
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
 
             {/* Header */}
-            <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+            <div className="text-center mt-6 sm:mt-10 lg:mt-12 mb-6 sm:mb-8 lg:mb-10">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="h-0.5 w-8 sm:w-12 bg-gradient-to-r from-gofarm-light-green to-gofarm-green rounded-full" />
                 <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gofarm-green" />
@@ -532,21 +646,27 @@ export default function CollectionPage() {
 
                 {showPriceFilter && (
                   <div className="mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                      <div className="flex-1 w-full sm:min-w-[200px]">
-                        <div className="flex justify-between text-sm text-gray-500 mb-2">
-                          <span>Price: ${priceRange.min} - ${priceRange.max}</span>
-                        </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="200"
-                          value={priceRange.max}
-                          onChange={(e) => handlePriceChange({ ...priceRange, max: parseInt(e.target.value, 10) })}
-                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gofarm-green"
-                        />
-                      </div>
-                      <button onClick={() => handlePriceChange({ min: 0, max: 200 })} className="text-sm text-gofarm-green hover:underline">Reset</button>
+                    <div className="flex justify-between text-sm font-semibold text-gofarm-black mb-3">
+                      <span>${dragRange.min}</span>
+                      <span className="text-gray-400 text-xs font-normal">Price Range</span>
+                      <span>${dragRange.max}</span>
+                    </div>
+                    <DualRangeSlider
+                      min={dragRange.min}
+                      max={dragRange.max}
+                      globalMin={PRICE_GLOBAL_MIN}
+                      globalMax={PRICE_GLOBAL_MAX}
+                      onChange={handleDragRange}
+                    />
+                    <div className="flex justify-between items-center mt-3">
+                      <span className="text-xs text-gray-400">${PRICE_GLOBAL_MIN}</span>
+                      <button
+                        onClick={() => handlePriceChange({ min: PRICE_GLOBAL_MIN, max: PRICE_GLOBAL_MAX })}
+                        className="text-xs text-gofarm-green hover:underline font-medium"
+                      >
+                        Reset
+                      </button>
+                      <span className="text-xs text-gray-400">${PRICE_GLOBAL_MAX}</span>
                     </div>
                   </div>
                 )}
