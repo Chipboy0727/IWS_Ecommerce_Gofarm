@@ -110,8 +110,8 @@ export default function SiteFooter() {
         <div className="py-8 sm:py-10 lg:py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           
           {/* Logo & Description */}
-          <div className="space-y-3 sm:space-y-4 text-center sm:text-left">
-            <div className="flex justify-center sm:justify-start">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex justify-start">
               <Link href="/">
                 <img 
                   alt="logo" 

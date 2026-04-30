@@ -247,12 +247,14 @@ export default function SiteHeader() {
   const [userEmail, setUserEmail] = useState("");
   const [orderCount, setOrderCount] = useState(0);
   
+  const [mounted, setMounted] = useState(false);
   const isRefreshingRef = useRef(false);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   const initialLoadRef = useRef(true);
 
   // Load user data - runs once on mount
   useEffect(() => {
+    setMounted(true);
     const user = localStorage.getItem("user");
     if (user) {
       try {
@@ -480,7 +482,7 @@ export default function SiteHeader() {
                 {/* Cart - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
                 <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconCart />
-                  {cartCount > 0 && (
+                  {mounted && cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-gofarm-green text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
                       {cartCount > 99 ? "99+" : cartCount}
                     </span>
@@ -490,7 +492,7 @@ export default function SiteHeader() {
                 {/* Wishlist - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
                 <Link href="/wishlist" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconHeart />
-                  {wishlistCount > 0 && (
+                  {mounted && wishlistCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
                       {wishlistCount > 99 ? "99+" : wishlistCount}
                     </span>
@@ -500,7 +502,7 @@ export default function SiteHeader() {
                 {/* Orders - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
                 <Link href="/orders" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconOrders />
-                  {orderCount > 0 && (
+                  {mounted && orderCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
                       {orderCount > 99 ? "99+" : orderCount}
                     </span>
@@ -508,8 +510,8 @@ export default function SiteHeader() {
                 </Link>
 
                 {/* User menu - Desktop */}
-                <div className="hidden lg:block relative">
-                  {isLoggedIn ? (
+                <div className="hidden lg:block relative min-w-[100px] flex justify-end">
+                  {mounted && isLoggedIn ? (
                     <div className="relative">
                       <button
                         onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
@@ -543,7 +545,7 @@ export default function SiteHeader() {
                         </>
                       )}
                     </div>
-                  ) : (
+                  ) : mounted ? (
                     <div className="flex items-center gap-1.5 sm:gap-2">
                       <Link href="/sign-in" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-gofarm-green hover:bg-gofarm-green/10 rounded-lg transition-colors">
                         Sign In
@@ -552,6 +554,8 @@ export default function SiteHeader() {
                         Sign Up
                       </Link>
                     </div>
+                  ) : (
+                    <div className="h-10 w-24 bg-gray-100/50 animate-pulse rounded-lg" />
                   )}
                 </div>
 

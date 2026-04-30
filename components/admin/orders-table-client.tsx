@@ -107,8 +107,10 @@ export default function OrdersTableClient({
   const filterRef = useRef<HTMLDivElement | null>(null);
   const rowMenuRef = useRef<HTMLDivElement | null>(null);
   const pageSize = 4;
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handlePointerDown = (event: MouseEvent) => {
       const target = event.target as Node;
       if (!filterRef.current?.contains(target)) setMenuOpen(false);
@@ -401,7 +403,7 @@ export default function OrdersTableClient({
         </div>
 
         <div className="orders-filter-count">
-          Showing {filteredRows.length.toLocaleString("en-US")} of {totalCount.toLocaleString("en-US")} orders
+          {mounted && `Showing ${filteredRows.length.toLocaleString("en-US")} of ${totalCount.toLocaleString("en-US")} orders`}
         </div>
       </div>
 
@@ -418,7 +420,7 @@ export default function OrdersTableClient({
             </tr>
           </thead>
           <tbody>
-            {pageRows.map((row) => {
+            {mounted && pageRows.map((row) => {
               const dateCell = formatDateCell(row.date);
               const initials = row.customer
                 .split(" ")
@@ -455,7 +457,7 @@ export default function OrdersTableClient({
                 </tr>
               );
             })}
-            {pageRows.length === 0 ? (
+            {mounted && pageRows.length === 0 ? (
               <tr>
                 <td colSpan={6} className="orders-empty">
                   No matching orders found.
