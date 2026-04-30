@@ -49,11 +49,36 @@ function IconStar() {
   );
 }
 
+// Toast Message Component
+function ToastMessage({ productName, onClose }: { productName: string; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
+      <div className="bg-gofarm-green text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
+        <div className="bg-white/20 p-1 rounded-full">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <span>{productName} added to cart!</span>
+      </div>
+    </div>
+  );
+}
+
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<LocalProduct | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastProductName, setToastProductName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { addToCart } = useCart();
@@ -94,10 +119,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
     e.stopPropagation();
-    const salePrice = product.discount 
-      ? product.price - (product.price * product.discount) / 100 
+    const salePrice = product.discount
+      ? product.price - (product.price * product.discount) / 100
       : product.price;
-    
+
     addToCart({
       id: product.id,
       name: product.name,
@@ -105,6 +130,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       imageSrc: product.imageSrc,
       slug: product.slug,
     });
+
+    setToastProductName(product.name);
+    setShowToast(true);
   };
 
   return (
@@ -118,7 +146,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             onClick={onClose}
             className="fixed inset-0 bg-black/80 backdrop-blur-md"
           />
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -126,7 +154,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             className="relative w-full max-w-6xl bg-white rounded-[32px] shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header Area */}
-            <div 
+            <div
               style={{ background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)" }}
               className="p-6 lg:p-8 text-white"
             >
@@ -186,17 +214,17 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     </thead>
                     <tbody>
                       {loading ? (
-                         <tr><td colSpan={5} className="text-center py-20 text-gray-400">Searching...</td></tr>
+                        <tr><td colSpan={5} className="text-center py-20 text-gray-400">Searching...</td></tr>
                       ) : results.length > 0 ? (
                         results.map((product) => {
-                          const salePrice = product.discount 
-                            ? product.price - (product.price * product.discount) / 100 
+                          const salePrice = product.discount
+                            ? product.price - (product.price * product.discount) / 100
                             : product.price;
                           return (
-                            <tr 
-                              key={product.id} 
+                            <tr
+                              key={product.id}
                               onClick={() => setSelectedProduct(product)}
-                              className="group hover:bg-gray-50 transition-colors cursor-pointer"
+                              className="group hover:bg-gray-100 transition-colors cursor-pointer"
                             >
                               <td className="p-4">
                                 <div className="relative w-24 h-24 bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
@@ -225,11 +253,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 </div>
                               </td>
                               <td className="p-4 text-center">
-                                <button 
+                                <button
                                   onClick={(e) => handleAddToCart(e, product)}
-                                  className="inline-flex items-center gap-2 bg-white border-2 border-[#22c55e] hover:bg-[#22c55e] hover:text-white text-[#22c55e] font-black py-2.5 px-5 rounded-2xl transition-all shadow-sm active:scale-95"
+                                  className="inline-flex items-center gap-2 bg-white border-2 border-[#22c55e] hover:!bg-[#16a34a] hover:!text-white text-[#22c55e] font-bold py-2.5 px-5 rounded-2xl transition-all shadow-sm active:scale-95"
                                 >
-                                  <IconCart />
                                   <span className="text-sm">Add to Cart</span>
                                 </button>
                               </td>
@@ -244,12 +271,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 </div>
               )}
             </div>
+            {showToast && (
+              <ToastMessage productName={toastProductName} onClose={() => setShowToast(false)} />
+            )}
           </motion.div>
         </div>
       )}
-      
+
       {/* Detail Modal */}
-      <ProductModal 
+      <ProductModal
         product={selectedProduct}
         isOpen={!!selectedProduct}
         onClose={() => setSelectedProduct(null)}

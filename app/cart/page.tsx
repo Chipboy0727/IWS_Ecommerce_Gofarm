@@ -524,7 +524,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 sm:mt-6">
+                <div className="mt-8 sm:mt-10">
                   <Link href="/shop" className="inline-flex items-center gap-1 sm:gap-2 text-gofarm-green hover:text-gofarm-light-green font-medium transition-colors text-sm sm:text-base">
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -594,7 +594,7 @@ export default function CartPage() {
                   <button
                     onClick={handleProceedToCheckout}
                     disabled={selectedCount === 0 || hasStockIssues()}
-                    className="w-full mt-5 sm:mt-6 py-2.5 sm:py-3 bg-gofarm-green text-white font-semibold rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className="w-full mt-8 sm:mt-10 py-2.5 sm:py-3 bg-gofarm-green text-white font-semibold rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                   >
                     Proceed to Checkout ({selectedCount} items)
                   </button>

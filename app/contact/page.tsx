@@ -1,10 +1,8 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Contact Us | gofarm",
-  description: "Get in touch with the GoFarm team for support, questions, or feedback.",
-};
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 function IconMapPin({ className = "" }: { className?: string }) {
   return (
@@ -64,6 +62,14 @@ function IconSend({ className = "" }: { className?: string }) {
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
       <path d="m21.854 2.147-10.94 10.939" />
+    </svg>
+  );
+}
+
+function IconCheck({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
     </svg>
   );
 }
@@ -146,8 +152,58 @@ const faqs = [
 ];
 
 export default function ContactPage() {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => setShowSuccess(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    setLoading(false);
+    setShowSuccess(true);
+    (e.target as HTMLFormElement).reset();
+  };
+
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white overflow-x-hidden">
+      {/* Success Popup */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+            className="fixed top-24 right-4 sm:right-8 z-50 flex items-center gap-3 rounded-2xl bg-white p-4 shadow-2xl border border-gofarm-green/10 min-w-[280px] sm:min-w-[320px]"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gofarm-green text-white shadow-lg shadow-gofarm-green/20">
+              <IconCheck className="h-6 w-6" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-gofarm-green">Message Sent!</p>
+              <p className="text-xs text-gray-500">We'll get back to you shortly.</p>
+            </div>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <section className="bg-linear-to-r from-gofarm-green to-gofarm-light-green py-12 sm:py-16 lg:py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">
           <div className="text-center">
@@ -205,7 +261,7 @@ export default function ContactPage() {
           <section className="lg:col-span-2">
             <div className="rounded-2xl border border-gray-100 bg-white p-5 sm:p-6 lg:p-8 shadow-lg">
               <h2 className="mb-5 sm:mb-6 text-xl sm:text-2xl font-bold text-gofarm-green">Send us a Message</h2>
-              <form className="space-y-4 sm:space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
                   <div className="space-y-1.5 sm:space-y-2">
                     <label htmlFor="name" className="text-xs sm:text-sm font-medium text-gofarm-green">
@@ -263,10 +319,11 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="inline-flex h-10 sm:h-12 w-full sm:w-auto transform items-center justify-center gap-2 rounded-lg bg-gofarm-green px-5 sm:px-8 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-gofarm-light-green hover:shadow-xl disabled:transform-none text-sm sm:text-base"
+                  disabled={loading}
+                  className="inline-flex h-10 sm:h-12 w-full sm:w-auto transform items-center justify-center gap-2 rounded-lg bg-gofarm-green px-5 sm:px-8 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-gofarm-light-green hover:shadow-xl disabled:transform-none disabled:opacity-70 text-sm sm:text-base"
                 >
-                  <IconSend className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Send Message
+                  <IconSend className={`h-4 w-4 sm:h-5 sm:w-5 ${loading ? 'animate-pulse' : ''}`} />
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
               </form>
             </div>
@@ -291,4 +348,4 @@ export default function ContactPage() {
       </main>
     </div>
   );
-}
+}

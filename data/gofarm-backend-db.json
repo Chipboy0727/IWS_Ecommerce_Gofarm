@@ -2,7 +2,7 @@
   "products": [
     {
       "id": "FR-AP-01",
-      "name": "Fuji Apple (Táo Fuji)",
+      "name": "Fuji Apple",
       "slug": "fuji-apple",
       "imageSrc": "/images/f.taofuji.jpg",
       "imageAlt": "Fuji Apple",
@@ -22,7 +22,7 @@
     },
     {
       "id": "FR-AP-02",
-      "name": "Granny Smith Apple (táo xanh)",
+      "name": "Granny Smith Apple",
       "slug": "granny-smith-apple",
       "imageSrc": "/images/f.taoxanh.jpg",
       "imageAlt": "Granny Smith Apple",
@@ -42,7 +42,7 @@
     },
     {
       "id": "FR-BA-01",
-      "name": "Laba Banana (chuối Laba)",
+      "name": "Laba Banana",
       "slug": "laba-banana",
       "imageSrc": "/images/f.chuoilaba.jpg",
       "imageAlt": "Laba Banana",
@@ -62,7 +62,7 @@
     },
     {
       "id": "FR-MA-01",
-      "name": "Hoa Loc Mango (xoài Hòa Lộc)",
+      "name": "Hoa Loc Mango",
       "slug": "hoa-loc-mango",
       "imageSrc": "/images/f.xoaicat.jpg",
       "imageAlt": "Hoa Loc Mango",
@@ -82,7 +82,7 @@
     },
     {
       "id": "FR-WA-01",
-      "name": "Seedless Watermelon (Dưa hấu không hạt)",
+      "name": "Seedless Watermelon",
       "slug": "seedless-watermelon",
       "imageSrc": "/images/f.duahaukohat.jpg",
       "imageAlt": "Seedless Watermelon",
@@ -102,7 +102,7 @@
     },
     {
       "id": "FR-DR-01",
-      "name": "Red Flesh Dragon Fruits (Thanh long ruột đỏ)",
+      "name": "Red Flesh Dragon Fruits",
       "slug": "red-dragon-fruit",
       "imageSrc": "/images/f.thanhlong.jpg",
       "imageAlt": "Red Dragon Fruit",
@@ -122,7 +122,7 @@
     },
     {
       "id": "FR-DU-01",
-      "name": "Ri6 Durian (Sầu riêng Ri6)",
+      "name": "Ri6 Durian",
       "slug": "ri6-durian",
       "imageSrc": "/images/f.saurieng.jpg",
       "imageAlt": "Ri6 Durian",
@@ -142,7 +142,7 @@
     },
     {
       "id": "FR-MA-02",
-      "name": "Mangosteen (Măng cụt)",
+      "name": "Mangosteen",
       "slug": "mangosteen",
       "imageSrc": "/images/f.mangcut.jpg",
       "imageAlt": "Mangosteen",
@@ -162,7 +162,7 @@
     },
     {
       "id": "FR-OR-01",
-      "name": "King Orange (Cam sành)",
+      "name": "King Orange",
       "slug": "king-orange",
       "imageSrc": "/images/f.camsanh.jpg",
       "imageAlt": "King Orange",
@@ -182,7 +182,7 @@
     },
     {
       "id": "FR-PO-01",
-      "name": "Green Skin Pomelo (Bưởi da xanh)",
+      "name": "Green Skin Pomelo",
       "slug": "green-skin-pomelo",
       "imageSrc": "/images/f.buoidaxanh.jpg",
       "imageAlt": "Green Skin Pomelo",
@@ -202,7 +202,7 @@
     },
     {
       "id": "FR-GR-01",
-      "name": "Shine Muscat Grape (Nho mẫu đơn)",
+      "name": "Shine Muscat Grape",
       "slug": "shine-muscat-grape",
       "imageSrc": "/images/f.nhomaudon.jpg",
       "imageAlt": "Shine Muscat Grape",
@@ -222,7 +222,7 @@
     },
     {
       "id": "FR-GR-02",
-      "name": "American Black Grape (Nho đen Mỹ)",
+      "name": "American Black Grape",
       "slug": "black-grape",
       "imageSrc": "/images/f.nhodenmy.jpg",
       "imageAlt": "Black Grape",
@@ -242,7 +242,7 @@
     },
     {
       "id": "FR-ST-01",
-      "name": "Strawberry (Dâu tây)",
+      "name": "Strawberry",
       "slug": "strawberry",
       "imageSrc": "/images/f.dautay.jpg",
       "imageAlt": "Strawberry",
@@ -262,7 +262,7 @@
     },
     {
       "id": "FR-BL-01",
-      "name": "Blueberry (Việt quất)",
+      "name": "Blueberry",
       "slug": "blueberry",
       "imageSrc": "/images/f.vietquat.jpg",
       "imageAlt": "Blueberry",
@@ -282,7 +282,7 @@
     },
     {
       "id": "FR-KI-01",
-      "name": "Golden Kiwi (Kiwi vàng)",
+      "name": "Golden Kiwi",
       "slug": "golden-kiwi",
       "imageSrc": "/images/f.kiwivang.jpg",
       "imageAlt": "Golden Kiwi",
@@ -302,7 +302,7 @@
     },
     {
       "id": "FR-PE-01",
-      "name": "Korean Pear (Lê Hàn Quốc)",
+      "name": "Korean Pear",
       "slug": "korean-pear",
       "imageSrc": "/images/f.lehanquoc.jpg",
       "imageAlt": "Korean Pear",
@@ -322,7 +322,7 @@
     },
     {
       "id": "FR-AV-01",
-      "name": "Butter Avocado (Bơ sáp)",
+      "name": "Butter Avocado",
       "slug": "butter-avocado",
       "imageSrc": "/images/f.bosap.jpg",
       "imageAlt": "Butter Avocado",
@@ -342,7 +342,7 @@
     },
     {
       "id": "FR-RA-01",
-      "name": "Rambutan (Chôm chôm)",
+      "name": "Rambutan",
       "slug": "rambutan",
       "imageSrc": "/images/f.chomchom.jpg",
       "imageAlt": "Rambutan",
@@ -362,7 +362,7 @@
     },
     {
       "id": "FR-GU-01",
-      "name": "Queen Guava (Ổi nữ hoàng)",
+      "name": "Queen Guava",
       "slug": "queen-guava",
       "imageSrc": "/images/f.oiqueen.jpg",
       "imageAlt": "Queen Guava",
@@ -382,7 +382,7 @@
     },
     {
       "id": "FR-PI-01",
-      "name": "Pineapple (Dứa/Thơm)",
+      "name": "Pineapple",
       "slug": "pineapple",
       "imageSrc": "/images/f.dua.jpg",
       "imageAlt": "Pineapple",
@@ -402,7 +402,7 @@
     },
     {
       "id": "VG-BR-01",
-      "name": "Broccoli (Súp lơ xanh)",
+      "name": "Broccoli",
       "slug": "broccoli",
       "imageSrc": "/images/v.suploxanh.jpg",
       "imageAlt": "Broccoli",
@@ -422,7 +422,7 @@
     },
     {
       "id": "VG-CA-01",
-      "name": "Cauliflower (Súp lơ trắng)",
+      "name": "Cauliflower",
       "slug": "cauliflower",
       "imageSrc": "/images/v.suplotrang.jpg",
       "imageAlt": "Cauliflower",
@@ -442,7 +442,7 @@
     },
     {
       "id": "VG-CB-01",
-      "name": "White Cabbage (Bắp cải trắng)",
+      "name": "White Cabbage",
       "slug": "white-cabbage",
       "imageSrc": "/images/v.bapcaixanh.jpg",
       "imageAlt": "White Cabbage",
@@ -462,7 +462,7 @@
     },
     {
       "id": "VG-CB-02",
-      "name": "Purple Cabbage (Bắp cải tím)",
+      "name": "Purple Cabbage",
       "slug": "purple-cabbage",
       "imageSrc": "/images/v.bapcaitim.jpg",
       "imageAlt": "Purple Cabbage",
@@ -482,7 +482,7 @@
     },
     {
       "id": "VG-NA-01",
-      "name": "Napa Cabbage (Cải thảo)",
+      "name": "Napa Cabbage",
       "slug": "napa-cabbage",
       "imageSrc": "/images/v.caithao.jpg",
       "imageAlt": "Napa Cabbage",
@@ -502,7 +502,7 @@
     },
     {
       "id": "VG-BO-01",
-      "name": "Bok Choy (Cải thìa)",
+      "name": "Bok Choy",
       "slug": "bok-choy",
       "imageSrc": "/images/v.caithia.jpg",
       "imageAlt": "Bok Choy",
@@ -522,7 +522,7 @@
     },
     {
       "id": "VG-SP-01",
-      "name": "Spinach (Cải bó xôi)",
+      "name": "Spinach",
       "slug": "spinach",
       "imageSrc": "/images/v.caiboxoi.jpg",
       "imageAlt": "Spinach",
@@ -542,7 +542,7 @@
     },
     {
       "id": "VG-KA-01",
-      "name": "Kale (Cải xoăn)",
+      "name": "Kale",
       "slug": "kale",
       "imageSrc": "/images/v.caixoan.jpg",
       "imageAlt": "Kale",
@@ -562,7 +562,7 @@
     },
     {
       "id": "VG-LE-01",
-      "name": "Hydroponic Lettuce (Xà lách thủy canh)",
+      "name": "Hydroponic Lettuce",
       "slug": "hydroponic-lettuce",
       "imageSrc": "/images/v.xalach.jpg",
       "imageAlt": "Lettuce",
@@ -582,7 +582,7 @@
     },
     {
       "id": "VG-CA-02",
-      "name": "Carrot (Cà rốt)",
+      "name": "Carrot",
       "slug": "carrot",
       "imageSrc": "/images/v.carot.jpg",
       "imageAlt": "Carrot",
@@ -602,7 +602,7 @@
     },
     {
       "id": "VG-PO-01",
-      "name": "Potato (Khoai tây)",
+      "name": "Potato",
       "slug": "potato",
       "imageSrc": "/images/v.khoaitay.jpg",
       "imageAlt": "Potato",
@@ -622,7 +622,7 @@
     },
     {
       "id": "VG-SP-02",
-      "name": "Purple Sweet Potato (Khoai lang tím)",
+      "name": "Purple Sweet Potato",
       "slug": "purple-sweet-potato",
       "imageSrc": "/images/v.khoaitim.jpg",
       "imageAlt": "Purple Sweet Potato",
@@ -642,7 +642,7 @@
     },
     {
       "id": "VG-PU-01",
-      "name": "Pumpkin (Bí đỏ)",
+      "name": "Pumpkin",
       "slug": "pumpkin",
       "imageSrc": "/images/v.bido.jpg",
       "imageAlt": "Pumpkin",
@@ -662,7 +662,7 @@
     },
     {
       "id": "VG-ZU-01",
-      "name": "Zucchini (Bí ngòi)",
+      "name": "Zucchini",
       "slug": "zucchini",
       "imageSrc": "/images/v.bingoi.jpg",
       "imageAlt": "Zucchini",
@@ -682,7 +682,7 @@
     },
     {
       "id": "VG-TO-01",
-      "name": "Cherry Tomato (Cà chua bi)",
+      "name": "Cherry Tomato",
       "slug": "cherry-tomato",
       "imageSrc": "/images/v.cachuabi.jpg",
       "imageAlt": "Cherry Tomato",
@@ -702,7 +702,7 @@
     },
     {
       "id": "VG-TO-02",
-      "name": "Tomato (Cà chua thường)",
+      "name": "Tomato",
       "slug": "tomato",
       "imageSrc": "/images/v.cachua.jpg",
       "imageAlt": "Tomato",
@@ -722,7 +722,7 @@
     },
     {
       "id": "VG-CU-01",
-      "name": "Cucumber (Dưa leo)",
+      "name": "Cucumber",
       "slug": "cucumber",
       "imageSrc": "/images/v.dualeo.jpg",
       "imageAlt": "Cucumber",
@@ -742,7 +742,7 @@
     },
     {
       "id": "VG-BE-01",
-      "name": "Red Bell Pepper (Ớt chuông đỏ)",
+      "name": "Red Bell Pepper",
       "slug": "red-bell-pepper",
       "imageSrc": "/images/v.otchuongdo.jpg",
       "imageAlt": "Red Bell Pepper",
@@ -762,7 +762,7 @@
     },
     {
       "id": "VG-BE-02",
-      "name": "Yellow Bell Pepper (Ớt chuông vàng)",
+      "name": "Yellow Bell Pepper",
       "slug": "yellow-bell-pepper",
       "imageSrc": "/images/v.otchuongvang.jpg",
       "imageAlt": "Yellow Bell Pepper",
@@ -782,7 +782,7 @@
     },
     {
       "id": "VG-AS-01",
-      "name": "Asparagus (Măng tây)",
+      "name": "Asparagus",
       "slug": "asparagus",
       "imageSrc": "/images/v.mangtay.jpg",
       "imageAlt": "Asparagus",
@@ -802,7 +802,7 @@
     },
     {
       "id": "SH-ON-01",
-      "name": "Green Onion (Hành lá)",
+      "name": "Green Onion",
       "slug": "green-onion",
       "imageSrc": "/images/s.hanhla.jpg",
       "imageAlt": "Green Onion",
@@ -822,7 +822,7 @@
     },
     {
       "id": "SH-CO-01",
-      "name": "Coriander (Ngò rí)",
+      "name": "Coriander",
       "slug": "coriander",
       "imageSrc": "/images/s.raumui.jpg",
       "imageAlt": "Coriander",
@@ -842,7 +842,7 @@
     },
     {
       "id": "SH-GA-01",
-      "name": "Garlic (Tỏi ta)",
+      "name": "Garlic",
       "slug": "garlic",
       "imageSrc": "/images/s.toita.jpg",
       "imageAlt": "Garlic",
@@ -862,7 +862,7 @@
     },
     {
       "id": "SH-GA-02",
-      "name": "Solo Garlic (Tỏi cô đơn)",
+      "name": "Solo Garlic",
       "slug": "solo-garlic",
       "imageSrc": "/images/s.toicodon.jpg",
       "imageAlt": "Solo Garlic",
@@ -882,7 +882,7 @@
     },
     {
       "id": "SH-GI-01",
-      "name": "Ginger (Gừng già)",
+      "name": "Ginger",
       "slug": "ginger",
       "imageSrc": "/images/s.gung.jpg",
       "imageAlt": "Ginger",
@@ -902,7 +902,7 @@
     },
     {
       "id": "SH-SH-01",
-      "name": "Shallot (Hành tím)",
+      "name": "Shallot",
       "slug": "shallot",
       "imageSrc": "/images/s.hanhtim.jpg",
       "imageAlt": "Shallot",
@@ -922,7 +922,7 @@
     },
     {
       "id": "SH-ON-02",
-      "name": "Onion (Hành tây)",
+      "name": "Onion",
       "slug": "onion",
       "imageSrc": "/images/s.hanhtay.jpg",
       "imageAlt": "Onion",
@@ -942,7 +942,7 @@
     },
     {
       "id": "SH-CH-01",
-      "name": "Bird Eye Chili (Ớt chỉ thiên)",
+      "name": "Bird Eye Chili",
       "slug": "birds-eye-chili",
       "imageSrc": "/images/s.otchithien.jpg",
       "imageAlt": "Chili",
@@ -962,7 +962,7 @@
     },
     {
       "id": "SH-CH-02",
-      "name": "Horn Chili (Ớt sừng)",
+      "name": "Horn Chili",
       "slug": "horn-chili",
       "imageSrc": "/images/s.otsung.jpg",
       "imageAlt": "Horn Chili",
@@ -982,7 +982,7 @@
     },
     {
       "id": "SH-LE-01",
-      "name": "Lemongrass (Sả)",
+      "name": "Lemongrass",
       "slug": "lemongrass",
       "imageSrc": "/images/s.sa.jpg",
       "imageAlt": "Lemongrass",
@@ -1002,7 +1002,7 @@
     },
     {
       "id": "SH-GA-03",
-      "name": "Galangal (Riềng)",
+      "name": "Galangal",
       "slug": "galangal",
       "imageSrc": "/images/s.rieng.jpg",
       "imageAlt": "Galangal",
@@ -1022,7 +1022,7 @@
     },
     {
       "id": "SH-TU-01",
-      "name": "Turmeric (Nghệ)",
+      "name": "Turmeric",
       "slug": "turmeric",
       "imageSrc": "/images/s.nghe.jpg",
       "imageAlt": "Turmeric",
@@ -1042,7 +1042,7 @@
     },
     {
       "id": "SH-BA-01",
-      "name": "Thai Basil (Húng quế)",
+      "name": "Thai Basil",
       "slug": "thai-basil",
       "imageSrc": "/images/s.hungque.png",
       "imageAlt": "Thai Basil",
@@ -1062,7 +1062,7 @@
     },
     {
       "id": "SH-PE-01",
-      "name": "Perilla (Tía tô)",
+      "name": "Perilla",
       "slug": "perilla",
       "imageSrc": "/images/s.tiato.jpg",
       "imageAlt": "Perilla",
@@ -1082,7 +1082,7 @@
     },
     {
       "id": "SH-BA-02",
-      "name": "Vietnamese Balm (Kinh giới)",
+      "name": "Vietnamese Balm",
       "slug": "vietnamese-balm",
       "imageSrc": "/images/s.kinhgioi.jpg",
       "imageAlt": "Balm",
@@ -1102,7 +1102,7 @@
     },
     {
       "id": "SH-CO-02",
-      "name": "Vietnamese Coriander (Rau răm)",
+      "name": "Vietnamese Coriander",
       "slug": "vietnamese-coriander",
       "imageSrc": "/images/s.rauram.jpg",
       "imageAlt": "Rau Ram",
@@ -1122,7 +1122,7 @@
     },
     {
       "id": "SH-DI-01",
-      "name": "Dill (Thì là)",
+      "name": "Dill",
       "slug": "dill",
       "imageSrc": "/images/s.thiala.jpg",
       "imageAlt": "Dill",
@@ -1142,7 +1142,7 @@
     },
     {
       "id": "SH-LI-01",
-      "name": "Lime Leaf (Lá chanh)",
+      "name": "Lime Leaf",
       "slug": "lime-leaf",
       "imageSrc": "/images/s.lachanh.jpg",
       "imageAlt": "Lime Leaf",
@@ -1162,7 +1162,7 @@
     },
     {
       "id": "SH-LI-02",
-      "name": "Seedless Lime (Chanh không hạt)",
+      "name": "Seedless Lime",
       "slug": "seedless-lime",
       "imageSrc": "/images/s.chanhkohat.png",
       "imageAlt": "Lime",
@@ -1182,7 +1182,7 @@
     },
     {
       "id": "SH-MI-01",
-      "name": "Spearmint (Húng lủi)",
+      "name": "Spearmint",
       "slug": "spearmint",
       "imageSrc": "/images/s.hunglui.jpg",
       "imageAlt": "Spearmint",
@@ -1202,7 +1202,7 @@
     },
     {
       "id": "JU-OR-01",
-      "name": "Orange Juice (Nước cam tươi)",
+      "name": "Orange Juice",
       "slug": "orange-juice",
       "imageSrc": "/images/j.nuoccam.jpg",
       "imageAlt": "Orange Juice",
@@ -1222,7 +1222,7 @@
     },
     {
       "id": "JU-AP-01",
-      "name": "Apple Juice (Nước ép táo)",
+      "name": "Apple Juice",
       "slug": "apple-juice",
       "imageSrc": "/images/j.nuoctao.jpg",
       "imageAlt": "Apple Juice",
@@ -1242,7 +1242,7 @@
     },
     {
       "id": "JU-CA-01",
-      "name": "Carrot Juice (Nước ép cà rốt)",
+      "name": "Carrot Juice",
       "slug": "carrot-juice",
       "imageSrc": "/images/j.nuoccarot.jpg",
       "imageAlt": "Carrot Juice",
@@ -1262,7 +1262,7 @@
     },
     {
       "id": "JU-BE-01",
-      "name": "Mixed Berry Juice (Nước ép tổng hợp)",
+      "name": "Mixed Berry Juice",
       "slug": "mixed-berry-juice",
       "imageSrc": "/images/j.nuoceptonghop.png",
       "imageAlt": "Mixed Berry Juice",
@@ -1282,7 +1282,7 @@
     },
     {
       "id": "JU-WA-01",
-      "name": "Watermelon Juice (Nước ép dưa hấu)",
+      "name": "Watermelon Juice",
       "slug": "watermelon-juice",
       "imageSrc": "/images/j.nuocduahau.jpg",
       "imageAlt": "Watermelon Juice",
@@ -1302,7 +1302,7 @@
     },
     {
       "id": "JU-PI-01",
-      "name": "Pineapple Juice (Nước ép dứa)",
+      "name": "Pineapple Juice",
       "slug": "pineapple-juice",
       "imageSrc": "/images/j.nuocduas.jpg",
       "imageAlt": "Pineapple Juice",
@@ -1322,7 +1322,7 @@
     },
     {
       "id": "JU-GU-01",
-      "name": "Guava Juice (Nước ép ổi)",
+      "name": "Guava Juice",
       "slug": "guava-juice",
       "imageSrc": "/images/j.nuocoi.jpg",
       "imageAlt": "Guava Juice",
@@ -1342,7 +1342,7 @@
     },
     {
       "id": "JU-MA-01",
-      "name": "Mango Juice (Nước ép xoài)",
+      "name": "Mango Juice",
       "slug": "mango-juice",
       "imageSrc": "/images/j.nuocxoai.jpg",
       "imageAlt": "Mango Juice",
@@ -1362,7 +1362,7 @@
     },
     {
       "id": "JU-GR-01",
-      "name": "Grapefruit Juice (Nước ép bưởi)",
+      "name": "Grapefruit Juice",
       "slug": "grapefruit-juice",
       "imageSrc": "/images/j.nuocbuoi.png",
       "imageAlt": "Grapefruit Juice",
@@ -1382,7 +1382,7 @@
     },
     {
       "id": "JU-PM-01",
-      "name": "Pomegranate Juice (Nước ép lựu)",
+      "name": "Pomegranate Juice",
       "slug": "pomegranate-juice",
       "imageSrc": "/images/j.nuocluu.jpg",
       "imageAlt": "Pomegranate Juice",
@@ -1402,7 +1402,7 @@
     },
     {
       "id": "JU-DE-01",
-      "name": "Green Detox Juice (Nước ép detox)",
+      "name": "Green Detox Juice",
       "slug": "green-detox-juice",
       "imageSrc": "/images/j.nuocdetox.jpg",
       "imageAlt": "Green Detox Juice",
@@ -1422,7 +1422,7 @@
     },
     {
       "id": "JU-CE-01",
-      "name": "Celery Juice (Nước ép cần tây)",
+      "name": "Celery Juice",
       "slug": "celery-juice",
       "imageSrc": "/images/j.nuoccan.png",
       "imageAlt": "Celery Juice",
@@ -1442,7 +1442,7 @@
     },
     {
       "id": "JU-LM-01",
-      "name": "Fresh Lemonade (Nước chanh)",
+      "name": "Fresh Lemonade",
       "slug": "lemonade",
       "imageSrc": "/images/j.nuocchanh.jpg",
       "imageAlt": "Fresh Lemonade",
@@ -1462,7 +1462,7 @@
     },
     {
       "id": "JU-PA-01",
-      "name": "Passion Fruit Juice (Nước ép chanh leo)",
+      "name": "Passion Fruit Juice",
       "slug": "passion-fruit-juice",
       "imageSrc": "/images/j.nuocchanhleo.png",
       "imageAlt": "Passion Fruit Juice",
@@ -1482,7 +1482,7 @@
     },
     {
       "id": "JU-CO-01",
-      "name": "Coconut Water (Nước dừa tươi)",
+      "name": "Coconut Water",
       "slug": "coconut-water",
       "imageSrc": "/images/j.nuocduatuoi.jpg",
       "imageAlt": "Coconut Water",
@@ -1502,7 +1502,7 @@
     },
     {
       "id": "JU-GP-01",
-      "name": "Grape Juice (Nước ép nho)",
+      "name": "Grape Juice",
       "slug": "grape-juice",
       "imageSrc": "/images/j.nuocnho.jpg",
       "imageAlt": "Grape Juice",
@@ -1522,7 +1522,7 @@
     },
     {
       "id": "JU-TM-01",
-      "name": "Tomato Juice (Nước ép cà chua)",
+      "name": "Tomato Juice",
       "slug": "tomato-juice",
       "imageSrc": "/images/j.nuoccachua.jpg",
       "imageAlt": "Tomato Juice",
@@ -1542,7 +1542,7 @@
     },
     {
       "id": "JU-BT-01",
-      "name": "Beetroot Juice (Nước ép củ dền)",
+      "name": "Beetroot Juice",
       "slug": "beetroot-juice",
       "imageSrc": "/images/j.nuoccuden.png",
       "imageAlt": "Beetroot Juice",
@@ -1562,7 +1562,7 @@
     },
     {
       "id": "JU-PC-01",
-      "name": "Peach Juice (Nước ép đào)",
+      "name": "Peach Juice",
       "slug": "peach-juice",
       "imageSrc": "/images/j.nuocdao.jpg",
       "imageAlt": "Peach Juice",
@@ -1582,7 +1582,7 @@
     },
     {
       "id": "JU-AL-01",
-      "name": "Aloe Vera Drink (Nước nha đam)",
+      "name": "Aloe Vera Drink",
       "slug": "aloe-vera-drink",
       "imageSrc": "/images/j.nuocnhadam.jpg",
       "imageAlt": "Aloe Vera Drink",

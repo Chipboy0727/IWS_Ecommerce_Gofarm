@@ -144,7 +144,7 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
     <Link
       href={href}
       className={[
-        "text-sm sm:text-base lg:text-[17px] font-semibold transition-colors duration-200 inline-flex items-center gap-1 sm:gap-1.5",
+        "relative group text-sm sm:text-base lg:text-[17px] font-semibold transition-colors duration-200 inline-flex items-center gap-1 sm:gap-1.5 py-1",
         active ? "text-gofarm-green" : "text-gofarm-gray hover:text-gofarm-green",
       ].join(" ")}
     >

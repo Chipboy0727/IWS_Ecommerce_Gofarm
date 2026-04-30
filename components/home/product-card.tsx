@@ -96,7 +96,7 @@ export function productCardHtml(product: LocalProduct) {
   
   return `
     <div class="transform hover:scale-105 transition-transform duration-300 h-full">
-      <article class="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl h-full flex flex-col">
+      <article class="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-gray-100/50 h-full flex flex-col">
         <div class="relative">
           <a href="/shop/${product.slug}" class="block w-full text-left">
             <div class="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
@@ -215,7 +215,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
   return (
     <>
       <div className="transform hover:scale-105 transition-transform duration-300 h-full">
-        <article className="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl h-full flex flex-col">
+        <article className="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:bg-gray-100/50 h-full flex flex-col">
           <div className="relative">
             <button type="button" onClick={handleQuickView} className="block w-full text-left">
               <div className="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
