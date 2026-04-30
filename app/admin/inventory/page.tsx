@@ -536,13 +536,40 @@ export default async function InventoryPage() {
       }
       .inventory-table-wrap {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .inventory-table {
-        min-width: 960px;
+        min-width: 760px;
       }
       .inventory-footer {
         flex-direction: column;
         align-items: flex-start;
+      }
+    }
+    @media (max-width: 760px) {
+      .inventory-stat-card {
+        min-height: 110px;
+        padding: 16px 18px;
+      }
+      .inventory-stat-value {
+        font-size: 30px;
+        margin-top: 12px;
+      }
+      .inventory-stat-meta {
+        font-size: 12px;
+      }
+      .inventory-toolbar {
+        padding: 14px 14px 12px;
+        gap: 10px;
+      }
+      .inventory-search {
+        min-height: 42px;
+        font-size: 14px;
+      }
+      .inventory-filter {
+        min-height: 40px;
+        font-size: 13px;
+        padding: 0 10px;
       }
     }
   `;

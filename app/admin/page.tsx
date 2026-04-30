@@ -76,7 +76,7 @@ export default async function AdminDashboardPage() {
       actions={null}
     >
       <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 xl:grid-cols-4">
           {statCards.map((item) => (
             <StatCard
               key={item.label}
@@ -99,14 +99,14 @@ export default async function AdminDashboardPage() {
           subtitle="Latest order activity across all farms"
           right={<AdminActionButton tone="ghost">View All</AdminActionButton>}
         >
-          <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5">
-            <table className="page-table min-w-full">
+          <div className="table-scroll-wrap rounded-[18px] ring-1 ring-black/5">
+            <table className="page-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Product</th>
-                  <th>Customer</th>
-                  <th>Date</th>
+                  <th className="hidden sm:table-cell">Customer</th>
+                  <th className="hidden md:table-cell">Date</th>
                   <th>Amount</th>
                   <th>Status</th>
                 </tr>
@@ -114,22 +114,22 @@ export default async function AdminDashboardPage() {
               <tbody>
                 {transactions.map((item) => (
                   <tr key={item.id}>
-                    <td className="text-[13px] font-semibold text-[#86a07b]">{item.id}</td>
+                    <td className="text-[10px] sm:text-[13px] font-semibold text-[#86a07b]" style={{ maxWidth: 120, wordBreak: 'break-all' }}>{item.id}</td>
                     <td>
                       <div className="product-row">
                         <Image src={item.image} alt={item.product} width={40} height={40} className="product-thumb" />
-                        <div>
-                          <div className="text-[13px] font-semibold text-[#253323]">{item.product}</div>
-                          <div className="text-[12px] text-[#758272]">Order #{item.id.slice(-4)}</div>
+                        <div style={{ minWidth: 0 }}>
+                          <div className="text-[11px] sm:text-[13px] font-semibold text-[#253323] truncate" style={{ maxWidth: 140 }}>{item.product}</div>
+                          <div className="text-[10px] sm:text-[12px] text-[#758272]">Order #{item.id.slice(-4)}</div>
                         </div>
                       </div>
                     </td>
-                    <td>
-                      <div className="text-[13px] font-semibold text-[#253323]">{item.customer}</div>
-                      <div className="text-[12px] text-[#758272]">{item.location}</div>
+                    <td className="hidden sm:table-cell">
+                      <div className="text-[11px] sm:text-[13px] font-semibold text-[#253323]">{item.customer}</div>
+                      <div className="text-[10px] sm:text-[12px] text-[#758272] truncate" style={{ maxWidth: 160 }}>{item.location}</div>
                     </td>
-                    <td className="text-[13px] text-[#4d5d4b]">{item.date}</td>
-                    <td className="table-amount">{formatMoney(item.amount)}</td>
+                    <td className="hidden md:table-cell text-[11px] sm:text-[13px] text-[#4d5d4b] whitespace-nowrap">{item.date}</td>
+                    <td className="table-amount whitespace-nowrap" style={{ fontSize: 'inherit' }}>{formatMoney(item.amount)}</td>
                     <td>
                       <Pill tone={item.status === "completed" ? "green" : item.status === "cancelled" ? "red" : "pink"}>
                         {item.status === "completed" ? "COMPLETED" : item.status === "cancelled" ? "CANCELLED" : "PROCESSING"}

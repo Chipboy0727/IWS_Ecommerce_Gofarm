@@ -654,6 +654,7 @@ export function AdminShell({
     .page-table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 640px;
     }
     .page-table thead {
       background: #f0f5e4;
@@ -665,6 +666,7 @@ export function AdminShell({
       text-transform: uppercase;
       letter-spacing: 0.18em;
       color: #748171;
+      white-space: nowrap;
     }
     .page-table td {
       padding: 18px 22px;
@@ -673,6 +675,10 @@ export function AdminShell({
     }
     .page-table tr:last-child td {
       border-bottom: 0;
+    }
+    .table-scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .product-row {
       display: flex;
@@ -902,6 +908,44 @@ export function AdminShell({
       .admin-main {
         padding: 0 10px 10px;
         padding-top: 58px;
+      }
+      .page-table th {
+        padding: 10px 12px;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+      }
+      .page-table td {
+        padding: 12px;
+        font-size: 12px;
+      }
+      .product-row {
+        gap: 8px;
+      }
+      .product-thumb {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+      }
+      .card-body {
+        padding: 14px;
+      }
+      .card-header {
+        padding: 14px 14px 0;
+      }
+      .card-title {
+        font-size: 18px;
+      }
+      .stat-card {
+        min-height: 100px;
+        padding: 14px 16px;
+      }
+      .stat-value {
+        font-size: 26px;
+      }
+      .stat-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
       }
     }
   `;
