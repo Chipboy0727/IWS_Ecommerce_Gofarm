@@ -223,7 +223,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
                   <span className="inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
                     {status}
                   </span>
-                  {product.discount && (
+                  {(product.discount ?? 0) > 0 && (
                     <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
                       -{product.discount}%
                     </span>
@@ -274,7 +274,7 @@ export function ProductCard({ product }: { product: LocalProduct }) {
 
             <div className="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
               <span className="text-base sm:text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-              {product.discount && (
+              {(product.discount ?? 0) > 0 && (
                 <>
                   <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
                   <span className="inline-flex items-center rounded-md bg-red-50 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-medium text-red-500">
