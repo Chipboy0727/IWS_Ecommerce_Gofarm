@@ -887,6 +887,54 @@
   ],
   "orders": [
     {
+      "id": "ORD-1777537202332",
+      "date": "2026-04-30",
+      "total": 135.3,
+      "status": "pending",
+      "items": 4,
+      "products": [
+        {
+          "id": "976cd1bb-277c-4ebe-b1b6-5d6dd3275706",
+          "name": "Tomato Juices",
+          "price": 13,
+          "quantity": 1,
+          "imageSrc": "/images/3c7db86fd76d8fca08104d95fda225f19f791dc6-1024x1024.jpg",
+          "slug": "tomato-juices"
+        },
+        {
+          "id": "a36d4b88-3484-47f0-9467-7ba0024cf4e3",
+          "name": "Pistachio",
+          "price": 44,
+          "quantity": 1,
+          "imageSrc": "/images/6df699a5a14720d75316a12c4dd3d46408fb1f0f-1024x1024.png",
+          "slug": "pistachio"
+        },
+        {
+          "id": "7364eeb3-48f2-402e-a4c2-4cf9b3995259",
+          "name": "Pomegranates",
+          "price": 14,
+          "quantity": 1,
+          "imageSrc": "/images/2331e8445d442162b44cbef66fd50a4d6955c6e9-1024x1024.jpg",
+          "slug": "pomegranates"
+        },
+        {
+          "id": "976cd1bb-277c-4ebe-b1b6-5d6dd3275706-2 kg",
+          "name": "Tomato Juices (2 kg)",
+          "price": 26,
+          "quantity": 2,
+          "imageSrc": "/images/3c7db86fd76d8fca08104d95fda225f19f791dc6-1024x1024.jpg",
+          "slug": "tomato-juices"
+        }
+      ],
+      "shippingAddress": "30, CT12C, Kim Văn Kim Lũ, Quận Hoàng Mai, Thành phố Hà Nội 123123",
+      "customerName": "test1",
+      "customerEmail": "test1@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-30T08:20:02.348Z",
+      "updatedAt": "2026-04-30T08:20:02.348Z"
+    },
+    {
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
@@ -1034,15 +1082,33 @@
       "pinX": 0,
       "pinY": 0,
       "manager": "Tuấn",
-      "contact": "",
+      "contact": "0123456789",
       "imageSrc": "/images/logo.svg",
       "status": "Active",
       "createdAt": "2026-04-29T17:38:45.857Z",
       "updatedAt": "2026-04-29T17:38:45.857Z"
+    },
+    {
+      "id": "f02e2444-9ca2-4a3f-9487-8b00c853ab2a",
+      "name": "Thanh Hoá",
+      "address": "Sầm Sơn Thanh Hoá",
+      "phone": "123456789",
+      "email": "",
+      "country": "",
+      "hours": "",
+      "city": "Thanh Hoá",
+      "pinX": 0,
+      "pinY": 0,
+      "manager": "quemich",
+      "contact": "123456789",
+      "imageSrc": "/images/logo.svg",
+      "status": "Active",
+      "createdAt": "2026-04-30T08:02:37.994Z",
+      "updatedAt": "2026-04-30T08:02:37.994Z"
     }
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-29T17:38:45.857Z"
+    "updatedAt": "2026-04-30T08:20:02.349Z"
   }
 }
