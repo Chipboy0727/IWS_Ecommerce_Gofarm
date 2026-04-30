@@ -1692,7 +1692,7 @@
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
-      "status": "pending",
+      "status": "delivered",
       "items": 8,
       "products": [
         {
@@ -1766,7 +1766,7 @@
       "customerPhone": "",
       "paymentMethod": "Cash on Delivery",
       "createdAt": "2026-04-24T04:15:46.411Z",
-      "updatedAt": "2026-04-24T04:15:46.411Z"
+      "updatedAt": "2026-04-30T08:46:48.327Z"
     }
   ],
   "stores": [

@@ -18,7 +18,7 @@ export type BackendUser = {
   resetTokenExpiresAt?: string | null;
 };
 
-export type BackendOrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "awaiting_payment";
+export type BackendOrderStatus = "pending" | "processing" | "preparing" | "shipped" | "delivered" | "cancelled" | "awaiting_payment";
 
 export type BackendOrderItem = {
   id: string;
