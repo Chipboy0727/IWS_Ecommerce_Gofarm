@@ -486,6 +486,45 @@ export default async function OrdersPage() {
         flex-direction: column;
         align-items: flex-start;
       }
+      .orders-stat-card {
+        min-height: 100px;
+        padding: 14px 16px;
+      }
+      .orders-stat-value {
+        font-size: 18px;
+      }
+      .orders-stat-label {
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .orders-table th {
+        padding: 10px 12px;
+        font-size: 9px;
+      }
+      .orders-table td {
+        padding: 12px;
+        font-size: 12px;
+      }
+      .orders-id-cell span {
+        font-size: 8px;
+      }
+      .orders-customer-name {
+        font-size: 12px;
+      }
+      .orders-customer-email {
+        font-size: 9px;
+      }
+      .orders-customer-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 9px;
+      }
+      .orders-customer {
+        gap: 8px;
+      }
+      .orders-filterbar {
+        padding: 12px 14px;
+      }
     }
   `;
 
