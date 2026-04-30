@@ -28,6 +28,7 @@ export type ProductInput = {
   price?: unknown;
   discount?: unknown;
   brand?: unknown;
+  origin?: unknown;
   categoryId?: unknown;
   categoryTitle?: unknown;
   description?: unknown;
@@ -110,11 +111,11 @@ export function listProducts(products: LocalProduct[], query: ProductListQuery) 
 
   const filtered = products.filter((product) => {
     if (search) {
-      const haystack = [product.name, product.description, product.brand ?? "", product.categoryTitle ?? ""].join(" ").toLowerCase();
+      const haystack = [product.name, product.description, product.brand ?? "", product.origin ?? "", product.categoryTitle ?? ""].join(" ").toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     if (category && product.categoryId?.toLowerCase() !== category && product.categoryTitle?.toLowerCase() !== category) return false;
-    if (brand && (product.brand ?? "").toLowerCase() !== brand) return false;
+    if (brand && ((product.brand ?? "").toLowerCase() !== brand && (product.origin ?? "").toLowerCase() !== brand)) return false;
     if (status && (product.status ?? "").toLowerCase() !== status) return false;
     if (filterType === "sale" && !(product.discount && product.discount > 0)) return false;
     if (filterType === "featured" && !(Boolean((product as { isFeatured?: boolean }).isFeatured) || product.rating >= 4.5)) return false;
@@ -210,6 +211,7 @@ export function createProductPayload(input: ProductInput, categories: LocalCateg
     price,
     discount: input.discount === undefined || input.discount === null || input.discount === "" ? null : toNumber(input.discount, 0),
     brand: sanitizeOptionalString(input.brand),
+    origin: sanitizeOptionalString(input.origin),
     categoryId: category?.id ?? categoryId ?? null,
     categoryTitle: sanitizeOptionalString(input.categoryTitle) ?? category?.title ?? null,
     description: sanitizeOptionalString(input.description) ?? "",
@@ -252,6 +254,7 @@ export function updateProductPayload(existing: LocalProduct, input: ProductInput
     price: nextPrice,
     discount: discountValue,
     brand: sanitizeOptionalString(input.brand) ?? existing.brand,
+    origin: sanitizeOptionalString(input.origin) ?? existing.origin,
     categoryId: nextCategory?.id ?? nextCategoryId ?? existing.categoryId,
     categoryTitle: sanitizeOptionalString(input.categoryTitle) ?? nextCategory?.title ?? existing.categoryTitle,
     description: sanitizeOptionalString(input.description) ?? existing.description,

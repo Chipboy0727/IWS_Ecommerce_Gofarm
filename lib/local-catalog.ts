@@ -9,6 +9,7 @@ export type LocalProduct = {
   price: number;
   discount: number | null;
   brand: string | null;
+  origin: string | null;
   categoryId: string | null;
   categoryTitle: string | null;
   description: string;

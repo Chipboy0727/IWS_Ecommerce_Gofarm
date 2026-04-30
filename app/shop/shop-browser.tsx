@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
@@ -35,16 +36,27 @@ function ToastMessage({ message, onClose }: { message: string; onClose: () => vo
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
-      <div className="bg-gofarm-green text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+    <div className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
+      <div className="bg-gofarm-green text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
+        <div className="bg-white/20 p-1 rounded-full">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
         <span>{message}</span>
       </div>
     </div>
   );
 }
+
+function SparklesIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+    </svg>
+  );
+}
+
 
 // Icon Heart
 function HeartIcon({ className = "", filled = false }: { className?: string; filled?: boolean }) {
@@ -244,8 +256,26 @@ export default function ShopBrowser({
 }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const [activeCategory, setActiveCategory] = useState<string>("all");
-  const [activeBrand, setActiveBrand] = useState<string>("all");
+  const searchParams = useSearchParams();
+
+  // Initialize activeCategory from ?category= URL param
+  const initialCategory = useMemo(() => {
+    const catParam = searchParams.get("category");
+    if (!catParam) return "all";
+    const paramLower = catParam.toLowerCase();
+    const matched = categories.find(
+      (c) => {
+        const titleLower = c.title.toLowerCase();
+        if (titleLower === paramLower || c.id.toLowerCase() === paramLower) return true;
+        // Special: "spices" param matches "spices & herbs"
+        if (paramLower === "spices" && titleLower === "spices & herbs") return true;
+        return false;
+      }
+    );
+    return matched ? matched.id : "all";
+  }, [searchParams, categories]);
+
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [sortBy, setSortBy] = useState<SortMode>("featured");
   const [wishlistStatus, setWishlistStatus] = useState<Record<string, boolean>>({});
   const [selectedProduct, setSelectedProduct] = useState<LocalProduct | null>(null);
@@ -253,11 +283,30 @@ export default function ShopBrowser({
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+
+  // Sync activeCategory when URL param changes
+  useEffect(() => {
+    setActiveCategory(initialCategory);
+  }, [initialCategory]);
   const itemsPerPage = 24;
+  
+  const categoriesWithCounts = useMemo(() => {
+    return categories.map(cat => {
+      const count = products.filter(p => {
+        const pCatTitle = p.categoryTitle?.toLowerCase() || "";
+        const tCatTitle = cat.title.toLowerCase();
+        
+        if (p.categoryId === cat.id || pCatTitle === tCatTitle) return true;
+        if (tCatTitle === "spices & herbs" && pCatTitle === "spices") return true;
+        return false;
+      }).length;
+      return { ...cat, count };
+    });
+  }, [categories, products]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategory, activeBrand, sortBy, products]);
+  }, [activeCategory, sortBy, products]);
 
   useEffect(() => {
     const status: Record<string, boolean> = {};
@@ -267,19 +316,23 @@ export default function ShopBrowser({
     setWishlistStatus(status);
   }, [products, isInWishlist]);
 
-  const brands = Array.from(
-    products.reduce((map, product) => {
-      const key = product.brand ?? "Unbranded";
-      map.set(key, (map.get(key) ?? 0) + 1);
-      return map;
-    }, new Map<string, number>()).entries()
-  )
-    .map(([title, count]) => ({ title, count }))
-    .sort((a, b) => a.title.localeCompare(b.title));
-
   const filtered = [...products]
-    .filter((product) => activeCategory === "all" || product.categoryId === activeCategory)
-    .filter((product) => activeBrand === "all" || (product.brand ?? "Unbranded") === activeBrand)
+    .filter((product) => {
+      if (activeCategory === "all") return true;
+      const targetCategory = categories.find(c => c.id === activeCategory);
+      if (!targetCategory) return product.categoryId === activeCategory;
+      
+      const pCatTitle = product.categoryTitle?.toLowerCase() || "";
+      const tCatTitle = targetCategory.title.toLowerCase();
+      
+      // Basic match by ID or Title
+      if (product.categoryId === activeCategory || pCatTitle === tCatTitle) return true;
+      
+      // Special mapping for Spices & Herbs
+      if (tCatTitle === "spices & herbs" && pCatTitle === "spices") return true;
+      
+      return false;
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case "name":
@@ -341,14 +394,16 @@ export default function ShopBrowser({
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 pb-12 sm:pb-16">
         
         {/* Header */}
-        <section className="pt-6 sm:pt-8 lg:pt-10">
-          <div className="rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-4 sm:px-5 md:px-6 py-4 sm:py-5 md:py-6 shadow-sm">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-gofarm-black">
-              Shop Products
-            </h1>
-            <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-gray-500">
-              Discover amazing products tailored to your needs
-            </p>
+        <section className="pt-6 sm:pt-8 lg:pt-10 mb-2 sm:mb-4">
+          <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="h-0.5 w-8 sm:w-12 bg-gradient-to-r from-gofarm-light-green to-gofarm-green rounded-full" />
+              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gofarm-green" />
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gofarm-black">Shop Products</h1>
+              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gofarm-green" />
+              <div className="h-0.5 w-8 sm:w-12 bg-gradient-to-l from-gofarm-light-green to-gofarm-green rounded-full" />
+            </div>
+            <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">Discover amazing products tailored to your needs</p>
           </div>
         </section>
 
@@ -388,7 +443,7 @@ export default function ShopBrowser({
                   count={products.length}
                   onClick={() => setActiveCategory("all")}
                 />
-                {categories.map((category) => (
+                {categoriesWithCounts.map((category) => (
                   <FilterOption
                     key={category.id}
                     active={activeCategory === category.id}
@@ -400,31 +455,6 @@ export default function ShopBrowser({
               </div>
             </div>
 
-            <div className="px-4 py-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-gofarm-black">Brands</h3>
-                <span className="inline-flex min-w-[28px] items-center justify-center rounded-full bg-gray-100 px-1.5 py-0.5 text-xs font-semibold text-gray-600">
-                  {brands.length}
-                </span>
-              </div>
-              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
-                <FilterOption
-                  active={activeBrand === "all"}
-                  label="All"
-                  count={products.length}
-                  onClick={() => setActiveBrand("all")}
-                />
-                {brands.map((brand) => (
-                  <FilterOption
-                    key={brand.title}
-                    active={activeBrand === brand.title}
-                    label={brand.title}
-                    count={brand.count}
-                    onClick={() => setActiveBrand(brand.title)}
-                  />
-                ))}
-              </div>
-            </div>
           </aside>
 
           {/* Mobile Filters Modal */}
@@ -449,33 +479,13 @@ export default function ShopBrowser({
                         count={products.length}
                         onClick={() => { setActiveCategory("all"); setMobileFiltersOpen(false); }}
                       />
-                      {categories.map((category) => (
+                      {categoriesWithCounts.map((category) => (
                         <FilterOption
                           key={category.id}
                           active={activeCategory === category.id}
                           label={category.title}
                           count={category.count}
                           onClick={() => { setActiveCategory(category.id); setMobileFiltersOpen(false); }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mb-6">
-                    <h3 className="text-base font-bold text-gofarm-black mb-3">Brands</h3>
-                    <div className="space-y-3">
-                      <FilterOption
-                        active={activeBrand === "all"}
-                        label="All"
-                        count={products.length}
-                        onClick={() => { setActiveBrand("all"); setMobileFiltersOpen(false); }}
-                      />
-                      {brands.map((brand) => (
-                        <FilterOption
-                          key={brand.title}
-                          active={activeBrand === brand.title}
-                          label={brand.title}
-                          count={brand.count}
-                          onClick={() => { setActiveBrand(brand.title); setMobileFiltersOpen(false); }}
                         />
                       ))}
                     </div>
@@ -615,7 +625,7 @@ export default function ShopBrowser({
               ) : (
                 <div className="rounded-xl border border-dashed border-gofarm-light-green/30 bg-white px-4 py-12 sm:py-16 text-center">
                   <h3 className="text-base sm:text-lg font-bold text-gofarm-black">No products match your filters</h3>
-                  <p className="mt-2 text-xs sm:text-sm text-gray-500">Try a different category or brand.</p>
+                  <p className="mt-2 text-xs sm:text-sm text-gray-500">Try a different category.</p>
                 </div>
               )}
             </div>

@@ -361,8 +361,8 @@ export default function ProductDetailPage() {
               {activeTab === "additional information" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="flex flex-col sm:flex-row border-b border-gray-100 py-2 sm:py-3">
-                    <span className="w-full sm:w-1/3 font-bold text-gray-900 text-xs sm:text-sm mb-1 sm:mb-0">Brand</span>
-                    <span className="text-xs sm:text-sm text-gray-600 break-words">{product.brand || "Unbranded"}</span>
+                    <span className="w-full sm:w-1/3 font-bold text-gray-900 text-xs sm:text-sm mb-1 sm:mb-0">Origin</span>
+                    <span className="text-xs sm:text-sm text-gray-600 break-words">{product.origin || "Unknown"}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row border-b border-gray-100 py-2 sm:py-3">
                     <span className="w-full sm:w-1/3 font-bold text-gray-900 text-xs sm:text-sm mb-1 sm:mb-0">Category</span>

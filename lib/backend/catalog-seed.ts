@@ -94,6 +94,7 @@ type SeedDocument = {
   stock?: number;
   status?: string;
   brand?: { _ref?: string };
+  origin?: string;
   categories?: Array<{ _ref?: string }>;
   images?: Array<{ _sanityAsset?: string }>;
   image?: { _sanityAsset?: string };
@@ -185,6 +186,7 @@ function normalizeProduct(product: LocalProduct, index: number): LocalProduct {
     price: typeof product.price === "number" ? product.price : 0,
     discount: typeof product.discount === "number" ? product.discount : null,
     brand: product.brand ?? null,
+    origin: product.origin ?? null,
     categoryId: product.categoryId ?? null,
     categoryTitle: product.categoryTitle ?? null,
     description: product.description ?? "",
@@ -402,6 +404,7 @@ export async function loadSeedCatalog(): Promise<SeedCatalog> {
         price: typeof doc.price === "number" ? doc.price : 0,
         discount: typeof doc.discount === "number" ? doc.discount : null,
         brand: brandRef ? brands.get(brandRef) ?? brandRef : null,
+        origin: doc.origin ?? null,
         categoryId: categoryRef,
         categoryTitle: category?.title ?? null,
         description: doc.description ?? "",

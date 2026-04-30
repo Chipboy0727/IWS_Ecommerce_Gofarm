@@ -400,6 +400,12 @@ export default function CartPage() {
         <div className="max-w-6xl mx-auto px-3 sm:px-4">
           <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
+              <Link href="/shop" className="inline-flex items-center gap-1 sm:gap-2 text-gofarm-green hover:text-gofarm-light-green font-medium transition-colors text-sm sm:text-base mb-6">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Continue Shopping
+              </Link>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gofarm-black">Shopping Cart</h1>
               <p className="text-sm sm:text-base text-gofarm-gray mt-1 sm:mt-2">
                 {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in your cart
@@ -506,17 +512,17 @@ export default function CartPage() {
                               >
                                 +
                               </button>
-                              <button onClick={() => handleRemoveItem(item.id)} className="ml-auto sm:ml-0 text-red-500 hover:text-red-600 text-xs sm:text-sm flex items-center gap-1">
-                                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Remove
-                              </button>
                             </div>
                           </div>
                           
-                          <div className="text-right">
+                          <div className="flex flex-col justify-between items-end min-w-[80px] sm:min-w-[100px]">
                             <p className="font-bold text-gofarm-green text-sm sm:text-base">${(item.price * item.quantity).toFixed(2)}</p>
+                            <button onClick={() => handleRemoveItem(item.id)} className="text-red-500 hover:text-red-600 text-xs sm:text-sm flex items-center gap-1 mt-auto">
+                              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              Remove
+                            </button>
                           </div>
                         </div>
                       );
@@ -524,14 +530,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <div className="mt-8 sm:mt-10">
-                  <Link href="/shop" className="inline-flex items-center gap-1 sm:gap-2 text-gofarm-green hover:text-gofarm-light-green font-medium transition-colors text-sm sm:text-base">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Continue Shopping
-                  </Link>
-                </div>
+
               </div>
 
               <div className="lg:col-span-1">
