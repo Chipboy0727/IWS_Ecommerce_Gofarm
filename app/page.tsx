@@ -46,7 +46,7 @@ export default async function HomePage() {
     storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "vegetables" ||
-        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce/i.test(product.name)
+        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce|cà chua|cải|khoai|hành|tỏi|bí|rau|ớt chuông|măng tây|súp lơ|dưa leo/i.test(product.name)
     )
   );
 
@@ -54,7 +54,7 @@ export default async function HomePage() {
     storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "fruits" ||
-        /fruit|apple|pear|mango|banana|watermelon|orange|berry/i.test(product.name)
+        /fruit|apple|pear|mango|banana|watermelon|orange|berry|táo|lê|xoài|chuối|dưa|cam|nho|bơ|dâu|thanh long|bưởi|kiwi|măng cụt|sầu riêng|chôm chôm|việt quất|ổi|lựu|nhãn|vải/i.test(product.name)
     )
   );
 
@@ -62,7 +62,7 @@ export default async function HomePage() {
     storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "juices" ||
-        /juice|juices|smoothie/i.test(product.name)
+        /juice|juices|smoothie|nước ép|sinh tố|nước|sữa/i.test(product.name)
     )
   );
 
@@ -70,7 +70,7 @@ export default async function HomePage() {
     storefrontProducts.filter(
       (product) =>
         product.categoryTitle?.toLowerCase() === "spices & herbs" ||
-        /chili|pepper|garlic|salt|sugar|herb|spice/i.test(product.name)
+        /chili|pepper|garlic|salt|sugar|herb|spice|ớt|tiêu|tỏi|muối|đường|thảo mộc|gia vị|gừng|sả|hành|nghệ|riềng|rau thơm|quế|hồi/i.test(product.name)
     )
   );
 
