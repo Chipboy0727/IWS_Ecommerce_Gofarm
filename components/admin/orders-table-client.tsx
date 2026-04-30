@@ -79,10 +79,6 @@ export function OrdersHeaderActions({ rows }: { rows: OrderAdminRow[] }) {
         <IconExport />
         <span>Export Manifest</span>
       </button>
-      <Link href="/checkout" className="orders-action-button orders-action-primary">
-        <IconPlus />
-        <span>Create New Order</span>
-      </Link>
     </>
   );
 }
@@ -507,7 +503,7 @@ export default function OrdersTableClient({
             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Order Details</h2>
-                <p className="text-sm text-gray-500 font-medium mt-1">ID: {selectedOrder.id}</p>
+                <p className="text-gray-400 font-mono mt-1" style={{ fontSize: '9px', wordBreak: 'break-all', letterSpacing: '0.02em' }}>ID: {selectedOrder.id}</p>
               </div>
               <button 
                 onClick={() => setSelectedOrder(null)}
@@ -578,12 +574,13 @@ export default function OrdersTableClient({
                       disabled={isUpdating}
                       onChange={(e) => handleUpdateStatus(selectedOrder.id, e.target.value)}
                     >
-                      <option value="pending">Chờ xác nhận</option>
-                      <option value="processing">Đã xác nhận (Đang xử lý)</option>
-                      <option value="shipped">Đã gửi hàng</option>
-                      <option value="delivered">Đã giao đơn</option>
-                      <option value="cancelled">Từ chối (Huỷ đơn)</option>
-                      <option value="awaiting_payment">Chờ thanh toán</option>
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="preparing">Preparing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                      <option value="awaiting_payment">Awaiting Payment</option>
                     </select>
                   </div>
                 </div>

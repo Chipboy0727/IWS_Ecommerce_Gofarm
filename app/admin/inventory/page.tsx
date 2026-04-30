@@ -3,6 +3,8 @@ import Link from "next/link";
 import { AdminShell } from "@/components/admin/admin-shell";
 import InventoryTableClient, { type InventoryRow } from "@/components/admin/inventory-table-client";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 
 export const metadata: Metadata = {
   title: "Product Management | GoFarm",
@@ -38,7 +40,15 @@ function categoryLabel(value: string | null) {
 }
 
 export default async function InventoryPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Inventory Admin" : "Staff";
+
   const products = [...db.products].sort((a, b) => {
     const stockA = typeof a.stock === "number" ? a.stock : -1;
     const stockB = typeof b.stock === "number" ? b.stock : -1;
@@ -543,8 +553,8 @@ export default async function InventoryPage() {
       title="Product Management"
       subtitle=""
       searchPlaceholder="Search products, SKU or category..."
-      userName="Admin"
-      userRole="Inventory Admin"
+      userName={adminName}
+      userRole={adminRole}
       userLabel=""
       actions={
         <Link href="/admin/products" className="inventory-add-button">

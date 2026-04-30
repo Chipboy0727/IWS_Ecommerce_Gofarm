@@ -1689,6 +1689,78 @@
   ],
   "orders": [
     {
+      "id": "ORD-1777570615539",
+      "date": "2026-04-30",
+      "total": 19.959999999999997,
+      "status": "pending",
+      "items": 3,
+      "products": [
+        {
+          "id": "FR-AP-01",
+          "name": "Fuji Apple (Táo Fuji)",
+          "price": 5.5,
+          "quantity": 1,
+          "imageSrc": "/images/f.taofuji.jpg",
+          "slug": "fuji-apple"
+        },
+        {
+          "id": "FR-BA-01",
+          "name": "Laba Banana (chuối Laba)",
+          "price": 1.2,
+          "quantity": 1,
+          "imageSrc": "/images/f.chuoilaba.jpg",
+          "slug": "laba-banana"
+        },
+        {
+          "id": "VG-AS-01",
+          "name": "Asparagus (Măng tây)",
+          "price": 6,
+          "quantity": 1,
+          "imageSrc": "/images/v.mangtay.jpg",
+          "slug": "asparagus"
+        }
+      ],
+      "shippingAddress": "30, CT12C, Kim Văn Kim Lũ, Quận Hoàng Mai, Thành phố Hà Nội 123123",
+      "customerName": "test1",
+      "customerEmail": "test1@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-30T17:36:55.562Z",
+      "updatedAt": "2026-04-30T17:36:55.562Z"
+    },
+    {
+      "id": "ORD-1777543266249",
+      "date": "2026-04-30",
+      "total": 11.27,
+      "status": "delivered",
+      "items": 2,
+      "products": [
+        {
+          "id": "VG-BR-01",
+          "name": "Broccoli (Súp lơ xanh)",
+          "price": 2.5,
+          "quantity": 1,
+          "imageSrc": "/images/v.suploxanh.jpg",
+          "slug": "broccoli"
+        },
+        {
+          "id": "VG-CA-01",
+          "name": "Cauliflower (Súp lơ trắng)",
+          "price": 2.3,
+          "quantity": 1,
+          "imageSrc": "/images/v.suplotrang.jpg",
+          "slug": "cauliflower"
+        }
+      ],
+      "shippingAddress": "30, CT12C, Kim Văn Kim Lũ, Quận Hoàng Mai, Thành phố Hà Nội 123123",
+      "customerName": "Admin1",
+      "customerEmail": "admin@gofarm.local",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-04-30T10:01:06.272Z",
+      "updatedAt": "2026-04-30T14:18:10.979Z"
+    },
+    {
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
@@ -1863,6 +1935,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-30T08:56:57.215Z"
+    "updatedAt": "2026-04-30T17:36:55.563Z"
   }
 }

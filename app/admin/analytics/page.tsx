@@ -3,6 +3,8 @@ import { AdminActionButton, AdminShell, SectionCard, StatCard, Pill } from "@/co
 import { SalesPerformanceCard } from "@/components/admin/sales-performance";
 import { buildDashboardStats, buildSalesSeries } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 
 import { ExportAnalyticsButton } from "@/components/admin/export-analytics-button";
 
@@ -12,7 +14,15 @@ export const metadata: Metadata = {
 };
 
 export default async function AnalyticsPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Senior Admin" : "Staff";
+
   const stats = buildDashboardStats(db);
   const series = buildSalesSeries(db.orders);
   const cancelledRate = db.orders.length > 0 ? (db.orders.filter((order) => order.status === "cancelled").length / db.orders.length) * 100 : 0;
@@ -23,8 +33,8 @@ export default async function AnalyticsPage() {
       title="Analytics"
       subtitle="Deep insight into traffic, stock health, and order performance."
       searchPlaceholder="Search orders, farmers, or metrics..."
-      userName="Admin"
-      userRole="Senior Admin"
+      userName={adminName}
+      userRole={adminRole}
       userLabel="Agricultural Hub"
       actions={<ExportAnalyticsButton data={stats} />}
     >

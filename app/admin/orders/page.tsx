@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { AdminShell } from "@/components/admin/admin-shell";
 import OrdersTableClient, { OrdersHeaderActions, type OrderAdminRow } from "@/components/admin/orders-table-client";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 
 export const metadata: Metadata = {
   title: "Order Log | GoFarm",
@@ -45,7 +47,15 @@ function buildRows(db: Awaited<ReturnType<typeof readDb>>): OrderAdminRow[] {
 }
 
 export default async function OrdersPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Regional Manager" : "Staff";
+
   const rows = buildRows(db);
   const activeOrders = rows.filter((row) => row.status !== "cancelled").length;
   const pendingFulfillment = rows.filter((row) => row.status === "pending" || row.status === "processing" || row.status === "awaiting_payment").length;
@@ -286,12 +296,14 @@ export default async function OrdersPage() {
     }
     .orders-id-cell span {
       color: #178214;
-      font-weight: 800;
-      line-height: 1.45;
+      font-weight: 700;
+      font-size: 10px;
+      line-height: 1.4;
       display: inline-block;
-      min-width: 112px;
-      word-break: normal;
+      min-width: 0;
+      word-break: break-all;
       overflow-wrap: anywhere;
+      letter-spacing: 0.01em;
     }
     .orders-customer {
       display: flex;
@@ -483,8 +495,8 @@ export default async function OrdersPage() {
       title="Order Log"
       subtitle="Real-time agricultural supply chain fulfillment."
       searchPlaceholder="Search orders, customers..."
-      userName="Admin User"
-      userRole="Regional Manager"
+      userName={adminName}
+      userRole={adminRole}
       userLabel=""
       actions={<OrdersHeaderActions rows={rows} />}
     >

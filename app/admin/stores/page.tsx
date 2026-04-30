@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { AdminShell, SectionCard, StatCard } from "@/components/admin/admin-shell";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 import StoresTableClient from "@/components/admin/stores-table-client";
 
 export const metadata: Metadata = {
@@ -12,7 +14,15 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AdminStoresPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Regional Manager" : "Staff";
+
   const stores = db.stores;
   
   const activeStores = stores.filter((store) => store.status === "Active").length;
@@ -24,8 +34,8 @@ export default async function AdminStoresPage() {
       title="Store Management"
       subtitle="Operational hub for global agricultural distribution centers."
       searchPlaceholder="Search stores, regions, or audits..."
-      userName="Marcus Thorne"
-      userRole="Regional Manager"
+      userName={adminName}
+      userRole={adminRole}
       userLabel="GoFarm Central"
     >
       <div className="space-y-4 sm:space-y-6">

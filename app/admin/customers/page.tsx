@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconUsers, IconChart, IconBox } from "@/components/admin/admin-shell";
 import { buildCustomerRows, buildDashboardStats } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
+import { cookies } from "next/headers";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth";
 import CustomersTableClient from "@/components/admin/customers-table-client";
 
 export const metadata: Metadata = {
@@ -10,7 +12,15 @@ export const metadata: Metadata = {
 };
 
 export default async function CustomersPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const session = token ? verifySessionToken(token) : null;
+  
   const db = await readDb();
+  const currentUser = session ? db.users.find((u) => u.id === session.sub) : null;
+  const adminName = currentUser?.name || "Admin";
+  const adminRole = currentUser?.role === "admin" ? "Super Admin" : "Staff";
+
   const stats = buildDashboardStats(db);
   const users = buildCustomerRows(db.users);
   const adminCount = db.users.filter((user) => user.role === "admin").length;
@@ -21,8 +31,8 @@ export default async function CustomersPage() {
       title="User Management"
       subtitle="Oversee the growth of your agricultural community. Manage staff permissions and support customer success through centralized controls."
       searchPlaceholder="Search entries, customers, or roles..."
-      userName="Alex Rivera"
-      userRole="Super Admin"
+      userName={adminName}
+      userRole={adminRole}
       userLabel="GoFarm Central"
     >
       <div className="space-y-4 sm:space-y-6">
