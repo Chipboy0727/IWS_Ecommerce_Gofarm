@@ -139,8 +139,8 @@ function ToastMessage({ productName }: { productName: string }) {
 }
 
 // Product Card Component - Responsive
-function ProductCardComponent({ product, viewMode = "grid", onShare }: { 
-  product: LocalProduct; 
+function ProductCardComponent({ product, viewMode = "grid", onShare }: {
+  product: LocalProduct;
   viewMode?: string;
   onShare?: (product: LocalProduct) => void;
 }) {
@@ -242,7 +242,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
     <>
       <div className="transform hover:scale-105 transition-transform duration-300">
         <article className="group relative border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-          
+
           <div className="relative aspect-square overflow-hidden bg-white flex items-center justify-center p-3 sm:p-4">
             <Link href={`/shop/${product.slug}`} className="block w-full h-full" onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
               <img src={product.imageSrc} className="w-full h-full object-contain transition-all duration-500 group-hover:scale-105" alt={product.imageAlt} loading="lazy" />
@@ -437,7 +437,7 @@ export default function CollectionPage() {
       <div className="bg-gradient-to-b from-gofarm-light-green/5 via-white to-gofarm-light-orange/5 min-h-screen">
         <main>
           <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
-            
+
             {/* Header */}
             <div className="text-center mb-6 sm:mb-8 lg:mb-10">
               <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -459,7 +459,7 @@ export default function CollectionPage() {
             <div className="rounded-xl border bg-white border-gofarm-light-green/20 shadow-lg mb-4">
               <div className="p-3 sm:p-4 lg:p-5">
                 <div className="flex flex-col lg:flex-row gap-3">
-                  
+
                   <div className="flex-1 relative">
                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
@@ -507,7 +507,7 @@ export default function CollectionPage() {
               <div className="p-3 sm:p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-gofarm-black">Filter by:</span>
-                  
+
                   <button onClick={() => handleFilterType("all")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "all" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
                     All
                   </button>
@@ -523,7 +523,7 @@ export default function CollectionPage() {
                   <button onClick={() => handleFilterType("hot")} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${filterType === "hot" ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
                     Hot
                   </button>
-                  
+
                   <button onClick={() => setShowPriceFilter(!showPriceFilter)} className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${showPriceFilter ? "bg-gofarm-green text-white" : "bg-gray-100 text-gray-600 hover:bg-gofarm-light-green/20"}`}>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                     Price

@@ -1689,30 +1689,6 @@
   ],
   "orders": [
     {
-      "id": "ORD-1777538871580",
-      "date": "2026-04-30",
-      "total": 56.1,
-      "status": "pending",
-      "items": 1,
-      "products": [
-        {
-          "id": "FR-GR-02-1 kg",
-          "name": "American Black Grape (Nho đen Mỹ) (1 kg)",
-          "price": 8.5,
-          "quantity": 6,
-          "imageSrc": "/images/f.nhodenmy.jpg",
-          "slug": "black-grape"
-        }
-      ],
-      "shippingAddress": "aaaaaa, Hanoi, Vietnam 10000",
-      "customerName": "Test User",
-      "customerEmail": "user@gofarm.local",
-      "customerPhone": "",
-      "paymentMethod": "Cash on Delivery",
-      "createdAt": "2026-04-30T08:47:51.598Z",
-      "updatedAt": "2026-04-30T08:47:51.598Z"
-    },
-    {
       "id": "ORD-1777004146392",
       "date": "2026-04-24",
       "total": 140.8,
@@ -1887,6 +1863,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-04-30T08:47:51.600Z"
+    "updatedAt": "2026-04-30T08:56:57.215Z"
   }
 }

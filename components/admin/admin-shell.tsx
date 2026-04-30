@@ -860,8 +860,8 @@ export function AdminShell({
             <div className="sidebar-inner">
               <div className="brand">
                 <div className="brand-copy">
-                  <div className="brand-title">GoFarm</div>
-                  <div className="brand-subtitle">Agricultural Admin</div>
+                  <img src="/images/gofarmnamelogo.png" alt="GoFarm Logo" style={{ height: "32px", width: "auto", display: "block" }} />
+                  <div className="brand-subtitle" style={{ marginTop: "4px" }}>Agricultural Admin</div>
                 </div>
                 <button
                   type="button"
