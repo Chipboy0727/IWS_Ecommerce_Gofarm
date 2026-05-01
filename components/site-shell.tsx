@@ -18,6 +18,6 @@ export default function SiteShell({ children }: { children: ReactNode }) {
       </main>
       {!isAdminRoute ? <SiteFooter /> : null}
       {!isAdminRoute ? <ChatBox /> : null}
-    </>
+    </div>
   );
 }
