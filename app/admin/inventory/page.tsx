@@ -92,20 +92,6 @@ export default async function InventoryPage() {
     .actions {
       padding-top: 0;
     }
-    .inventory-add-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 18px;
-      height: 44px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #139f12 0%, #138d11 100%);
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 700;
-      box-shadow: 0 8px 16px rgba(17, 140, 16, 0.18);
-    }
     .inventory-stats {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -187,34 +173,6 @@ export default async function InventoryPage() {
       align-items: center;
       gap: 16px;
       padding: 22px 24px 16px;
-    }
-    .inventory-search {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-height: 52px;
-      padding: 0 16px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #e8f0dc 0%, #e2ecd3 100%);
-      color: #6f7d6c;
-      font-size: 17px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 8px 16px rgba(112, 137, 83, 0.06);
-      transition: box-shadow 0.18s ease, transform 0.18s ease;
-    }
-    .inventory-search:focus-within {
-      box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
-    }
-    .inventory-input {
-      width: 100%;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: #4f5f4b;
-      font-size: 16px;
-    }
-    .inventory-input::placeholder {
-      color: #7a8677;
     }
     .inventory-dropdown-group {
       display: flex;
@@ -508,7 +466,7 @@ export default async function InventoryPage() {
         width: 100%;
         min-width: 0;
       }
-      .inventory-search {
+      .inventory-toolbar .pm-search {
         width: 100%;
         flex: 1 1 100%;
       }
@@ -545,7 +503,7 @@ export default async function InventoryPage() {
         padding: 14px 14px 12px;
         gap: 10px;
       }
-      .inventory-search {
+      .inventory-toolbar .pm-search {
         min-height: 42px;
         font-size: 14px;
       }
@@ -567,8 +525,8 @@ export default async function InventoryPage() {
       userRole={adminRole}
       userLabel=""
       actions={
-        <Link href="/admin/products" className="inventory-add-button">
-          <IconPlus />
+        <Link href="/admin/products" className="pm-add-button">
+          <span className="pm-add-icon">+</span>
           <span>Add New Product</span>
         </Link>
       }
@@ -615,14 +573,6 @@ export default async function InventoryPage() {
         </section>
       </div>
     </AdminShell>
-  );
-}
-
-function IconPlus() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-    </svg>
   );
 }
 

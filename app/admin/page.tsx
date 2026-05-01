@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { AdminActionButton, AdminShell, Pill, SectionCard, StatCard, IconChart, IconCart, IconGrid, IconUsers } from "@/components/admin/admin-shell";
+import Link from "next/link";
+import { AdminShell, Pill, SectionCard, StatCard, IconChart, IconCart, IconGrid, IconUsers } from "@/components/admin/admin-shell";
 import { SalesPerformanceCard } from "@/components/admin/sales-performance";
 import { buildDashboardStats, buildRecentOrders, buildSalesSeries } from "@/lib/backend/admin-analytics";
 import { readDb } from "@/lib/backend/db";
@@ -97,7 +98,11 @@ export default async function AdminDashboardPage() {
         <SectionCard
           title="Recent Transactions"
           subtitle="Latest order activity across all farms"
-          right={<AdminActionButton tone="ghost">View All</AdminActionButton>}
+          right={
+            <Link href="/admin/orders" className="btn btn-ghost">
+              View All
+            </Link>
+          }
         >
           <div className="admin-data-table-shell">
             <table className="page-table">

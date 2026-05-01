@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pill, IconStore } from "@/components/admin/admin-shell";
+import { Pill, IconStore, IconSearch } from "@/components/admin/admin-shell";
 import { InvIconEdit, InvIconPause, InvIconPlay, InvIconTrash } from "@/components/admin/inventory-style-actions";
 import type { BackendStore } from "@/lib/backend/db";
 
@@ -123,24 +123,23 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
 
   return (
     <>
-      {/* Top Search & Create Entry Actions */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center mb-6">
-        <input 
-          type="text" 
-          placeholder="Search stores or cities..." 
-          className="px-4 py-2 border rounded-md text-sm w-full sm:w-80 outline-none focus:ring-2 focus:ring-[#0b7312]"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
-        <button 
-          onClick={openAddModal}
-          style={{ backgroundColor: '#0b7312', color: 'white' }}
-          className="rounded-lg px-4 py-2 text-sm font-semibold shadow-sm hover:bg-[#0a6610] hover:shadow-md active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0b7312]/40 focus-visible:ring-offset-1 transition-all duration-200 whitespace-nowrap"
-        >
-          + Add New Location
+      <div className="pm-toolbar admin-list-toolbar">
+        <label className="pm-search">
+          <IconSearch aria-hidden />
+          <input
+            type="text"
+            placeholder="Search stores or cities..."
+            className="pm-input"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </label>
+        <button type="button" className="pm-add-button" onClick={openAddModal}>
+          <span className="pm-add-icon">+</span>
+          <span>Add New Location</span>
         </button>
       </div>
 

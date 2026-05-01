@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { InvIconEdit, InvIconTrash } from "@/components/admin/inventory-style-actions";
+import { IconSearch } from "@/components/admin/admin-shell";
 
 export type InventoryRow = {
   id: string;
@@ -130,8 +131,8 @@ export default function InventoryTableClient({
   return (
     <>
       <div className="inventory-toolbar">
-        <label className="inventory-search">
-          <IconSearch />
+        <label className="pm-search">
+          <IconSearch aria-hidden />
           <input
             value={search}
             onChange={(event) => {
@@ -139,7 +140,7 @@ export default function InventoryTableClient({
               setPage(1);
             }}
             placeholder="Search products, SKU or category..."
-            className="inventory-input"
+            className="pm-input"
           />
         </label>
 
@@ -332,15 +333,6 @@ export default function InventoryTableClient({
         </div>
       </div>
     </>
-  );
-}
-
-function IconSearch() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-      <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M16 16l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
   );
 }
 

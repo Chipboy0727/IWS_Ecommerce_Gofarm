@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AdminActionButton, AdminShell, IconBell, IconStore, Pill } from "@/components/admin/admin-shell";
+import { AdminShell, IconBell, IconStore, Pill } from "@/components/admin/admin-shell";
 
 export type LiveStoreRow = {
   id: string;
@@ -200,7 +200,10 @@ export default function StoresLiveView({
             <p className="mt-1 text-[13px] text-[#72806f]">Operational hub for global agricultural distribution centers.</p>
           </div>
           <div className="pt-1">
-            <AdminActionButton tone="primary">Add New Location</AdminActionButton>
+            <Link href="/admin/stores" className="pm-add-button">
+              <span className="pm-add-icon">+</span>
+              <span>Add New Location</span>
+            </Link>
           </div>
         </div>
 
