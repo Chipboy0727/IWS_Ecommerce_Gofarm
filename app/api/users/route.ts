@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { readDb } from "@/lib/backend/db";
+import { readDb, updateDb, cloneDb } from "@/lib/backend/db";
 import { jsonError, parsePositiveInt, sanitizeOptionalString } from "@/lib/backend/http";
 import { requireAdmin } from "@/lib/backend/session";
+import { hashPassword } from "@/lib/backend/auth";
 import type { NextRequest } from "next/server";
+import { randomUUID } from "node:crypto";
 
 export const runtime = "nodejs";
 
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
   const name = sanitizeOptionalString(body.name);
   const email = sanitizeOptionalString(body.email);
   const password = sanitizeOptionalString(body.password);
-  const role = sanitizeOptionalString(body.role) === "admin" ? "admin" : "user";
+  const role: "admin" | "user" = sanitizeOptionalString(body.role) === "admin" ? "admin" : "user";
 
   if (!name || !email || !password) {
     return jsonError("Name, email, and password are required", 400);
@@ -93,40 +95,41 @@ export async function POST(request: NextRequest) {
     return jsonError("Invalid email format", 400);
   }
 
-  const { hashPassword } = await import("@/lib/backend/auth");
-  const { updateDb, cloneDb } = await import("@/lib/backend/db");
-  const { randomUUID } = await import("node:crypto");
-
   try {
-    const newUser = await updateDb((db) => {
+    const now = new Date().toISOString();
+    const id = randomUUID();
+    const normalizedEmail = email.toLowerCase();
+    const status = "Active";
+
+    await updateDb((db) => {
       const next = cloneDb(db);
-      if (next.users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+      if (next.users.some((u) => u.email.toLowerCase() === normalizedEmail)) {
         throw new Error("Email already in use");
       }
       
-      const now = new Date().toISOString();
       const user = {
-        id: randomUUID(),
+        id,
         name,
-        email: email.toLowerCase(),
+        email: normalizedEmail,
         passwordHash: hashPassword(password),
         role,
         createdAt: now,
         updatedAt: now,
+        status,
       };
       
       next.users.push(user);
       return next;
     });
     
-    const user = newUser.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     return NextResponse.json({
-      id: user?.id,
-      name: user?.name,
-      email: user?.email,
-      role: user?.role,
-      createdAt: user?.createdAt,
-      updatedAt: user?.updatedAt,
+      id,
+      name,
+      email: normalizedEmail,
+      role,
+      status,
+      createdAt: now,
+      updatedAt: now,
     });
   } catch (error: any) {
     return jsonError(error.message, 400);

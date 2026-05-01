@@ -184,8 +184,7 @@ export default function OrdersTableClient({
       <button
         type="button"
         onClick={() => setSelectedOrder(row)}
-        className="px-1.5 py-[2px] rounded-sm border font-medium text-[9px] transition-colors whitespace-nowrap"
-        style={{ borderColor: '#a2c2e8', color: '#86abda' }}
+        className="orders-mini-btn blue-outline"
       >
         Details
       </button>
@@ -193,20 +192,18 @@ export default function OrdersTableClient({
 
     if (row.status === "pending") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Order", "Are you sure you want to confirm this order?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#3b82f6', color: '#ffffff' }}
+            className="orders-mini-btn primary"
           >
             Confirm
           </button>
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Reject Order", "Are you sure you want to reject this order?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+            className="orders-mini-btn danger"
           >
             Reject
           </button>
@@ -217,20 +214,18 @@ export default function OrdersTableClient({
 
     if (row.status === "processing") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "preparing", "Prepare Goods", "Change order status to Preparing?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#a855f7', color: '#ffffff' }}
+            className="orders-mini-btn purple"
           >
             Prepare
           </button>
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+            className="orders-mini-btn danger"
           >
             Cancel
           </button>
@@ -241,12 +236,11 @@ export default function OrdersTableClient({
 
     if (row.status === "preparing") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "shipped", "Hand over to Shipper", "Change order status to Shipped?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#f97316', color: '#ffffff' }}
+            className="orders-mini-btn orange"
           >
             Ship
           </button>
@@ -257,20 +251,18 @@ export default function OrdersTableClient({
 
     if (row.status === "shipped") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "delivered", "Mark Delivered", "Confirm this order has been successfully delivered?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#22c55e', color: '#ffffff' }}
+            className="orders-mini-btn primary"
           >
             Deliver
           </button>
           <button
             type="button"
             onClick={() => setFailedOrderModal(row.id)}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#6b7280', color: '#ffffff' }}
+            className="orders-mini-btn gray"
           >
             Failed
           </button>
@@ -281,12 +273,11 @@ export default function OrdersTableClient({
 
     if (row.status === "delivered") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => window.print()}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#6366f1', color: '#ffffff' }}
+            className="orders-mini-btn indigo"
           >
             Print
           </button>
@@ -297,12 +288,11 @@ export default function OrdersTableClient({
 
     if (row.status === "cancelled") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => alert("Cancel Reason: Customer changed their mind or delivery failed.")}
-            className="px-1.5 py-[2px] rounded-sm border font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' }}
+            className="orders-mini-btn gray"
           >
             Reason
           </button>
@@ -313,20 +303,18 @@ export default function OrdersTableClient({
 
     if (row.status === "awaiting_payment") {
       return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="orders-mini-actions">
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Payment", "Change order status to Processing?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+            className="orders-mini-btn primary"
           >
             Paid
           </button>
           <button
             type="button"
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
-            className="px-1.5 py-[2px] rounded-sm font-medium text-[9px] transition-colors whitespace-nowrap"
-            style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+            className="orders-mini-btn danger"
           >
             Cancel
           </button>
@@ -336,7 +324,7 @@ export default function OrdersTableClient({
     }
 
     return (
-      <div className="flex items-center gap-2">
+      <div className="orders-mini-actions" style={{ justifyContent: "flex-start" }}>
         {btnDetails}
       </div>
     );
