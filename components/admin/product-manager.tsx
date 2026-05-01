@@ -869,40 +869,6 @@ export default function ProductManager() {
           color: #16781f;
           box-shadow: 0 6px 12px rgba(90, 117, 66, 0.18);
         }
-        .pm-add-button {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          min-height: 46px;
-          border: 0;
-          border-radius: 12px;
-          padding: 0 16px;
-          cursor: pointer;
-          color: #fff;
-          font-size: 14px;
-          font-weight: 800;
-          background: linear-gradient(180deg, #21ad1b 0%, #138e13 100%);
-          box-shadow: 0 14px 24px rgba(18, 142, 19, 0.25);
-          transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
-        }
-        .pm-add-button:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 18px 28px rgba(18, 142, 19, 0.3);
-          filter: saturate(1.03);
-        }
-        .pm-add-button:active {
-          transform: translateY(0);
-        }
-        .pm-add-icon {
-          width: 20px;
-          height: 20px;
-          display: grid;
-          place-items: center;
-          border-radius: 999px;
-          background: rgba(255, 255, 255, 0.2);
-          line-height: 1;
-          font-size: 14px;
-        }
         .input {
           width: 100%;
           border-radius: 22px;
@@ -924,41 +890,6 @@ export default function ProductManager() {
         }
         .input:hover:not(:focus) {
           border-color: #b5c4a7;
-        }
-        .pm-toolbar {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 0 0 16px;
-        }
-        .pm-search {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          min-height: 52px;
-          padding: 0 16px;
-          border-radius: 8px;
-          background: linear-gradient(180deg, #e8f0dc 0%, #e2ecd3 100%);
-          color: #6f7d6c;
-          font-size: 17px;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 8px 16px rgba(112, 137, 83, 0.06);
-          transition: box-shadow 0.18s ease, transform 0.18s ease;
-          cursor: text;
-        }
-        .pm-search:focus-within {
-          box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
-        }
-        .pm-input {
-          width: 100%;
-          border: 0;
-          outline: 0;
-          background: transparent;
-          color: #4f5f4b;
-          font-size: 16px;
-        }
-        .pm-input::placeholder {
-          color: #7a8677;
         }
         .pm-dropdown-group {
           display: flex;
