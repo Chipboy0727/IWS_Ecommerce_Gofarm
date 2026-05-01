@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Pill } from "@/components/admin/admin-shell";
+import { InvIconBan, InvIconEdit, InvIconTrash, InvIconUnban } from "@/components/admin/inventory-style-actions";
 
 export type CustomerRow = {
   id: string;
@@ -181,7 +182,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
         <input 
           type="text" 
           placeholder="Search name or email..." 
-          className="px-4 py-2 border rounded-md text-sm w-full sm:w-80 outline-none focus:ring-2 focus:ring-[#0b7312]"
+          className="px-4 py-2 border border-[#d4e0ca] rounded-md text-sm w-full sm:w-80 outline-none focus:ring-2 focus:ring-[#0b7312]"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -191,7 +192,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
         <button 
           onClick={openAddModal}
           style={{ backgroundColor: '#0b7312', color: 'white' }}
-          className="rounded-md px-4 py-2 text-sm font-semibold shadow-sm hover:bg-[#0a6610] transition-colors whitespace-nowrap"
+          className="rounded-lg px-4 py-2 text-sm font-semibold shadow-sm hover:bg-[#0a6610] hover:shadow-md active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0b7312]/40 focus-visible:ring-offset-1 transition-all duration-200 whitespace-nowrap"
         >
           + Create Account
         </button>
@@ -208,8 +209,8 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
             }}
             className={`rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[13px] font-semibold transition-colors ${
               roleFilter === filterName 
-                ? "bg-white text-[#0b7312] shadow-sm ring-1 ring-black/5" 
-                : "bg-transparent text-[#5b6658] hover:bg-black/5"
+                ? "bg-white text-[#0b7312] shadow-sm border border-[#dbead2]" 
+                : "bg-transparent text-[#5b6658] hover:bg-[#edf5e7]"
             }`}
           >
             {filterName}
@@ -218,27 +219,29 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto overflow-hidden rounded-xl sm:rounded-[18px] ring-1 ring-black/5 bg-white">
-        <table className="page-table min-w-[640px] sm:min-w-full w-full">
+      <div className="admin-data-table-shell">
+        <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium">
           <thead>
-            <tr className="border-b border-black/5">
-              <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px] font-semibold text-[#5b6658]">User Profile</th>
-              <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px] font-semibold text-[#5b6658]">Role</th>
-              <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px] font-semibold text-[#5b6658]">Join Date</th>
-              <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-[11px] sm:text-[12px] font-semibold text-[#5b6658]">Status</th>
-              <th className="px-3 sm:px-4 py-2 sm:py-3 text-right text-[11px] sm:text-[12px] font-semibold text-[#5b6658]">Actions</th>
+            <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">User Profile</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Role</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Join Date</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Status</th>
+              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">
+                <div className="page-table-actions-head">Actions</div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {pageUsers.map((user) => (
-              <tr key={user.id} className="border-b border-black/5 last:border-0 hover:bg-[#f9faf7] transition-colors">
+              <tr key={user.id} className="border-b border-[#eef2eb] last:border-0 hover:bg-gradient-to-r hover:from-[#fbfdf8] hover:to-[#f4faef] transition-all duration-200">
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-[#203028] text-[10px] sm:text-[12px] font-bold text-white shrink-0">
                       {user.avatar}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[12px] sm:text-[13px] font-semibold text-[#243322] truncate">{user.name}</div>
+                      <div className="text-[12px] sm:text-[13px] font-bold text-[#243322] truncate">{user.name}</div>
                       <div className="text-[10px] sm:text-[12px] text-[#748171] truncate">{user.email}</div>
                     </div>
                   </div>
@@ -252,31 +255,31 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                   <Pill tone={user.tone}>{user.status.toUpperCase()}</Pill>
                 </td>
-                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-right whitespace-nowrap">
-                  <div className="flex items-center justify-end gap-2 text-[#657265]">
-                    <button 
-                      onClick={() => handleToggleBan(user.id, user.name, user.status)} 
-                      className={`inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full hover:bg-[#ffeaea] transition-colors ${
-                        user.status === "Banned" ? "text-[#dc2626]" : "hover:text-[#dc2626]"
-                      }`}
-                      title={user.status === "Banned" ? "Unban User" : "Ban User"}
-                    >
-                      <IconBan />
-                    </button>
-                    <button 
-                      onClick={() => openEditModal(user)} 
-                      className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full hover:bg-[#edf4e0] hover:text-[#0b7312] transition-colors"
-                      title="Edit"
-                    >
-                      <IconEdit />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(user.id, user.name)} 
-                      className="inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full hover:bg-[#ffeaea] hover:text-[#dc2626] transition-colors"
-                      title="Delete"
-                    >
-                      <IconTrash />
-                    </button>
+                <td className="page-table-col-actions w-[180px] py-2.5 sm:py-3 whitespace-nowrap">
+                  <div className="page-table-actions-cell">
+                    <div className="admin-icon-actions">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleBan(user.id, user.name, user.status)}
+                        className={user.status === "Banned" ? "admin-icon-actions-accent" : "admin-icon-actions-danger"}
+                        title={user.status === "Banned" ? "Unban User" : "Ban User"}
+                        aria-label={user.status === "Banned" ? `Unban ${user.name}` : `Ban ${user.name}`}
+                      >
+                        {user.status === "Banned" ? <InvIconUnban /> : <InvIconBan />}
+                      </button>
+                      <button type="button" onClick={() => openEditModal(user)} title="Edit user" aria-label={`Edit ${user.name}`}>
+                        <InvIconEdit />
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-icon-actions-danger"
+                        onClick={() => handleDelete(user.id, user.name)}
+                        title="Delete user"
+                        aria-label={`Delete ${user.name}`}
+                      >
+                        <InvIconTrash />
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -320,7 +323,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                   }}
                   className={`flex h-8 w-8 items-center justify-center rounded-md ${
                     page !== pageNum 
-                      ? "bg-white ring-1 ring-black/10 hover:bg-black/5 text-[#243322]" 
+                      ? "bg-white ring-1 ring-[#dbead2] hover:bg-[#edf5e7] text-[#243322]" 
                       : "font-bold"
                   }`}
                 >
@@ -343,13 +346,13 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
-            <div className="px-6 py-4 border-b border-black/5 flex justify-between items-center bg-[#fdfefc]">
+            <div className="px-6 py-4 border-b border-[#e3ebdf] flex justify-between items-center bg-[#fdfefc]">
               <h3 className="text-lg font-bold text-[#1a2519]">
                 {isEditing ? "Edit User" : "Create New User"}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="text-[#6f7b6d] hover:text-black rounded-full p-1 hover:bg-black/5 transition-colors"
+                className="text-[#6f7b6d] hover:text-[#243322] rounded-full p-1 hover:bg-[#edf5e7] transition-colors"
               >
                 ✕
               </button>
@@ -370,7 +373,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="text" 
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
-                    className="w-full px-3 py-2 border border-black/10 rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
                     placeholder="John Doe"
                   />
                 </div>
@@ -382,7 +385,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="email" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
-                    className="w-full px-3 py-2 border border-black/10 rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -396,7 +399,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="password" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
-                    className="w-full px-3 py-2 border border-black/10 rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
                     placeholder={isEditing ? "••••••••" : "Create a password"}
                   />
                 </div>
@@ -406,7 +409,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                   <select 
                     value={role} 
                     onChange={(e) => setRole(e.target.value)} 
-                    className="w-full px-3 py-2 border border-black/10 rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312] bg-white appearance-none"
+                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312] bg-white appearance-none"
                   >
                     <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
@@ -418,7 +421,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                 <button 
                   type="button" 
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-semibold text-[#5b6658] hover:text-black transition-colors"
+                  className="px-4 py-2 text-sm font-semibold text-[#5b6658] hover:bg-[#f0f5e4] rounded-lg transition-all duration-200"
                 >
                   Cancel
                 </button>
@@ -426,7 +429,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                   type="submit" 
                   disabled={isSubmitting}
                   style={{ backgroundColor: '#0b7312', color: 'white' }}
-                  className="px-6 py-2 text-sm font-semibold rounded-lg hover:bg-[#09610f] transition-colors disabled:opacity-70 flex items-center justify-center min-w-[100px]"
+                  className="px-6 py-2 text-sm font-semibold rounded-lg hover:bg-[#09610f] hover:shadow-md active:scale-[0.99] transition-all duration-200 disabled:opacity-70 flex items-center justify-center min-w-[100px]"
                 >
                   {isSubmitting ? "Saving..." : "Save"}
                 </button>
@@ -439,28 +442,3 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
   );
 }
 
-function IconEdit() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <path d="M4 20h3.5L18 9.5 14.5 6 4 16.5V20Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-      <path d="m13.5 7 3.5 3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconTrash() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <path d="M5 7h14M9 7V5.7A1.7 1.7 0 0 1 10.7 4h2.6A1.7 1.7 0 0 1 15 5.7V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.8a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconBan() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.7" />
-      <path d="m4.9 4.9 14.2 14.2" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}

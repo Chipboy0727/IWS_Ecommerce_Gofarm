@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
 import { Pill, SectionCard } from "@/components/admin/admin-shell";
+import { InvIconEdit, InvIconTrash } from "@/components/admin/inventory-style-actions";
 
 type ProductFormState = {
   name: string;
@@ -470,68 +471,78 @@ export default function ProductManager() {
           </div>
         ) : (
           <>
-            <div className="overflow-hidden rounded-[18px] border border-[#e1ebd4] bg-white shadow-[0_14px_28px_rgba(77,107,53,0.08)]">
-              <div className="max-h-[800px] overflow-y-auto">
-                <table className="page-table min-w-full text-left">
-                <thead className="bg-[#f0f5e4]">
-                  <tr className="text-[11px] uppercase tracking-[0.18em] text-[#748171]">
-                    <th className="px-5 py-4">SKU</th>
-                    <th className="px-5 py-4">Product</th>
-                    <th className="px-5 py-4">Category</th>
-                    <th className="px-5 py-4">Stock Level</th>
-                    <th className="px-5 py-4">Status</th>
-                    <th className="px-5 py-4">Price</th>
-                    <th className="px-5 py-4">Actions</th>
+            <div className="admin-data-table-shell">
+              <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
+                <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium text-left">
+                <thead>
+                  <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">SKU</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Product</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Category</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Stock Level</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Status</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Price</th>
+                    <th className="page-table-col-actions w-[130px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">
+                      <div className="page-table-actions-head">Actions</div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedProducts.map((product, index) => {
+                  {paginatedProducts.map((product) => {
                     const stock = typeof product.stock === "number" ? product.stock : 0;
                     const tone = stockTone(stock);
                     return (
-                      <tr key={product.id} className={index === paginatedProducts.length - 1 ? "" : "border-b border-[#edf1e5]"}>
-                        <td className="px-5 py-4 text-[13px] font-medium text-[#748171]">
+                      <tr key={product.id} className="border-b border-[#eef2eb] last:border-0 hover:bg-gradient-to-r hover:from-[#fbfdf8] hover:to-[#f4faef] transition-all duration-200">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-[#748171]">
                           {product.slug.toUpperCase()}
                         </td>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                          <div className="flex items-center gap-2 sm:gap-3">
                             <img
                               src={product.imageSrc || "/images/logo.svg"}
                               alt={product.name}
-                              className="h-10 w-10 rounded-[10px] object-cover"
+                              className="h-8 w-8 sm:h-10 sm:w-10 rounded-[10px] object-cover shrink-0"
                               onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                             />
-                            <div className="text-[13px] font-semibold text-[#243322]">{product.name}</div>
+                            <div className="text-[12px] sm:text-[13px] font-bold text-[#243322]">{product.name}</div>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                           <Pill tone="green">{resolveCategory(product)?.title ?? product.categoryTitle ?? "Uncategorized"}</Pill>
                         </td>
-                        <td className="px-5 py-4 text-[13px] text-[#4d5d4b]">
-                          <div className="flex items-center gap-3">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] text-[#4d5d4b]">
+                          <div className="flex items-center gap-2 sm:gap-3">
                             <div className="progress">
                               <span
                                 className={tone === "green" ? "status-green" : tone === "amber" ? "status-amber" : "status-red"}
                                 style={{ width: `${stockWidth(stock)}%` }}
                               />
                             </div>
-                            <div className="text-[13px] font-semibold text-[#243322]">{stock}</div>
+                            <div className="text-[12px] sm:text-[13px] font-semibold text-[#243322]">{stock}</div>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                           <Pill tone={tone}>{(product.status ?? "ACTIVE").toUpperCase()}</Pill>
                         </td>
-                        <td className="px-5 py-4 text-[13px] font-semibold text-[#253323]">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-semibold text-[#253323] whitespace-nowrap">
                           ${product.price.toFixed(2)}
                         </td>
-                        <td className="px-5 py-4">
-                          <div className="icon-actions">
-                            <button type="button" onClick={() => openEdit(product)} aria-label={`Edit ${product.name}`}>
-                              <IconPen />
-                            </button>
-                            <button type="button" onClick={() => handleDelete(product)} aria-label={`Delete ${product.name}`}>
-                              <IconTrash />
-                            </button>
+                        <td className="page-table-col-actions w-[130px] py-2.5 sm:py-3 whitespace-nowrap">
+                          <div className="page-table-actions-cell">
+                            <div className="admin-icon-actions">
+                              <button type="button" onClick={() => openEdit(product)} title="Edit product" aria-label={`Edit ${product.name}`}>
+                                <InvIconEdit />
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-icon-actions-danger"
+                                onClick={() => handleDelete(product)}
+                                title="Delete product"
+                                aria-label={`Delete ${product.name}`}
+                              >
+                                <InvIconTrash />
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -570,7 +581,7 @@ export default function ProductManager() {
                         }}
                         className={`flex h-8 w-8 items-center justify-center rounded-md ${
                           page !== pageNum 
-                            ? "bg-white ring-1 ring-black/10 hover:bg-black/5 text-[#243322]" 
+                            ? "bg-white ring-1 ring-[#dbead2] hover:bg-[#edf5e7] text-[#243322]" 
                             : "font-bold"
                         }`}
                       >
@@ -1157,19 +1168,3 @@ function IconChevronDown() {
   );
 }
 
-function IconPen() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-      <path d="M4 20h4l10-10-4-4L4 16v4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="m13 6 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconTrash() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
-      <path d="M5 7h14M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.6a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}

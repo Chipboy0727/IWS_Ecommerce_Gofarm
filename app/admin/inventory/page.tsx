@@ -448,23 +448,6 @@ export default async function InventoryPage() {
       font-weight: 700;
       color: #394337;
     }
-    .inventory-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #445540;
-    }
-    .inventory-actions a,
-    .inventory-actions button {
-      border: 0;
-      background: transparent;
-      padding: 0;
-      color: inherit;
-      cursor: pointer;
-    }
-    .inventory-actions .danger {
-      color: #db3d30;
-    }
     .inventory-empty {
       text-align: center;
       color: #64725f;

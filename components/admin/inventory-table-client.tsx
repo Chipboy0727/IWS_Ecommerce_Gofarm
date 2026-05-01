@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { InvIconEdit, InvIconTrash } from "@/components/admin/inventory-style-actions";
 
 export type InventoryRow = {
   id: string;
@@ -268,18 +269,18 @@ export default function InventoryTableClient({
                   <span className="inventory-price">{formatMoney(row.price)}</span>
                 </td>
                 <td>
-                  <div className="inventory-actions">
+                  <div className="admin-icon-actions">
                     <Link href="/admin/products" aria-label={`Edit ${row.name}`}>
-                      <IconEdit />
+                      <InvIconEdit />
                     </Link>
                     <button
                       type="button"
-                      className="danger"
+                      className="admin-icon-actions-danger"
                       onClick={() => void handleDelete(row)}
                       aria-label={`Delete ${row.name}`}
                       disabled={busySlug === row.slug}
                     >
-                      <IconTrash />
+                      <InvIconTrash />
                     </button>
                   </div>
                 </td>
@@ -356,23 +357,6 @@ function IconExport() {
     <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
       <path d="M12 5v9m0 0-3-3m3 3 3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M5 16.5V18a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconEdit() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <path d="M4 20h3.5L18 9.5 14.5 6 4 16.5V20Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-      <path d="m13.5 7 3.5 3.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconTrash() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
-      <path d="M5 7h14M9 7V5.7A1.7 1.7 0 0 1 10.7 4h2.6A1.7 1.7 0 0 1 15 5.7V7m-8 0 .8 12a1.8 1.8 0 0 0 1.8 1.7h4.8a1.8 1.8 0 0 0 1.8-1.7L17 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }

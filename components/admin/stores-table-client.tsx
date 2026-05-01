@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Pill, IconStore } from "@/components/admin/admin-shell";
+import { InvIconEdit, InvIconPause, InvIconPlay, InvIconTrash } from "@/components/admin/inventory-style-actions";
 import type { BackendStore } from "@/lib/backend/db";
 
 export default function StoresTableClient({ initialStores }: { initialStores: BackendStore[] }) {
@@ -120,15 +121,6 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
     }
   };
 
-  const tableActionBase =
-    "inline-flex h-8 w-8 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1";
-  const tableActionStatus =
-    `${tableActionBase} hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]`;
-  const tableActionEdit =
-    `${tableActionBase} hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:ring-[#1d6fa5]/35`;
-  const tableActionDanger =
-    `${tableActionBase} hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:ring-[#d32f2f]/35`;
-
   return (
     <>
       {/* Top Search & Create Entry Actions */}
@@ -173,7 +165,7 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto overflow-hidden rounded-xl sm:rounded-[18px] ring-1 ring-[#deead8] bg-white shadow-[0_10px_35px_-22px_rgba(19,55,24,0.4)]">
+      <div className="admin-data-table-shell">
         <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium">
           <thead>
             <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
@@ -218,81 +210,29 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
                 </td>
                 <td className="page-table-col-actions w-[180px] py-2.5 sm:py-3 whitespace-nowrap">
                   <div className="page-table-actions-cell">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f3f8ed] px-2 py-1">
-                  <button 
-                    onClick={() => handleToggleStatus(store.id, store.name, store.status)}
-                    className={`${tableActionStatus} border-0 ${
-                      store.status === "Active"
-                        ? "focus-visible:ring-[#c45c00]/40"
-                        : "focus-visible:ring-[#0b7312]/40"
-                    }`}
-                    style={
-                      store.status === "Active"
-                        ? {
-                            background: "linear-gradient(145deg, #ffe8cc 0%, #ffc978 100%)",
-                            color: "#a34a00",
-                            border: "none",
-                            boxShadow: "0 1px 4px rgba(196,92,0,0.15), inset 0 0 0 1px rgba(196,92,0,0.18)"
-                          }
-                        : {
-                            background: "linear-gradient(145deg, #e4f7d8 0%, #b8e7a0 100%)",
-                            color: "#0b5c10",
-                            border: "none",
-                            boxShadow: "0 1px 4px rgba(11,115,18,0.14), inset 0 0 0 1px rgba(11,115,18,0.18)"
-                          }
-                    }
-                    title={store.status === "Active" ? "Set Maintenance" : "Set Active"}
-                    aria-label={store.status === "Active" ? `Set ${store.name} to maintenance` : `Set ${store.name} to active`}
-                  >
-                    {store.status === "Active" ? (
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M10 9v6M14 9v6" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="m10 9 6 3-6 3V9Z" fill="currentColor" stroke="none" />
-                      </svg>
-                    )}
-                  </button>
-                  <button 
-                    onClick={() => openEditModal(store)}
-                    className={`${tableActionEdit} border-0`}
-                    style={{
-                      background: "linear-gradient(145deg, #edf7ff 0%, #dcefff 100%)",
-                      color: "#1a6a9e",
-                      border: "none",
-                      boxShadow: "0 1px 4px rgba(29,111,165,0.1), inset 0 0 0 1px rgba(29,111,165,0.12)"
-                    }}
-                    title="Edit store"
-                    aria-label={`Edit ${store.name}`}
-                  >
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M12 20h9" />
-                      <path d="m16.5 3.5 4 4L8 20l-4 1 1-4 11.5-13.5Z" />
-                    </svg>
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(store.id, store.name)}
-                    className={`${tableActionDanger} border-0`}
-                    style={{
-                      background: "linear-gradient(145deg, #ffeded 0%, #ffdede 100%)",
-                      color: "#c62828",
-                      border: "none",
-                      boxShadow: "0 1px 4px rgba(211,47,47,0.1), inset 0 0 0 1px rgba(211,47,47,0.12)"
-                    }}
-                    title="Delete store"
-                    aria-label={`Delete ${store.name}`}
-                  >
-                    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4h8v2" />
-                      <path d="M19 6l-1 14H6L5 6" />
-                      <path d="M10 11v6M14 11v6" />
-                    </svg>
-                  </button>
-                  </div>
+                    <div className="admin-icon-actions">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStatus(store.id, store.name, store.status)}
+                        className={store.status === "Active" ? "admin-icon-actions-warn" : "admin-icon-actions-accent"}
+                        title={store.status === "Active" ? "Set Maintenance" : "Set Active"}
+                        aria-label={store.status === "Active" ? `Set ${store.name} to maintenance` : `Set ${store.name} to active`}
+                      >
+                        {store.status === "Active" ? <InvIconPause /> : <InvIconPlay />}
+                      </button>
+                      <button type="button" onClick={() => openEditModal(store)} title="Edit store" aria-label={`Edit ${store.name}`}>
+                        <InvIconEdit />
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-icon-actions-danger"
+                        onClick={() => handleDelete(store.id, store.name)}
+                        title="Delete store"
+                        aria-label={`Delete ${store.name}`}
+                      >
+                        <InvIconTrash />
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>

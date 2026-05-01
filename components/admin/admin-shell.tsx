@@ -95,11 +95,23 @@ export function AdminShell({
     .admin-root {
       min-height: 100vh;
       --sidebar-width: 254px;
+      --admin-border: #d4e0ca;
+      --admin-border-muted: rgba(36, 49, 31, 0.1);
       background:
         radial-gradient(circle at top left, rgba(255,255,255,.72), transparent 30%),
         linear-gradient(180deg, #edf5de 0%, #eef5df 100%);
       color: #223021;
       font-family: var(--font-jost), Arial, Helvetica, sans-serif;
+    }
+    .admin-root .page-table button {
+      border-style: none;
+      border-width: 0;
+      border-color: transparent;
+    }
+    .admin-root input:not([type="checkbox"]):not([type="radio"]),
+    .admin-root select,
+    .admin-root textarea {
+      border-color: var(--admin-border);
     }
     .admin-root[data-sidebar-collapsed="true"] {
       --sidebar-width: 0px;
@@ -357,7 +369,7 @@ export function AdminShell({
       gap: 12px;
       padding-left: 16px;
       margin-left: 2px;
-      border-left: 1px solid rgba(0, 0, 0, 0.07);
+      border-left: 1px solid var(--admin-border-muted);
     }
     .user-text {
       text-align: right;
@@ -454,7 +466,7 @@ export function AdminShell({
     .btn-secondary {
       background: #f3f7ea;
       color: #1f391f;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+      box-shadow: inset 0 0 0 1px var(--admin-border-muted);
     }
     .btn-secondary:hover {
       background: #edf4e0;
@@ -483,7 +495,7 @@ export function AdminShell({
       background: #fff;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
       overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--admin-border-muted);
     }
     .card-body {
       padding: 22px;
@@ -517,7 +529,7 @@ export function AdminShell({
       background: #fff;
       padding: 16px 20px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--admin-border-muted);
       overflow: hidden;
     }
     .stat-card.active {
@@ -701,6 +713,62 @@ export function AdminShell({
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
+    .admin-data-table-shell {
+      overflow-x: auto;
+      overflow: hidden;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--admin-border);
+      box-shadow: 0 10px 35px -22px rgba(19, 55, 24, 0.4);
+      outline: none;
+    }
+    .admin-data-table-shell .page-table {
+      border: 0;
+      outline: none;
+    }
+    .admin-icon-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
+      color: #445540;
+    }
+    .admin-icon-actions a,
+    .admin-icon-actions button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-icon-actions .admin-icon-actions-danger {
+      color: #db3d30;
+    }
+    .admin-icon-actions .admin-icon-actions-accent {
+      color: #1a7e19;
+    }
+    .admin-icon-actions .admin-icon-actions-warn {
+      color: #b45309;
+    }
+    .admin-icon-actions .admin-icon-actions-muted {
+      color: #6b7a66;
+    }
+    .admin-icon-actions .admin-icon-actions-violet {
+      color: #6d28d9;
+    }
+    .admin-icon-actions .admin-icon-actions-indigo {
+      color: #4338ca;
+    }
+    @media (min-width: 640px) {
+      .admin-data-table-shell {
+        border-radius: 18px;
+      }
+    }
     .product-row {
       display: flex;
       align-items: center;
@@ -753,7 +821,7 @@ export function AdminShell({
       padding: 14px 20px;
       border-radius: 18px;
       background: #eaf5db;
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--admin-border-muted);
       font-size: 13px;
       color: #60705f;
     }
@@ -767,7 +835,7 @@ export function AdminShell({
       border-radius: 18px;
       background: #fafcf7;
       overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 0 0 1px var(--admin-border-muted);
     }
     .panel-card-body {
       padding: 16px;
@@ -837,7 +905,7 @@ export function AdminShell({
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid var(--admin-border-muted);
     }
     .mobile-hamburger-btn {
       width: 40px;
@@ -845,7 +913,7 @@ export function AdminShell({
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--admin-border);
       background: #fff;
       border-radius: 10px;
       color: #223021;
@@ -868,7 +936,7 @@ export function AdminShell({
       height: 34px;
       border-radius: 999px;
       background: #f0f4e8;
-      border: 1px solid rgba(0,0,0,0.06);
+      border: 1px solid var(--admin-border);
       color: #223021;
       display: flex;
       align-items: center;

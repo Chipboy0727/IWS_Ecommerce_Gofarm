@@ -2,6 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  InvIconAlert,
+  InvIconCheck,
+  InvIconEye,
+  InvIconInfo,
+  InvIconPackage,
+  InvIconPrint,
+  InvIconTruck,
+  InvIconX,
+} from "@/components/admin/inventory-style-actions";
 
 export type OrderAdminRow = {
   id: string;
@@ -184,28 +194,34 @@ export default function OrdersTableClient({
       <button
         type="button"
         onClick={() => setSelectedOrder(row)}
-        className="orders-mini-btn blue-outline"
+        className="admin-icon-actions-muted"
+        title="Order details"
+        aria-label={`Details for order ${row.id}`}
       >
-        Details
+        <InvIconEye />
       </button>
     );
 
     if (row.status === "pending") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-accent"
+            title="Confirm order"
+            aria-label={`Confirm order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Order", "Are you sure you want to confirm this order?")}
-            className="orders-mini-btn primary"
           >
-            Confirm
+            <InvIconCheck />
           </button>
           <button
             type="button"
+            className="admin-icon-actions-danger"
+            title="Reject order"
+            aria-label={`Reject order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Reject Order", "Are you sure you want to reject this order?")}
-            className="orders-mini-btn danger"
           >
-            Reject
+            <InvIconX />
           </button>
           {btnDetails}
         </div>
@@ -214,20 +230,24 @@ export default function OrdersTableClient({
 
     if (row.status === "processing") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-violet"
+            title="Prepare goods"
+            aria-label={`Prepare order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "preparing", "Prepare Goods", "Change order status to Preparing?")}
-            className="orders-mini-btn purple"
           >
-            Prepare
+            <InvIconPackage />
           </button>
           <button
             type="button"
+            className="admin-icon-actions-danger"
+            title="Cancel order"
+            aria-label={`Cancel order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
-            className="orders-mini-btn danger"
           >
-            Cancel
+            <InvIconX />
           </button>
           {btnDetails}
         </div>
@@ -236,13 +256,15 @@ export default function OrdersTableClient({
 
     if (row.status === "preparing") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-warn"
+            title="Mark shipped"
+            aria-label={`Ship order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "shipped", "Hand over to Shipper", "Change order status to Shipped?")}
-            className="orders-mini-btn orange"
           >
-            Ship
+            <InvIconTruck />
           </button>
           {btnDetails}
         </div>
@@ -251,20 +273,24 @@ export default function OrdersTableClient({
 
     if (row.status === "shipped") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-accent"
+            title="Mark delivered"
+            aria-label={`Deliver order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "delivered", "Mark Delivered", "Confirm this order has been successfully delivered?")}
-            className="orders-mini-btn primary"
           >
-            Deliver
+            <InvIconCheck />
           </button>
           <button
             type="button"
+            className="admin-icon-actions-muted"
+            title="Mark delivery failed"
+            aria-label={`Failed delivery ${row.id}`}
             onClick={() => setFailedOrderModal(row.id)}
-            className="orders-mini-btn gray"
           >
-            Failed
+            <InvIconAlert />
           </button>
           {btnDetails}
         </div>
@@ -273,13 +299,15 @@ export default function OrdersTableClient({
 
     if (row.status === "delivered") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-indigo"
+            title="Print"
+            aria-label={`Print order ${row.id}`}
             onClick={() => window.print()}
-            className="orders-mini-btn indigo"
           >
-            Print
+            <InvIconPrint />
           </button>
           {btnDetails}
         </div>
@@ -288,13 +316,15 @@ export default function OrdersTableClient({
 
     if (row.status === "cancelled") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-muted"
+            title="Cancellation reason"
+            aria-label={`Reason for cancelled order ${row.id}`}
             onClick={() => alert("Cancel Reason: Customer changed their mind or delivery failed.")}
-            className="orders-mini-btn gray"
           >
-            Reason
+            <InvIconInfo />
           </button>
           {btnDetails}
         </div>
@@ -303,31 +333,31 @@ export default function OrdersTableClient({
 
     if (row.status === "awaiting_payment") {
       return (
-        <div className="orders-mini-actions">
+        <div className="admin-icon-actions">
           <button
             type="button"
+            className="admin-icon-actions-accent"
+            title="Confirm payment"
+            aria-label={`Mark paid ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "processing", "Confirm Payment", "Change order status to Processing?")}
-            className="orders-mini-btn primary"
           >
-            Paid
+            <InvIconCheck />
           </button>
           <button
             type="button"
+            className="admin-icon-actions-danger"
+            title="Cancel order"
+            aria-label={`Cancel order ${row.id}`}
             onClick={() => requestUpdateStatus(row.id, "cancelled", "Cancel Order", "Are you sure you want to cancel this order?")}
-            className="orders-mini-btn danger"
           >
-            Cancel
+            <InvIconX />
           </button>
           {btnDetails}
         </div>
       );
     }
 
-    return (
-      <div className="orders-mini-actions" style={{ justifyContent: "flex-start" }}>
-        {btnDetails}
-      </div>
-    );
+    return <div className="admin-icon-actions">{btnDetails}</div>;
   };
 
   return (
