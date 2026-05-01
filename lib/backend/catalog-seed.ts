@@ -66,12 +66,24 @@ export type BackendStore = {
   updatedAt: string;
 };
 
+export type BackendMessage = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: "unread" | "read" | "replied";
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type SeedCatalog = {
   products: LocalProduct[];
   categories: LocalCategory[];
   users: BackendUser[];
   orders: BackendOrder[];
   stores: BackendStore[];
+  messages: BackendMessage[];
   meta: {
     version: number;
     updatedAt: string;
@@ -331,6 +343,7 @@ function readLegacyDbState(): SeedCatalog | null {
       users: Array.isArray(parsed.users) && parsed.users.length > 0 ? parsed.users : [createSeedAdmin()],
       orders: Array.isArray(parsed.orders) ? parsed.orders.map(normalizeOrder) : [],
       stores: Array.isArray(parsed.stores) && parsed.stores.length > 0 ? parsed.stores.map(normalizeStore) : DEFAULT_STORES.map(normalizeStore),
+      messages: (parsed as any).messages ?? [],
       meta: parsed.meta ?? { version: 1, updatedAt: nowIso() },
     };
   } catch {
@@ -432,6 +445,7 @@ export async function loadSeedCatalog(): Promise<SeedCatalog> {
     users: [createSeedAdmin()],
     orders: [],
     stores: DEFAULT_STORES.map(normalizeStore),
+    messages: [],
     meta: { version: 1, updatedAt: nowIso() },
   };
 }

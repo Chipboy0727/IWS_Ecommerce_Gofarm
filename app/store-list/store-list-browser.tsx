@@ -303,6 +303,50 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
 export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("all");
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleFindNearMe = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        let nearestStore = stores[0];
+        let minDistance = Infinity;
+
+        stores.forEach(store => {
+          if (store.lat && store.lng) {
+            // Simplified distance calculation for relative comparison
+            const dist = Math.sqrt(
+              Math.pow(store.lat - latitude, 2) + 
+              Math.pow(store.lng - longitude, 2)
+            );
+            if (dist < minDistance) {
+              minDistance = dist;
+              nearestStore = store;
+            }
+          }
+        });
+
+        if (nearestStore) {
+          setSearchQuery(nearestStore.name);
+          setSelectedCountry("all");
+        }
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsLocating(false);
+        alert("Unable to retrieve your location. Please check your permissions.");
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  };
 
   const countries = useMemo(() => {
     return ["all", ...new Set(stores.map(s => s.country))];
@@ -331,10 +375,21 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
         
         {/* Hero Section */}
         <div className="mb-6 sm:mb-8 md:mb-10 text-center">
-          <div className="mb-3 sm:mb-4 inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-white px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gofarm-green shadow-md">
-            <IconMapPin className="h-3 w-3 sm:h-4 sm:w-4" />
-            Find your nearest store
-          </div>
+          <button
+            onClick={handleFindNearMe}
+            disabled={isLocating}
+            className="mb-3 sm:mb-4 inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-white px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-gofarm-green shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-wait"
+          >
+            {isLocating ? (
+              <svg className="animate-spin h-3 w-3 sm:h-4 sm:w-4" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+            ) : (
+              <IconMapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+            )}
+            {isLocating ? "Finding nearest store..." : "Find near store"}
+          </button>
           <h1 className="mb-2 sm:mb-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
             Store Locations
           </h1>
