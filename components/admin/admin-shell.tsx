@@ -121,9 +121,8 @@ export function AdminShell({
       padding-right: 24px;
     }
     .admin-sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
+      align-self: stretch;
+      min-height: max(100%, 100vh);
       border-right: 1px solid rgba(36, 49, 31, 0.08);
       background: linear-gradient(180deg, #dce6ca 0%, #e5ecd8 100%);
       padding: 28px 14px 18px 18px;
@@ -677,6 +676,27 @@ export function AdminShell({
     .page-table tr:last-child td {
       border-bottom: 0;
     }
+    .page-table th.page-table-col-actions,
+    .page-table td.page-table-col-actions {
+      text-align: center;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      padding-left: 22px;
+      padding-right: 6px !important;
+      vertical-align: middle;
+    }
+    .page-table th.page-table-col-actions .page-table-actions-head {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      transform: translateX(-6px);
+    }
+    .page-table td.page-table-col-actions .page-table-actions-cell {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      transform: translateX(-6px);
+    }
     .table-scroll-wrap {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -952,6 +972,17 @@ export function AdminShell({
       .page-table td {
         padding: 12px;
         font-size: 12px;
+      }
+      .page-table th.page-table-col-actions,
+      .page-table td.page-table-col-actions {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 12px;
+        padding-right: 4px !important;
+      }
+      .page-table th.page-table-col-actions .page-table-actions-head,
+      .page-table td.page-table-col-actions .page-table-actions-cell {
+        transform: translateX(-4px);
       }
       .product-row {
         gap: 8px;
