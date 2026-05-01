@@ -74,7 +74,7 @@ export default async function OrdersPage() {
 
   const css = `
     .orders-page-title {
-      color: #1f7d16;
+      color: #00a844;
     }
     .orders-action-button {
       display: inline-flex;
@@ -99,9 +99,9 @@ export default async function OrdersPage() {
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), 0 10px 18px rgba(97, 116, 69, 0.08);
     }
     .orders-action-primary {
-      background: linear-gradient(180deg, #22a715 0%, #168e10 100%);
+      background: linear-gradient(180deg, #3b9c3c 0%, #00a844 50%, #008038 100%);
       color: #fff;
-      box-shadow: 0 14px 24px rgba(29, 145, 24, 0.22);
+      box-shadow: 0 14px 24px rgba(0, 168, 68, 0.28);
     }
     .orders-grid {
       display: grid;
@@ -128,9 +128,9 @@ export default async function OrdersPage() {
       place-items: center;
       border-radius: 10px;
     }
-    .orders-stat-icon.green { background: #dff2d4; color: #247b1e; }
+    .orders-stat-icon.green { background: rgba(0, 168, 68, 0.12); color: #00a844; }
     .orders-stat-icon.pink { background: #ffdceb; color: #c34d8a; }
-    .orders-stat-icon.olive { background: #d8f1cb; color: #2b7c22; }
+    .orders-stat-icon.olive { background: rgba(0, 168, 68, 0.16); color: #008038; }
     .orders-stat-chip {
       border-radius: 999px;
       min-height: 24px;
@@ -140,7 +140,7 @@ export default async function OrdersPage() {
       font-size: 11px;
       font-weight: 800;
     }
-    .orders-stat-chip.green { background: #d9f2c4; color: #35852a; }
+    .orders-stat-chip.green { background: rgba(0, 168, 68, 0.14); color: #00a844; }
     .orders-stat-chip.pink { background: #ffd7e8; color: #b64b87; }
     .orders-stat-label {
       margin-top: 14px;
@@ -201,10 +201,10 @@ export default async function OrdersPage() {
     .orders-filter-button:hover,
     .orders-date-filter:hover {
       transform: translateY(-1px);
-      box-shadow: inset 0 0 0 1px rgba(35,123,30,0.08), 0 12px 20px rgba(88, 109, 65, 0.09);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.12), 0 12px 20px rgba(17, 24, 39, 0.06);
     }
     .orders-filter-button.is-open {
-      box-shadow: inset 0 0 0 1px rgba(35,123,30,0.18), 0 12px 20px rgba(88, 109, 65, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.22), 0 12px 20px rgba(17, 24, 39, 0.08);
     }
     .orders-filter-menu {
       position: absolute;
@@ -231,11 +231,11 @@ export default async function OrdersPage() {
       cursor: pointer;
     }
     .orders-filter-menu-item:hover {
-      background: #edf6e4;
-      color: #257529;
+      background: rgba(0, 168, 68, 0.08);
+      color: #00a844;
     }
     .orders-filter-menu-item.active {
-      background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
+      background: linear-gradient(180deg, #3b9c3c 0%, #00a844 100%);
       color: #fff;
     }
     .orders-date-filter input {
@@ -249,14 +249,14 @@ export default async function OrdersPage() {
     .orders-clear-button {
       border: 0;
       background: transparent;
-      color: #218118;
+      color: #00a844;
       font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       transition: color 0.18s ease, transform 0.18s ease;
     }
     .orders-clear-button:hover {
-      color: #166a12;
+      color: #008038;
       transform: translateY(-1px);
     }
     .orders-filter-count {
@@ -276,7 +276,7 @@ export default async function OrdersPage() {
       min-width: 760px;
     }
     .orders-table thead {
-      background: #f0f5e4;
+      background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
     }
     .orders-table th {
       padding: 14px 22px;
@@ -303,7 +303,7 @@ export default async function OrdersPage() {
       border-bottom: 0;
     }
     .orders-id-cell span {
-      color: #178214;
+      color: #00a844;
       font-weight: 700;
       font-size: 10px;
       line-height: 1.4;
@@ -368,7 +368,7 @@ export default async function OrdersPage() {
     .orders-status-pill.processing { background: #bfdbfe; color: #1e3a8a; }
     .orders-status-pill.preparing { background: #e9d5ff; color: #6b21a8; }
     .orders-status-pill.shipped { background: #fed7aa; color: #9a3412; }
-    .orders-status-pill.delivered { background: #bbf7d0; color: #166534; }
+    .orders-status-pill.delivered { background: rgba(0, 168, 68, 0.14); color: #00a844; }
     .orders-status-pill.cancelled { background: #fecaca; color: #991b1b; }
     .orders-status-pill.awaiting_payment { background: #ffe5b8; color: #9d6810; }
     .orders-mini-actions {
@@ -403,7 +403,7 @@ export default async function OrdersPage() {
     }
     .orders-mini-btn:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: inset 0 0 0 1px rgba(25,126,24,0.14), 0 10px 18px rgba(88, 109, 65, 0.10);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.2), 0 10px 18px rgba(17, 24, 39, 0.08);
     }
     .orders-mini-btn:active:not(:disabled) {
       transform: translateY(0px);
@@ -415,12 +415,12 @@ export default async function OrdersPage() {
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
     }
     .orders-mini-btn.primary {
-      background: linear-gradient(180deg, rgba(26, 126, 25, 0.95) 0%, rgba(18, 108, 18, 0.95) 100%);
+      background: linear-gradient(180deg, rgba(0, 168, 68, 0.98) 0%, rgba(0, 128, 56, 0.98) 100%);
       color: #fff;
-      box-shadow: 0 12px 18px rgba(25, 126, 24, 0.18);
+      box-shadow: 0 12px 18px rgba(0, 168, 68, 0.22);
     }
     .orders-mini-btn.primary:hover:not(:disabled) {
-      box-shadow: 0 16px 24px rgba(25, 126, 24, 0.22);
+      box-shadow: 0 16px 24px rgba(0, 168, 68, 0.28);
     }
     .orders-mini-btn.danger {
       background: linear-gradient(180deg, rgba(220, 38, 38, 0.96) 0%, rgba(185, 28, 28, 0.96) 100%);
@@ -475,7 +475,7 @@ export default async function OrdersPage() {
       transition: background 0.18s ease, transform 0.18s ease;
     }
     .orders-more-button:hover {
-      background: #eef4e2;
+      background: rgba(0, 168, 68, 0.08);
       transform: translateY(-1px);
     }
     .orders-row-menu {
@@ -503,8 +503,8 @@ export default async function OrdersPage() {
       cursor: pointer;
     }
     .orders-row-menu button:hover {
-      background: #eef6e4;
-      color: #24752a;
+      background: rgba(0, 168, 68, 0.08);
+      color: #00a844;
     }
     .orders-empty {
       padding: 28px 18px;
@@ -541,10 +541,10 @@ export default async function OrdersPage() {
     }
     .orders-page-btn:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: inset 0 0 0 1px rgba(25,126,24,0.12), 0 8px 16px rgba(92, 111, 70, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.18), 0 8px 16px rgba(17, 24, 39, 0.06);
     }
     .orders-page-btn.active {
-      background: #1a7e19;
+      background: #00a844;
       color: #fff;
       box-shadow: none;
     }

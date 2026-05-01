@@ -462,11 +462,11 @@ export default function ProductManager() {
           <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
         ) : null}
         {notice ? (
-          <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{notice}</div>
+          <div className="mb-4 rounded-2xl border border-gofarm-green/20 bg-gofarm-green/5 px-4 py-3 text-sm text-gofarm-green">{notice}</div>
         ) : null}
 
         {loading ? (
-          <div className="rounded-[18px] bg-[#f8fbf2] px-6 py-12 text-center text-sm text-[#6f7b6d]">
+          <div className="rounded-[18px] bg-gray-50 px-6 py-12 text-center text-sm text-gofarm-gray">
             Loading products...
           </div>
         ) : (
@@ -475,14 +475,14 @@ export default function ProductManager() {
               <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
                 <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium text-left">
                 <thead>
-                  <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">SKU</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Product</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Category</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Stock Level</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Status</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Price</th>
-                    <th className="page-table-col-actions w-[130px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">
+                  <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">SKU</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Product</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Category</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Stock Level</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
+                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Price</th>
+                    <th className="page-table-col-actions w-[130px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
                       <div className="page-table-actions-head">Actions</div>
                     </th>
                   </tr>
@@ -492,8 +492,8 @@ export default function ProductManager() {
                     const stock = typeof product.stock === "number" ? product.stock : 0;
                     const tone = stockTone(stock);
                     return (
-                      <tr key={product.id} className="border-b border-[#eef2eb] last:border-0 hover:bg-gradient-to-r hover:from-[#fbfdf8] hover:to-[#f4faef] transition-all duration-200">
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-[#748171]">
+                      <tr key={product.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-gofarm-gray">
                           {product.slug.toUpperCase()}
                         </td>
                         <td className="px-3 sm:px-4 py-2.5 sm:py-3">
@@ -504,13 +504,13 @@ export default function ProductManager() {
                               className="h-8 w-8 sm:h-10 sm:w-10 rounded-[10px] object-cover shrink-0"
                               onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                             />
-                            <div className="text-[12px] sm:text-[13px] font-bold text-[#243322]">{product.name}</div>
+                            <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black">{product.name}</div>
                           </div>
                         </td>
                         <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                           <Pill tone="green">{resolveCategory(product)?.title ?? product.categoryTitle ?? "Uncategorized"}</Pill>
                         </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] text-[#4d5d4b]">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] text-gray-700">
                           <div className="flex items-center gap-2 sm:gap-3">
                             <div className="progress">
                               <span
@@ -518,13 +518,13 @@ export default function ProductManager() {
                                 style={{ width: `${stockWidth(stock)}%` }}
                               />
                             </div>
-                            <div className="text-[12px] sm:text-[13px] font-semibold text-[#243322]">{stock}</div>
+                            <div className="text-[12px] sm:text-[13px] font-semibold text-gofarm-black">{stock}</div>
                           </div>
                         </td>
                         <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                           <Pill tone={tone}>{(product.status ?? "ACTIVE").toUpperCase()}</Pill>
                         </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-semibold text-[#253323] whitespace-nowrap">
+                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-semibold text-gofarm-black whitespace-nowrap">
                           ${product.price.toFixed(2)}
                         </td>
                         <td className="page-table-col-actions w-[130px] py-2.5 sm:py-3 whitespace-nowrap">
@@ -555,13 +555,13 @@ export default function ProductManager() {
 
             {/* Pagination */}
             {filteredProducts.length > 0 && (
-              <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#6f7b6d] px-2">
+              <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-gofarm-gray px-2">
                 <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredProducts.length)} of {filteredProducts.length} products</div>
                 <div className="flex items-center gap-2">
                   <button 
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
                   >
                     ‹
                   </button>
@@ -576,12 +576,12 @@ export default function ProductManager() {
                         key={pageNum}
                         onClick={() => setPage(pageNum)}
                         style={{
-                          backgroundColor: page === pageNum ? '#0b7312' : '',
+                          backgroundColor: page === pageNum ? "#00a844" : "",
                           color: page === pageNum ? '#ffffff' : ''
                         }}
                         className={`flex h-8 w-8 items-center justify-center rounded-md ${
                           page !== pageNum 
-                            ? "bg-white ring-1 ring-[#dbead2] hover:bg-[#edf5e7] text-[#243322]" 
+                            ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black" 
                             : "font-bold"
                         }`}
                       >
@@ -592,7 +592,7 @@ export default function ProductManager() {
                   <button 
                     onClick={() => setPage(Math.min(pageCount, page + 1))}
                     disabled={page === pageCount}
-                    className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
                   >
                     ›
                   </button>
@@ -604,18 +604,18 @@ export default function ProductManager() {
       </SectionCard>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a2619]/60 p-4 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/55 p-4 backdrop-blur-md">
           <div className="pm-modal-shell flex h-full max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-[38px] bg-white shadow-[0_30px_70px_-10px_rgba(38,64,30,0.28)]">
             {/* Header */}
-            <div className="pm-modal-header flex items-center justify-between border-b border-[#dfead2] px-8 py-6">
+            <div className="pm-modal-header flex items-center justify-between border-b border-gray-200 px-8 py-6">
               <div>
-                <h3 className="text-2xl font-extrabold tracking-tight text-[#1a2619]">{editingSlug ? "Edit Product" : "Create New Product"}</h3>
-                <p className="text-[14px] text-[#547252]">{editingSlug ? "Update the product details below." : "Add a fresh new product to your catalog."}</p>
+                <h3 className="text-2xl font-extrabold tracking-tight text-gofarm-black">{editingSlug ? "Edit Product" : "Create New Product"}</h3>
+                <p className="text-[14px] text-gofarm-gray">{editingSlug ? "Update the product details below." : "Add a fresh new product to your catalog."}</p>
               </div>
               <button
                 type="button"
                 onClick={closeModal}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/75 text-[#4d5d4b] ring-1 ring-[#d7e5c8] transition-all hover:bg-white hover:text-[#1a2619] hover:ring-[#b9d6ab] active:scale-90"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/75 text-gray-700 ring-1 ring-gray-200 transition-all hover:bg-white hover:text-gofarm-black hover:ring-gofarm-light-green/50 active:scale-90"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -632,12 +632,12 @@ export default function ProductManager() {
                 </div>
               ) : null}
               <form id="product-form" onSubmit={handleSubmit} className="grid gap-8 md:grid-cols-2">
-                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
-                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-gray-50 p-8 border border-gray-200">
+                  <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gofarm-green/10 text-gofarm-green">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
-                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Basic Information</h4>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-gofarm-black">Basic Information</h4>
                   </div>
                   <div className="grid gap-6 md:grid-cols-2">
                     <Field label="Product Name">
@@ -652,15 +652,15 @@ export default function ProductManager() {
                   </div>
                 </div>
 
-                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between border-b border-[#edf1e5] pb-4">
+                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between border-b border-gray-200 pb-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gofarm-green/10 text-gofarm-green">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                       </div>
-                      <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Media</h4>
+                      <h4 className="text-[14px] font-bold uppercase tracking-widest text-gofarm-black">Media</h4>
                     </div>
-                    <div className="flex rounded-full bg-[#f0f5e4] p-1 scale-90">
+                    <div className="flex rounded-full bg-gray-100 p-1 scale-90">
                       <button type="button" onClick={() => setImageMode("url")} className={`pm-toggle-btn ${imageMode === "url" ? "is-active" : ""}`}>LINK</button>
                       <button type="button" onClick={() => setImageMode("upload")} className={`pm-toggle-btn ${imageMode === "upload" ? "is-active" : ""}`}>UPLOAD</button>
                     </div>
@@ -673,13 +673,13 @@ export default function ProductManager() {
                     ) : (
                       <div className="relative">
                         <input type="file" accept="image/*" onChange={handleFileUpload} className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0" />
-                        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#dce4d1] bg-[#f8fbf2] p-8 text-center transition-all hover:border-[#16781f]">
+                        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center transition-all hover:border-gofarm-green">
                           {uploading ? (
-                            <svg className="h-8 w-8 animate-spin text-[#16781f]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <svg className="h-8 w-8 animate-spin text-gofarm-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                           ) : (
                             <>
-                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#16781f] mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                              <span className="text-[13px] font-bold text-[#1a2619]">Click to Upload</span>
+                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gofarm-green mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                              <span className="text-[13px] font-bold text-gofarm-black">Click to Upload</span>
                             </>
                           )}
                         </div>
@@ -689,7 +689,7 @@ export default function ProductManager() {
                       <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" placeholder="Image description" required />
                     </Field>
                     {form.imageSrc && !previewError ? (
-                      <div className="relative mt-3 group overflow-hidden rounded-[24px] border border-[#dce4d1]">
+                      <div className="relative mt-3 group overflow-hidden rounded-[24px] border border-gray-200">
                         <img
                           src={form.imageSrc}
                           alt="Preview"
@@ -701,19 +701,19 @@ export default function ProductManager() {
                         </div>
                       </div>
                     ) : form.imageSrc ? (
-                      <div className="mt-3 flex h-32 items-center justify-center rounded-[24px] border border-dashed border-[#d3dfc5] bg-[#f7fbf1] text-[13px] font-semibold text-[#6f7b6d]">
+                      <div className="mt-3 flex h-32 items-center justify-center rounded-[24px] border border-dashed border-gray-300 bg-gofarm-light-orange/35 text-[13px] font-semibold text-gofarm-gray">
                         Invalid image URL. Please use another link or upload a file.
                       </div>
                     ) : null}
                   </div>
                 </div>
 
-                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gofarm-green/10 text-gofarm-green">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                     </div>
-                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Pricing</h4>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-gofarm-black">Pricing</h4>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <Field label="Price ($)">
@@ -731,12 +731,12 @@ export default function ProductManager() {
                   </div>
                 </div>
 
-                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
-                  <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
+                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-gray-50 p-8 border border-gray-200">
+                  <div className="flex items-center gap-3 border-b border-gray-200 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gofarm-green/10 text-gofarm-green">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </div>
-                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Classification</h4>
+                    <h4 className="text-[14px] font-bold uppercase tracking-widest text-gofarm-black">Classification</h4>
                   </div>
                   <div className="grid gap-6 md:grid-cols-3">
                     <Field label="Category">
@@ -757,7 +757,7 @@ export default function ProductManager() {
             </div>
 
             {/* Footer */}
-            <div className="pm-modal-footer border-t border-[#e2ecd8] px-8 py-7">
+            <div className="pm-modal-footer border-t border-gray-200 px-8 py-7">
               <div className="pm-footer-actions flex items-center justify-end gap-3">
                 <button
                   type="button"
@@ -783,20 +783,20 @@ export default function ProductManager() {
       <style jsx>{`
         .pm-modal-shell {
           background:
-            radial-gradient(circle at top right, rgba(161, 227, 139, 0.24), transparent 38%),
-            radial-gradient(circle at bottom left, rgba(195, 240, 177, 0.22), transparent 40%),
+            radial-gradient(circle at top right, rgba(0, 168, 68, 0.08), transparent 42%),
+            radial-gradient(circle at bottom left, rgba(254, 143, 24, 0.09), transparent 45%),
             #ffffff;
-          border: 1px solid #dbe8cf;
+          border: 1px solid #e5e7eb;
         }
         .pm-modal-header {
-          background: linear-gradient(180deg, #f7fcef 0%, #eef7e3 100%);
+          background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
         }
         .pm-modal-body {
-          background: linear-gradient(180deg, #fdfefb 0%, #f7fbf2 100%);
+          background: linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
           padding-bottom: 14px;
         }
         .pm-modal-footer {
-          background: linear-gradient(180deg, #f7fbf2 0%, #f2f8e8 100%);
+          background: linear-gradient(180deg, #f9fafb 0%, #fff7ee 100%);
           overflow: visible;
           border-top: 0 !important;
           margin-top: -6px;
@@ -808,13 +808,13 @@ export default function ProductManager() {
         .pm-form-panel {
           border-radius: 42px !important;
           overflow: hidden;
-          box-shadow: 0 14px 30px rgba(83, 112, 58, 0.07);
+          box-shadow: 0 14px 30px rgba(17, 24, 39, 0.06);
           transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
         }
         .pm-form-panel:hover {
           transform: translateY(-2px);
-          border-color: #d8e7ca;
-          box-shadow: 0 18px 34px rgba(83, 112, 58, 0.12);
+          border-color: rgba(0, 168, 68, 0.22);
+          box-shadow: 0 18px 34px rgba(17, 24, 39, 0.1);
         }
         .pm-save-btn {
           position: relative;
@@ -824,30 +824,30 @@ export default function ProductManager() {
           min-width: 140px;
           white-space: nowrap;
           color: #ffffff;
-          background: linear-gradient(180deg, #21ad1b 0%, #138e13 100%);
-          box-shadow: 0 6px 10px rgba(18, 142, 19, 0.18);
+          background: linear-gradient(180deg, #3b9c3c 0%, #00a844 45%, #008038 100%);
+          box-shadow: 0 8px 18px rgba(0, 168, 68, 0.28);
         }
         .pm-save-btn:hover:not(:disabled) {
-          filter: saturate(1.03) brightness(1.01);
-          box-shadow: 0 7px 11px rgba(18, 142, 19, 0.2);
+          filter: brightness(1.04);
+          box-shadow: 0 10px 22px rgba(0, 168, 68, 0.34);
         }
         .pm-save-btn:disabled {
           cursor: not-allowed;
           filter: grayscale(0.08);
-          box-shadow: 0 8px 16px rgba(18, 142, 19, 0.18);
+          box-shadow: 0 6px 14px rgba(0, 168, 68, 0.15);
         }
         .pm-cancel-btn {
           flex: 0 0 auto;
           min-height: 42px;
           min-width: 96px;
           white-space: nowrap;
-          color: #4f5d4d;
-          background: linear-gradient(180deg, #ffffff 0%, #f3f8eb 100%);
-          box-shadow: inset 0 0 0 1px rgba(146, 168, 126, 0.35), 0 6px 10px rgba(96, 122, 70, 0.1);
+          color: #374151;
+          background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+          box-shadow: inset 0 0 0 1px #e5e7eb, 0 6px 10px rgba(17, 24, 39, 0.06);
         }
         .pm-cancel-btn:hover {
-          color: #2f3f2c;
-          box-shadow: inset 0 0 0 1px rgba(120, 150, 98, 0.45), 0 8px 12px rgba(96, 122, 70, 0.12);
+          color: #111827;
+          box-shadow: inset 0 0 0 1px #d1d5db, 0 8px 12px rgba(17, 24, 39, 0.08);
         }
         .pm-toggle-btn {
           border: 0;
@@ -855,41 +855,41 @@ export default function ProductManager() {
           padding: 6px 16px;
           font-size: 11px;
           font-weight: 800;
-          color: #6f7b6d;
+          color: #6b7280;
           background: transparent;
           cursor: pointer;
           transition: all 0.18s ease;
         }
         .pm-toggle-btn:hover {
-          color: #2f5f2a;
-          background: rgba(255, 255, 255, 0.58);
+          color: #00a844;
+          background: rgba(0, 168, 68, 0.06);
         }
         .pm-toggle-btn.is-active {
           background: #ffffff;
-          color: #16781f;
-          box-shadow: 0 6px 12px rgba(90, 117, 66, 0.18);
+          color: #00a844;
+          box-shadow: 0 6px 14px rgba(0, 168, 68, 0.15);
         }
         .input {
           width: 100%;
           border-radius: 22px;
-          border: 1.5px solid #dce4d1;
+          border: 1.5px solid #e5e7eb;
           background: #fff;
           padding: 14px 18px;
           font-size: 15px;
-          color: #243322;
+          color: #111827;
           outline: none;
           transition: all 0.2s ease;
           box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .input::placeholder {
-          color: #a4b3a2;
+          color: #9ca3af;
         }
         .input:focus {
-          border-color: #0f9716;
-          box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.14), 0 6px 16px rgba(15, 151, 22, 0.1);
+          border-color: #00a844;
+          box-shadow: 0 0 0 4px rgba(0, 168, 68, 0.12), 0 6px 16px rgba(17, 24, 39, 0.06);
         }
         .input:hover:not(:focus) {
-          border-color: #b5c4a7;
+          border-color: #d1d5db;
         }
         .pm-dropdown-group {
           display: flex;
@@ -907,20 +907,23 @@ export default function ProductManager() {
           min-height: 48px;
           padding: 0 14px;
           border-radius: 12px;
-          background: linear-gradient(180deg, #f4f8ed 0%, #eaf2de 100%);
-          color: #4f604b;
+          background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+          color: #4b5563;
           font-size: 15px;
           text-decoration: none;
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 10px 18px rgba(117, 139, 89, 0.08);
-          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 6px 16px rgba(17, 24, 39, 0.05);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
         }
         .pm-filter:hover {
           transform: translateY(-1px);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 22px rgba(98, 125, 69, 0.12);
-          background: linear-gradient(180deg, #f7fbf0 0%, #edf5e2 100%);
+          border-color: rgba(0, 168, 68, 0.25);
+          box-shadow: 0 10px 22px rgba(17, 24, 39, 0.08);
+          background: linear-gradient(180deg, #ffffff 0%, #fff7ee 100%);
         }
         .pm-filter:focus-within {
-          box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.22), 0 12px 22px rgba(98, 125, 69, 0.12);
+          border-color: rgba(0, 168, 68, 0.45);
+          box-shadow: 0 0 0 3px rgba(0, 168, 68, 0.12), 0 10px 22px rgba(17, 24, 39, 0.08);
         }
         .pm-filter-select {
           min-width: 190px;
@@ -930,9 +933,9 @@ export default function ProductManager() {
           padding-right: 40px;
         }
         .pm-filter-select.is-open {
-          border-color: rgba(47, 151, 42, 0.24);
-          background: linear-gradient(180deg, #f8fcf3 0%, #eef7e5 100%);
-          box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.08), 0 16px 28px rgba(98, 125, 69, 0.14);
+          border-color: rgba(0, 168, 68, 0.3);
+          background: linear-gradient(180deg, #ffffff 0%, rgba(0, 168, 68, 0.06) 100%);
+          box-shadow: 0 12px 28px rgba(17, 24, 39, 0.1);
         }
         .pm-filter-button {
           border: 0;
@@ -944,13 +947,13 @@ export default function ProductManager() {
           right: 12px;
           top: 50%;
           transform: translateY(-50%);
-          color: #73916c;
+          color: #6b7280;
           pointer-events: none;
           transition: transform 0.18s ease, color 0.18s ease;
         }
         .pm-filter-select.is-open .pm-select-arrow {
           transform: translateY(-50%) rotate(180deg);
-          color: #2d8c2f;
+          color: #00a844;
         }
         .pm-menu {
           position: absolute;
@@ -961,8 +964,8 @@ export default function ProductManager() {
           padding: 6px;
           border-radius: 12px;
           background: rgba(255, 255, 255, 0.98);
-          border: 1px solid rgba(173, 191, 152, 0.55);
-          box-shadow: 0 14px 24px rgba(93, 118, 67, 0.12), 0 4px 10px rgba(93, 118, 67, 0.06);
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 14px 28px rgba(17, 24, 39, 0.12), 0 4px 10px rgba(17, 24, 39, 0.06);
           backdrop-filter: blur(16px);
           overflow: hidden;
           box-sizing: border-box;
@@ -977,7 +980,7 @@ export default function ProductManager() {
           background: transparent;
           border-radius: 9px;
           padding: 9px 12px;
-          color: #4d6247;
+          color: #374151;
           font-size: 14px;
           font-weight: 600;
           line-height: 1.25;
@@ -986,11 +989,11 @@ export default function ProductManager() {
           transition: background 0.16s ease, color 0.16s ease;
         }
         .pm-menu-item:hover {
-          background: linear-gradient(180deg, #f3f9ea 0%, #ebf5df 100%);
-          color: #24752a;
+          background: linear-gradient(180deg, #f9fafb 0%, #fff7ee 100%);
+          color: #00a844;
         }
         .pm-menu-item.active {
-          background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
+          background: linear-gradient(180deg, #3b9c3c 0%, #00a844 100%);
           color: #fff;
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
         }
@@ -1000,15 +1003,15 @@ export default function ProductManager() {
           display: grid;
           place-items: center;
           border-radius: 10px;
-          background: linear-gradient(180deg, #ffffff 0%, #f3f8eb 100%);
-          box-shadow: inset 0 0 0 1px rgba(146, 168, 126, 0.32);
+          background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+          box-shadow: inset 0 0 0 1px #e5e7eb;
           transition: transform 0.16s ease, box-shadow 0.16s ease, color 0.16s ease, background 0.16s ease;
         }
         .icon-actions button:hover {
           transform: translateY(-1px);
-          color: #1f7d16;
-          background: linear-gradient(180deg, #fbfff7 0%, #eef8e1 100%);
-          box-shadow: inset 0 0 0 1px rgba(23, 126, 20, 0.25), 0 8px 14px rgba(96, 122, 70, 0.14);
+          color: #00a844;
+          background: linear-gradient(180deg, #ffffff 0%, rgba(0, 168, 68, 0.08) 100%);
+          box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.22), 0 8px 14px rgba(17, 24, 39, 0.08);
         }
         @keyframes pmMenuIn {
           from {
@@ -1059,7 +1062,7 @@ function Field({
 }) {
   return (
     <label className={className}>
-      <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-[#6f7b6d]">{label}</span>
+      <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-gofarm-gray">{label}</span>
       {children}
     </label>
   );

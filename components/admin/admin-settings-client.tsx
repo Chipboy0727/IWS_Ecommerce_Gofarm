@@ -129,14 +129,14 @@ export function AdminSettingsClient() {
     }
   };
 
-  if (loading) return <div className="py-12 text-center text-sm text-[#6f7b6d]">Loading information...</div>;
+  if (loading) return <div className="py-12 text-center text-sm text-gofarm-gray">Loading information...</div>;
   if (error || !profile) return <div className="rounded-xl bg-red-50 p-4 text-red-700 border border-red-100">{error || "Error loading data"}</div>;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 pt-4">
       {toast && (
         <div 
-          style={{ backgroundColor: toast.type === 'success' ? '#0f7d17' : '#dc2626' }}
+          style={{ backgroundColor: toast.type === 'success' ? '#00a844' : '#dc2626' }}
           className="fixed top-6 right-6 z-50 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white shadow-lg transition-all"
         >
           {toast.message}
@@ -144,7 +144,7 @@ export function AdminSettingsClient() {
       )}
 
       {/* Tab Bar */}
-      <div style={{ backgroundColor: '#e2fae7' }} className="inline-flex gap-1 rounded-full p-1.5">
+      <div style={{ backgroundColor: 'rgba(0, 168, 68, 0.12)' }} className="inline-flex gap-1 rounded-full p-1.5">
         {[
           { key: "profile", label: "Personal Info" },
           { key: "password", label: "Change Password" },
@@ -155,7 +155,7 @@ export function AdminSettingsClient() {
             onClick={() => setTab(t.key as Tab)}
             style={{
               backgroundColor: tab === t.key ? '#ffffff' : 'transparent',
-              color: tab === t.key ? '#0f7d17' : '#5c6959'
+              color: tab === t.key ? "#00a844" : "#6b7280"
             }}
             className="rounded-full px-6 py-2.5 text-[13px] font-bold transition-all shadow-sm"
           >
@@ -167,10 +167,10 @@ export function AdminSettingsClient() {
       {/* Main Content Grid */}
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-3 items-stretch">
         {/* Left Card (Profile/Avatar) */}
-        <div className="h-full rounded-[32px] bg-white p-8 border border-[#edf1e5] shadow-sm flex flex-col items-center text-center">
+        <div className="h-full rounded-[32px] bg-white p-8 border border-gray-200 shadow-sm flex flex-col items-center text-center">
           <div className="relative">
             <div 
-              style={{ borderColor: '#e2fae7', backgroundColor: '#0f7d17' }}
+              style={{ borderColor: 'rgba(0, 168, 68, 0.12)', backgroundColor: '#00a844' }}
               className="w-40 h-40 rounded-full flex items-center justify-center border-4 overflow-hidden"
             >
               {avatar ? (
@@ -181,8 +181,8 @@ export function AdminSettingsClient() {
             </div>
             <button 
               onClick={() => fileRef.current?.click()}
-              style={{ backgroundColor: '#0f7d17' }}
-              className="absolute bottom-2 right-2 w-8 h-8 text-white rounded-full flex items-center justify-center shadow hover:bg-[#0d6813] transition-colors"
+              style={{ backgroundColor: '#00a844' }}
+              className="absolute bottom-2 right-2 w-8 h-8 text-white rounded-full flex items-center justify-center shadow hover:bg-gofarm-light-green transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -190,14 +190,14 @@ export function AdminSettingsClient() {
             </button>
           </div>
 
-          <h2 className="mt-5 text-xl font-bold text-[#1a2619]">{profile.name}</h2>
-          <p className="text-[13px] text-[#6f7b6d] mt-1 capitalize">{profile.role} Access</p>
+          <h2 className="mt-5 text-xl font-bold text-gofarm-black">{profile.name}</h2>
+          <p className="text-[13px] text-gofarm-gray mt-1 capitalize">{profile.role} Access</p>
 
           <div className="mt-6 w-full space-y-3">
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarPick} />
             <button 
               onClick={() => fileRef.current?.click()}
-              style={{ backgroundColor: '#0f7d17' }}
+              style={{ backgroundColor: '#00a844' }}
               className="w-full rounded-full text-white py-3 text-[13px] font-bold flex items-center justify-center gap-2 shadow transition-colors hover:opacity-90"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -221,58 +221,58 @@ export function AdminSettingsClient() {
         </div>
 
         {/* Right Card (Tab Forms) */}
-        <div className="h-full lg:col-span-2 rounded-[32px] bg-white p-8 border border-[#edf1e5] shadow-sm flex flex-col justify-between min-h-[400px]">
+        <div className="h-full lg:col-span-2 rounded-[32px] bg-white p-8 border border-gray-200 shadow-sm flex flex-col justify-between min-h-[400px]">
           {tab === "profile" && (
             <form onSubmit={handleProfileSubmit} className="space-y-6 flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-3 pb-4 border-b border-[#edf1e5] mb-6">
-                  <div style={{ backgroundColor: '#e2fae7', color: '#0f7d17' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                <div className="flex items-center gap-3 pb-4 border-b border-gray-200 mb-6">
+                  <div style={{ backgroundColor: 'rgba(0, 168, 68, 0.12)', color: '#00a844' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-[#1a2619]">Personal Profile</h3>
+                  <h3 className="text-lg font-bold text-gofarm-black">Personal Profile</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">Full Name</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">Full Name</label>
                     <input 
                       type="text" 
                       value={name} 
                       onChange={(e) => setName(e.target.value)} 
-                      style={{ backgroundColor: '#eef8f1' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#1a2619] font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-[#0f7d17]"
+                      style={{ backgroundColor: '#f9fafb' }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-black font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-gofarm-green"
                       placeholder="Enter your name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">Email Address</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">Email Address</label>
                     <input 
                       type="email" 
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)} 
-                      style={{ backgroundColor: '#eef8f1' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#1a2619] font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-[#0f7d17]"
+                      style={{ backgroundColor: '#f9fafb' }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-black font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-gofarm-green"
                       placeholder="admin@example.com"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5 flex items-center gap-1">
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5 flex items-center gap-1">
                       Role 
                       <svg className="w-3.5 h-3.5 text-[#a0ad9e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                     </label>
                     <div 
-                      style={{ backgroundColor: 'rgba(226, 250, 235, 0.7)' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#6f7b6d] font-medium text-sm cursor-not-allowed flex items-center gap-2"
+                      style={{ backgroundColor: "rgba(0, 168, 68, 0.08)" }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-gray font-medium text-sm cursor-not-allowed flex items-center gap-2"
                     >
-                      <svg style={{ color: '#0f7d17' }} className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <svg style={{ color: '#00a844' }} className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 5" />
                       </svg>
                       <span className="capitalize">{profile.role}</span>
@@ -281,12 +281,12 @@ export function AdminSettingsClient() {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">Account Created At</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">Account Created At</label>
                     <div 
-                      style={{ backgroundColor: 'rgba(226, 250, 235, 0.7)' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#6f7b6d] font-medium text-sm cursor-not-allowed flex items-center gap-2"
+                      style={{ backgroundColor: "rgba(0, 168, 68, 0.08)" }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-gray font-medium text-sm cursor-not-allowed flex items-center gap-2"
                     >
-                      <svg style={{ color: '#0f7d17' }} className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg style={{ color: '#00a844' }} className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       {new Date(profile.createdAt).toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" })} · {new Date(profile.createdAt).toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })}
@@ -295,11 +295,11 @@ export function AdminSettingsClient() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-6 border-t border-[#edf1e5] mt-6">
+              <div className="flex justify-end pt-6 border-t border-gray-200 mt-6">
                 <button 
                   type="submit" 
                   disabled={isSubmittingProfile}
-                  style={{ background: 'linear-gradient(90deg, #0f7d17, #2cd46e)' }}
+                  style={{ background: "linear-gradient(90deg, #00a844, #3b9c3c)" }}
                   className="rounded-full hover:brightness-105 text-white w-full md:w-[350px] py-4 text-[14px] font-bold flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-70"
                 >
                   {isSubmittingProfile ? "Saving..." : "Save Changes"}
@@ -314,50 +314,50 @@ export function AdminSettingsClient() {
           {tab === "password" && (
             <form onSubmit={handlePasswordSubmit} className="space-y-6 flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-3 pb-4 border-b border-[#edf1e5] mb-6">
-                  <div style={{ backgroundColor: '#e2fae7', color: '#0f7d17' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                <div className="flex items-center gap-3 pb-4 border-b border-gray-200 mb-6">
+                  <div style={{ backgroundColor: 'rgba(0, 168, 68, 0.12)', color: '#00a844' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-[#1a2619]">Change Password</h3>
+                  <h3 className="text-lg font-bold text-gofarm-black">Change Password</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">Current Password</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">Current Password</label>
                     <input 
                       type="password" 
                       value={currentPass} 
                       onChange={(e) => setCurrentPass(e.target.value)} 
-                      style={{ backgroundColor: '#eef8f1' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#1a2619] font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-[#0f7d17]"
+                      style={{ backgroundColor: '#f9fafb' }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-black font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-gofarm-green"
                       placeholder="••••••••"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">New Password</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">New Password</label>
                     <input 
                       type="password" 
                       value={newPass} 
                       onChange={(e) => setNewPass(e.target.value)} 
-                      style={{ backgroundColor: '#eef8f1' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#1a2619] font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-[#0f7d17]"
+                      style={{ backgroundColor: '#f9fafb' }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-black font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-gofarm-green"
                       placeholder="Min 8 characters"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1.5">Confirm Password</label>
+                    <label className="block text-[11px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1.5">Confirm Password</label>
                     <input 
                       type="password" 
                       value={confirmPass} 
                       onChange={(e) => setConfirmPass(e.target.value)} 
-                      style={{ backgroundColor: '#eef8f1' }}
-                      className="w-full px-5 py-3.5 rounded-full text-[#1a2619] font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-[#0f7d17]"
+                      style={{ backgroundColor: '#f9fafb' }}
+                      className="w-full px-5 py-3.5 rounded-full text-gofarm-black font-medium text-sm border-none outline-none transition-all focus:ring-2 focus:ring-gofarm-green"
                       placeholder="••••••••"
                       required
                     />
@@ -365,11 +365,11 @@ export function AdminSettingsClient() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-6 border-t border-[#edf1e5] mt-6">
+              <div className="flex justify-end pt-6 border-t border-gray-200 mt-6">
                 <button 
                   type="submit" 
                   disabled={isSubmittingPass}
-                  style={{ background: 'linear-gradient(90deg, #0f7d17, #2cd46e)' }}
+                  style={{ background: "linear-gradient(90deg, #00a844, #3b9c3c)" }}
                   className="rounded-full hover:brightness-105 text-white w-full md:w-[350px] py-4 text-[14px] font-bold flex items-center justify-center gap-2 shadow-lg transition-all disabled:opacity-70"
                 >
                   {isSubmittingPass ? "Saving..." : "Change Password"}
@@ -384,13 +384,13 @@ export function AdminSettingsClient() {
           {tab === "about" && (
             <div className="space-y-6 flex-1 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-3 pb-4 border-b border-[#edf1e5] mb-6">
-                  <div style={{ backgroundColor: '#e2fae7', color: '#0f7d17' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                <div className="flex items-center gap-3 pb-4 border-b border-gray-200 mb-6">
+                  <div style={{ backgroundColor: 'rgba(0, 168, 68, 0.12)', color: '#00a844' }} className="w-10 h-10 rounded-full flex items-center justify-center font-bold">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-[#1a2619]">System Information</h3>
+                  <h3 className="text-lg font-bold text-gofarm-black">System Information</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -401,9 +401,9 @@ export function AdminSettingsClient() {
                     { label: "Account ID", value: profile.id },
                     { label: "Last Updated", value: new Date(profile.updatedAt).toLocaleString("en-US") }
                   ].map((item) => (
-                    <div key={item.label} style={{ backgroundColor: '#eef8f1' }} className="rounded-2xl px-5 py-3.5 flex flex-col">
-                      <span className="text-[10px] font-bold text-[#6f7b6d] tracking-[0.1em] uppercase mb-1">{item.label}</span>
-                      <span className="text-[13px] text-[#1a2619] font-semibold truncate">{item.value}</span>
+                    <div key={item.label} style={{ backgroundColor: '#f9fafb' }} className="rounded-2xl px-5 py-3.5 flex flex-col">
+                      <span className="text-[10px] font-bold text-gofarm-gray tracking-[0.1em] uppercase mb-1">{item.label}</span>
+                      <span className="text-[13px] text-gofarm-black font-semibold truncate">{item.value}</span>
                     </div>
                   ))}
                 </div>

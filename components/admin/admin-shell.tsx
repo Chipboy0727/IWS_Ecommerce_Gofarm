@@ -95,12 +95,23 @@ export function AdminShell({
     .admin-root {
       min-height: 100vh;
       --sidebar-width: 254px;
-      --admin-border: #d4e0ca;
-      --admin-border-muted: rgba(36, 49, 31, 0.1);
+      --gf-primary: #00a844;
+      --gf-primary-hover: #3b9c3c;
+      --gf-primary-dark: #008038;
+      --gf-orange: #fe8f18;
+      --gf-surface: #ffffff;
+      --gf-bg: #f9fafb;
+      --gf-bg-warm: #fff7ee;
+      --gf-text: #111827;
+      --gf-text-muted: #6b7280;
+      --gf-text-soft: #9ca3af;
+      --admin-border: #e5e7eb;
+      --admin-border-muted: rgba(17, 24, 39, 0.06);
       background:
-        radial-gradient(circle at top left, rgba(255,255,255,.72), transparent 30%),
-        linear-gradient(180deg, #edf5de 0%, #eef5df 100%);
-      color: #223021;
+        radial-gradient(ellipse 120% 70% at 0% 0%, rgba(0, 168, 68, 0.07), transparent 52%),
+        radial-gradient(ellipse 90% 60% at 100% 0%, rgba(254, 143, 24, 0.08), transparent 48%),
+        linear-gradient(180deg, #ffffff 0%, #f9fafb 45%, #fffdfb 100%);
+      color: var(--gf-text);
       font-family: var(--font-jost), Arial, Helvetica, sans-serif;
     }
     .admin-root .page-table button {
@@ -135,10 +146,11 @@ export function AdminShell({
     .admin-sidebar {
       align-self: stretch;
       min-height: max(100%, 100vh);
-      border-right: 1px solid rgba(36, 49, 31, 0.08);
-      background: linear-gradient(180deg, #dce6ca 0%, #e5ecd8 100%);
+      border-right: 1px solid var(--admin-border);
+      background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
       padding: 28px 14px 18px 18px;
       z-index: 30;
+      box-shadow: 4px 0 24px rgba(17, 24, 39, 0.04);
     }
     .sidebar-inner {
       display: flex;
@@ -165,9 +177,9 @@ export function AdminShell({
       border-radius: 12px;
       display: grid;
       place-items: center;
-      background: linear-gradient(180deg, #108916 0%, #0b7312 100%);
+      background: linear-gradient(180deg, var(--gf-primary) 0%, var(--gf-primary-dark) 100%);
       color: #fff;
-      box-shadow: 0 10px 24px rgba(10, 120, 24, 0.26);
+      box-shadow: 0 10px 24px rgba(0, 168, 68, 0.28);
       flex: 0 0 auto;
     }
     .sidebar-toggle {
@@ -175,28 +187,29 @@ export function AdminShell({
       height: 34px;
       border: 0;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.58);
-      color: #4f5c4c;
+      background: #f3f4f6;
+      color: var(--gf-text-muted);
       display: grid;
       place-items: center;
       cursor: pointer;
       flex: 0 0 auto;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+      box-shadow: inset 0 0 0 1px var(--admin-border-muted);
     }
     .sidebar-toggle:hover {
-      background: rgba(255, 255, 255, 0.82);
+      background: #e5e7eb;
+      color: var(--gf-primary);
     }
     .brand-title {
       font-size: 24px;
       line-height: 1;
       font-weight: 800;
       letter-spacing: -0.04em;
-      color: #1a8a18;
+      color: var(--gf-primary);
     }
     .brand-subtitle {
       margin-top: 3px;
       font-size: 16px;
-      color: #4f5b4a;
+      color: var(--gf-text-muted);
     }
     .nav-list {
       display: flex;
@@ -219,22 +232,22 @@ export function AdminShell({
       display: flex;
       align-items: center;
       gap: 12px;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 11px 12px;
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
-      color: #4c5949;
+      color: var(--gf-text-muted);
       transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.56);
-      color: #158218;
+      background: #f3f4f6;
+      color: var(--gf-primary);
     }
     .nav-item.active {
-      background: #fff;
-      color: #158218;
-      box-shadow: 0 8px 18px rgba(26, 57, 19, 0.06);
+      background: rgba(0, 168, 68, 0.1);
+      color: var(--gf-primary);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.18);
     }
     .nav-icon {
       color: currentColor;
@@ -255,7 +268,7 @@ export function AdminShell({
       transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
     }
     .nav-item.active .nav-icon {
-      color: #0b7312;
+      color: var(--gf-primary);
     }
     .sidebar-footer {
       margin-top: auto;
@@ -264,7 +277,7 @@ export function AdminShell({
     .sidebar-links {
       display: grid;
       gap: 4px;
-      color: #4c5949;
+      color: var(--gf-text-muted);
       font-size: 15px;
     }
     .sidebar-link {
@@ -277,7 +290,8 @@ export function AdminShell({
       color: inherit;
     }
     .sidebar-link:hover {
-      background: rgba(255, 255, 255, 0.55);
+      background: #f3f4f6;
+      color: var(--gf-primary);
     }
     .sidebar-link-text {
       transition: opacity 0.18s ease, transform 0.18s ease, width 0.18s ease;
@@ -310,13 +324,14 @@ export function AdminShell({
       height: 38px;
       border: 0;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
-      color: #4f5c4c;
+      background: #ffffff;
+      color: var(--gf-text-muted);
       cursor: pointer;
-      box-shadow: 0 8px 18px rgba(34, 56, 29, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08), inset 0 0 0 1px var(--admin-border);
     }
     .sidebar-open-btn:hover {
-      background: rgba(255, 255, 255, 0.92);
+      background: #f9fafb;
+      color: var(--gf-primary);
     }
     .topbar {
       padding: 0 0 10px;
@@ -332,12 +347,12 @@ export function AdminShell({
       display: flex;
       align-items: center;
       gap: 10px;
-      border-radius: 14px;
-      background: rgba(236, 243, 224, 0.88);
+      border-radius: 12px;
+      background: #f9fafb;
       padding: 9px 15px;
-      color: #6e7d6d;
-      border: 1px solid rgba(255, 255, 255, 0.45);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+      color: var(--gf-text-muted);
+      border: 1px solid #e5e7eb;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
       min-height: 36px;
     }
     .searchbox span {
@@ -355,13 +370,14 @@ export function AdminShell({
       display: grid;
       place-items: center;
       border-radius: 999px;
-      color: #616f5f;
+      color: var(--gf-text-muted);
       border: 0;
       background: transparent;
       flex: 0 0 auto;
     }
     .icon-btn:hover {
-      background: rgba(255, 255, 255, 0.6);
+      background: #f3f4f6;
+      color: var(--gf-primary);
     }
     .userchip {
       display: flex;
@@ -378,7 +394,7 @@ export function AdminShell({
     .user-name {
       font-size: 12px;
       font-weight: 800;
-      color: #263224;
+      color: var(--gf-text);
     }
     .user-role {
       margin-top: 4px;
@@ -386,14 +402,14 @@ export function AdminShell({
       font-weight: 700;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: #687366;
+      color: var(--gf-text-soft);
     }
     .user-label {
       margin-top: 3px;
       font-size: 9px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #7d8a7b;
+      color: var(--gf-text-muted);
     }
     .avatar {
       width: 40px;
@@ -401,11 +417,11 @@ export function AdminShell({
       border-radius: 14px;
       display: grid;
       place-items: center;
-      background: linear-gradient(180deg, #105d13 0%, #0f9716 100%);
+      background: linear-gradient(180deg, var(--gf-primary-dark) 0%, var(--gf-primary) 100%);
       color: #fff;
-      box-shadow: 0 10px 20px rgba(15, 151, 22, 0.22);
+      box-shadow: 0 10px 22px rgba(0, 168, 68, 0.28);
       overflow: hidden;
-      border: 2px solid rgba(16, 145, 25, 0.35);
+      border: 2px solid rgba(0, 168, 68, 0.35);
     }
     .heading-row {
       margin-top: 12px;
@@ -420,14 +436,14 @@ export function AdminShell({
       line-height: 0.98;
       font-weight: 800;
       letter-spacing: -0.06em;
-      color: #1f2d1d;
+      color: var(--gf-text);
     }
     .page-subtitle {
       margin-top: 8px;
       max-width: 56rem;
       font-size: 15px;
       line-height: 1.45;
-      color: #576357;
+      color: var(--gf-text-muted);
     }
     .actions {
       display: flex;
@@ -456,27 +472,28 @@ export function AdminShell({
       transform: translateY(-1px);
     }
     .btn-primary {
-      background: linear-gradient(180deg, #17b516 0%, #0b9a0a 100%);
+      background: linear-gradient(180deg, var(--gf-primary) 0%, var(--gf-primary-dark) 100%);
       color: #fff;
-      box-shadow: 0 12px 22px rgba(11, 154, 10, 0.28);
+      box-shadow: 0 12px 24px rgba(0, 168, 68, 0.3);
     }
     .btn-primary:hover {
-      filter: brightness(0.98);
+      filter: brightness(1.05);
     }
     .btn-secondary {
-      background: #f3f7ea;
-      color: #1f391f;
-      box-shadow: inset 0 0 0 1px var(--admin-border-muted);
+      background: #ffffff;
+      color: var(--gf-text);
+      box-shadow: inset 0 0 0 1px var(--admin-border);
     }
     .btn-secondary:hover {
-      background: #edf4e0;
+      background: var(--gf-bg-warm);
+      border-color: rgba(0, 168, 68, 0.2);
     }
     .btn-ghost {
-      background: #eef5e2;
-      color: #0b7312;
+      background: rgba(0, 168, 68, 0.08);
+      color: var(--gf-primary);
     }
     .btn-ghost:hover {
-      background: #e4efd5;
+      background: rgba(0, 168, 68, 0.14);
     }
     .grid-stats {
       display: grid;
@@ -492,10 +509,10 @@ export function AdminShell({
     }
     .card {
       border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
+      background: var(--gf-surface);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 12px 32px rgba(17, 24, 39, 0.04);
       overflow: hidden;
-      border: 1px solid var(--admin-border-muted);
+      border: 1px solid var(--admin-border);
     }
     .card-body {
       padding: 22px;
@@ -514,26 +531,26 @@ export function AdminShell({
       line-height: 1.1;
       font-weight: 800;
       letter-spacing: -0.05em;
-      color: #253324;
+      color: var(--gf-text);
     }
     .card-subtitle {
       margin-top: 6px;
       font-size: 13px;
       line-height: 1.45;
-      color: #6f7b6d;
+      color: var(--gf-text-muted);
     }
     .stat-card {
       position: relative;
       min-height: 120px;
       border-radius: 20px;
-      background: #fff;
+      background: var(--gf-surface);
       padding: 16px 20px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 20px 30px rgba(13, 36, 13, 0.03);
-      border: 1px solid var(--admin-border-muted);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06), 0 12px 32px rgba(17, 24, 39, 0.04);
+      border: 1px solid var(--admin-border);
       overflow: hidden;
     }
     .stat-card.active {
-      background: linear-gradient(180deg, #0e8b11 0%, #0a7610 100%);
+      background: linear-gradient(135deg, var(--gf-primary-hover) 0%, var(--gf-primary) 45%, var(--gf-primary-dark) 100%);
       color: #fff;
     }
     .stat-top {
@@ -547,7 +564,7 @@ export function AdminShell({
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: #687466;
+      color: var(--gf-text-soft);
     }
     .stat-card.active .stat-label {
       color: rgba(255, 255, 255, 0.7);
@@ -558,8 +575,8 @@ export function AdminShell({
       display: grid;
       place-items: center;
       border-radius: 10px;
-      background: #e3eed9;
-      color: #118116;
+      background: rgba(0, 168, 68, 0.12);
+      color: var(--gf-primary);
       opacity: 0.95;
     }
     .stat-card.active .stat-icon {
@@ -572,7 +589,7 @@ export function AdminShell({
       line-height: 0.98;
       font-weight: 800;
       letter-spacing: -0.06em;
-      color: #1f2f1d;
+      color: var(--gf-text);
     }
     .stat-card.active .stat-value {
       color: #fff;
@@ -583,7 +600,7 @@ export function AdminShell({
       align-items: center;
       gap: 8px;
       font-size: 12px;
-      color: #51604f;
+      color: var(--gf-text-muted);
     }
     .stat-card.active .stat-meta {
       color: rgba(255, 255, 255, 0.76);
@@ -598,11 +615,11 @@ export function AdminShell({
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
-    .pill.green { background: #dff4d4; color: #18851f; }
-    .pill.emerald { background: #dbf7de; color: #0f7c16; }
+    .pill.green { background: rgba(0, 168, 68, 0.14); color: var(--gf-primary-dark); }
+    .pill.emerald { background: rgba(0, 168, 68, 0.12); color: var(--gf-primary); }
     .pill.red { background: #ffd9d5; color: #d43c35; }
     .pill.amber { background: #ffeec9; color: #a36c00; }
-    .pill.gray { background: #edf0ea; color: #586456; }
+    .pill.gray { background: #f3f4f6; color: var(--gf-text-muted); }
     .pill.pink { background: #f8dbe8; color: #b4467d; }
     .mini-icon {
       width: 44px;
@@ -611,7 +628,7 @@ export function AdminShell({
       display: grid;
       place-items: center;
     }
-    .mini-icon.green { background: #dff4d4; color: #16781f; }
+    .mini-icon.green { background: rgba(0, 168, 68, 0.14); color: var(--gf-primary); }
     .mini-icon.pink { background: #f9d9e7; color: #d74f90; }
     .mini-icon.red { background: #fde2dd; color: #d13e35; }
     .mini-icon.amber { background: #fff0c8; color: #c68f00; }
@@ -621,9 +638,9 @@ export function AdminShell({
       align-items: flex-end;
       gap: 8px;
       border-radius: 18px;
-      background: #fbfdf8;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
       padding: 36px 16px 12px;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 0 0 1px var(--admin-border);
     }
     .chart-bar {
       flex: 1;
@@ -646,22 +663,22 @@ export function AdminShell({
       bottom: 0;
       width: 100%;
       border-radius: 8px 8px 0 0;
-      background: #d9e4ce;
+      background: #e5e7eb;
     }
     .chart-front {
       position: relative;
       z-index: 1;
       width: 72%;
       border-radius: 8px 8px 0 0;
-      background: linear-gradient(to top, #038f0b, #0ca011, #17b11d);
-      box-shadow: 0 10px 20px rgba(5, 120, 15, 0.25);
+      background: linear-gradient(to top, var(--gf-primary-dark), var(--gf-primary), var(--gf-primary-hover));
+      box-shadow: 0 10px 22px rgba(0, 168, 68, 0.28);
     }
     .chart-label {
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.18em;
-      color: #6b7869;
+      color: var(--gf-text-muted);
     }
     .page-table {
       width: 100%;
@@ -669,7 +686,7 @@ export function AdminShell({
       min-width: 640px;
     }
     .page-table thead {
-      background: #f0f5e4;
+      background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
     }
     .page-table th {
       padding: 16px 22px;
@@ -677,13 +694,13 @@ export function AdminShell({
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.18em;
-      color: #748171;
+      color: var(--gf-text-muted);
       white-space: nowrap;
     }
     .page-table td {
       padding: 18px 22px;
       vertical-align: middle;
-      border-bottom: 1px solid #edf1e5;
+      border-bottom: 1px solid var(--admin-border);
     }
     .page-table tr:last-child td {
       border-bottom: 0;
@@ -709,8 +726,8 @@ export function AdminShell({
       width: 100%;
       transform: translateX(-6px);
     }
-    /* Shared list toolbar (products / stores / users) */
-    .pm-add-button {
+    /* Shared list toolbar — matches storefront CTAs: solid #00a844, hover #3b9c3c */
+    .admin-root .pm-add-button {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -722,24 +739,26 @@ export function AdminShell({
       color: #fff;
       font-size: 14px;
       font-weight: 800;
-      background: linear-gradient(180deg, #21ad1b 0%, #138e13 100%);
-      box-shadow: 0 14px 24px rgba(18, 142, 19, 0.25);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+      background-color: #00a844;
+      background-image: none;
+      box-shadow: 0 14px 28px rgba(0, 168, 68, 0.28);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
     }
-    a.pm-add-button,
-    a.pm-add-button:visited {
+    .admin-root a.pm-add-button,
+    .admin-root a.pm-add-button:visited {
       text-decoration: none;
       color: #fff;
     }
-    .pm-add-button:hover {
+    .admin-root .pm-add-button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 18px 28px rgba(18, 142, 19, 0.3);
-      filter: saturate(1.03);
+      background-color: #3b9c3c;
+      box-shadow: 0 18px 34px rgba(0, 168, 68, 0.35);
     }
-    .pm-add-button:active {
+    .admin-root .pm-add-button:active {
       transform: translateY(0);
+      background-color: #008038;
     }
-    .pm-add-icon {
+    .admin-root .pm-add-icon {
       width: 20px;
       height: 20px;
       display: grid;
@@ -762,27 +781,29 @@ export function AdminShell({
       gap: 12px;
       min-height: 52px;
       padding: 0 16px;
-      border-radius: 8px;
-      background: linear-gradient(180deg, #e8f0dc 0%, #e2ecd3 100%);
-      color: #6f7d6c;
+      border-radius: 10px;
+      background: #ffffff;
+      color: var(--gf-text-muted);
       font-size: 17px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.62), 0 8px 16px rgba(112, 137, 83, 0.06);
-      transition: box-shadow 0.18s ease, transform 0.18s ease;
+      border: 1px solid var(--admin-border);
+      box-shadow: 0 4px 14px rgba(17, 24, 39, 0.04);
+      transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
       cursor: text;
     }
     .pm-search:focus-within {
-      box-shadow: inset 0 0 0 1px rgba(25, 136, 22, 0.18), 0 10px 22px rgba(57, 130, 47, 0.12);
+      border-color: rgba(0, 168, 68, 0.45);
+      box-shadow: 0 0 0 3px rgba(0, 168, 68, 0.12), 0 8px 20px rgba(17, 24, 39, 0.06);
     }
     .pm-input {
       width: 100%;
       border: 0;
       outline: 0;
       background: transparent;
-      color: #4f5f4b;
+      color: var(--gf-text);
       font-size: 16px;
     }
     .pm-input::placeholder {
-      color: #7a8677;
+      color: var(--gf-text-soft);
     }
     .admin-list-toolbar.pm-toolbar {
       flex-wrap: wrap;
@@ -804,9 +825,9 @@ export function AdminShell({
       overflow-x: auto;
       overflow: hidden;
       border-radius: 14px;
-      background: #fff;
+      background: var(--gf-surface);
       border: 1px solid var(--admin-border);
-      box-shadow: 0 10px 35px -22px rgba(19, 55, 24, 0.4);
+      box-shadow: 0 10px 40px -24px rgba(17, 24, 39, 0.18);
       outline: none;
     }
     .admin-data-table-shell .page-table {
@@ -820,7 +841,7 @@ export function AdminShell({
       flex-wrap: wrap;
       gap: 12px;
       width: 100%;
-      color: #445540;
+      color: var(--gf-text-muted);
     }
     .admin-icon-actions a,
     .admin-icon-actions button {
@@ -837,13 +858,13 @@ export function AdminShell({
       color: #db3d30;
     }
     .admin-icon-actions .admin-icon-actions-accent {
-      color: #1a7e19;
+      color: var(--gf-primary);
     }
     .admin-icon-actions .admin-icon-actions-warn {
       color: #b45309;
     }
     .admin-icon-actions .admin-icon-actions-muted {
-      color: #6b7a66;
+      color: var(--gf-text-muted);
     }
     .admin-icon-actions .admin-icon-actions-violet {
       color: #6d28d9;
@@ -871,7 +892,7 @@ export function AdminShell({
       width: 96px;
       height: 10px;
       border-radius: 999px;
-      background: #dfe9d0;
+      background: #e5e7eb;
       overflow: hidden;
     }
     .progress > span {
@@ -879,23 +900,23 @@ export function AdminShell({
       height: 100%;
       border-radius: inherit;
     }
-    .status-green { background: #0f7c16; }
+    .status-green { background: var(--gf-primary); }
     .status-amber { background: #d59b00; }
     .status-red { background: #d6403b; }
     .table-amount {
       font-size: 13px;
       font-weight: 700;
-      color: #253323;
+      color: var(--gf-text);
     }
     .table-muted {
       font-size: 13px;
-      color: #637162;
+      color: var(--gf-text-muted);
     }
     .icon-actions {
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #657265;
+      color: var(--gf-text-muted);
     }
     .icon-actions button {
       border: 0;
@@ -907,10 +928,10 @@ export function AdminShell({
     .panel-note {
       padding: 14px 20px;
       border-radius: 18px;
-      background: #eaf5db;
-      border: 1px solid var(--admin-border-muted);
+      background: var(--gf-bg-warm);
+      border: 1px solid rgba(254, 143, 24, 0.22);
       font-size: 13px;
-      color: #60705f;
+      color: var(--gf-text-muted);
     }
     .panel-row {
       display: flex;
@@ -920,19 +941,19 @@ export function AdminShell({
     }
     .panel-card {
       border-radius: 18px;
-      background: #fafcf7;
+      background: #f9fafb;
       overflow: hidden;
-      box-shadow: inset 0 0 0 1px var(--admin-border-muted);
+      box-shadow: inset 0 0 0 1px var(--admin-border);
     }
     .panel-card-body {
       padding: 16px;
     }
     .field-slab {
       border-radius: 10px;
-      background: #eef4e7;
+      background: #f3f4f6;
       padding: 14px 16px;
       font-size: 13px;
-      color: #263225;
+      color: var(--gf-text);
     }
     .field-label {
       margin-bottom: 8px;
@@ -940,7 +961,7 @@ export function AdminShell({
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: #82907f;
+      color: var(--gf-text-muted);
     }
     .field-multiline {
       min-height: 82px;
@@ -951,10 +972,10 @@ export function AdminShell({
       height: 20px;
       border-radius: 999px;
       padding: 2px;
-      background: #d6ddcd;
+      background: #d1d5db;
     }
     .switch.on {
-      background: #0f9716;
+      background: var(--gf-primary);
     }
     .switch span {
       display: block;
@@ -986,13 +1007,14 @@ export function AdminShell({
       left: 0;
       right: 0;
       height: 60px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(12px);
       z-index: 45;
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
-      border-bottom: 1px solid var(--admin-border-muted);
+      border-bottom: 1px solid var(--admin-border);
+      box-shadow: 0 1px 3px rgba(17, 24, 39, 0.05);
     }
     .mobile-hamburger-btn {
       width: 40px;
@@ -1003,7 +1025,7 @@ export function AdminShell({
       border: 1px solid var(--admin-border);
       background: #fff;
       border-radius: 10px;
-      color: #223021;
+      color: var(--gf-text);
       cursor: pointer;
     }
     .mobile-logo {
@@ -1022,9 +1044,9 @@ export function AdminShell({
       width: 34px;
       height: 34px;
       border-radius: 999px;
-      background: #f0f4e8;
+      background: rgba(0, 168, 68, 0.1);
       border: 1px solid var(--admin-border);
-      color: #223021;
+      color: var(--gf-primary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1053,7 +1075,7 @@ export function AdminShell({
         z-index: 50;
         transform: translateX(-100%);
         transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        border-right: 1px solid rgba(36, 49, 31, 0.08);
+        border-right: 1px solid var(--admin-border);
         box-shadow: none;
       }
       .admin-sidebar.is-mobile-open {

@@ -448,7 +448,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="rounded-[28px] border border-gofarm-light-green/40 bg-white p-8 shadow-[0_20px_60px_rgba(16,185,129,0.12)]">
-              <div className="rounded-2xl bg-linear-to-br from-gofarm-green to-gofarm-green-dark p-6 text-white">
+              <div className="rounded-2xl bg-linear-to-br from-gofarm-green to-emerald-600 p-6 text-white">
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/80">Sign In</p>
                 <h2 className="mt-3 text-3xl font-black">Access dashboard</h2>
               </div>
@@ -479,7 +479,7 @@ export default function AdminDashboard() {
                 ) : null}
                 <button
                   type="submit"
-                  className="inline-flex w-full items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-green-500/20 transition hover:bg-gofarm-green-dark"
+                  className="inline-flex w-full items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-gofarm-green/50 transition hover:bg-gofarm-light-green"
                 >
                   Sign in to admin
                 </button>
@@ -591,7 +591,7 @@ export default function AdminDashboard() {
                 </div>
               ) : null}
               {notice ? (
-                <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 sm:col-span-2">
+                <div className="rounded-2xl border border-gofarm-green/25 bg-gofarm-green/5 px-4 py-3 text-sm font-medium text-gofarm-green sm:col-span-2">
                   {notice}
                 </div>
               ) : null}
@@ -600,7 +600,7 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-green-500/20 transition hover:bg-gofarm-green-dark disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-gofarm-green/50 transition hover:bg-gofarm-light-green disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? "Saving..." : selectedProduct ? "Update product" : "Create product"}
                 </button>
@@ -771,7 +771,7 @@ export default function AdminDashboard() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-green-500/20 transition hover:bg-gofarm-green-dark disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl bg-gofarm-green px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-gofarm-green/50 transition hover:bg-gofarm-light-green disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? "Saving..." : selectedCategorySlug ? "Update category" : "Create category"}
                 </button>

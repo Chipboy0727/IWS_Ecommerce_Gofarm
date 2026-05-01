@@ -83,7 +83,9 @@ export default function UserMessagesPage() {
                     <div>
                       <div className="flex gap-2 mb-2">
                         <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          msg.status === 'replied' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'
+                          msg.status === "replied"
+                            ? "bg-gofarm-green/10 text-gofarm-green"
+                            : "bg-amber-100 text-amber-600"
                         }`}>
                           {msg.status}
                         </span>

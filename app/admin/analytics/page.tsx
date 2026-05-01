@@ -54,7 +54,7 @@ export default async function AnalyticsPage() {
           <SalesPerformanceCard series={series} title="Traffic Overview" subtitle="Daily sessions and purchase intent" />
           <SectionCard 
             className="text-white ai-forecast-card" 
-            style={{ background: 'linear-gradient(180deg, #127d12 0%, #0d6f0f 100%)', border: 'none' }}
+            style={{ background: "linear-gradient(180deg, #00a844 0%, #008038 100%)", border: "none" }}
             title="AI Market Forecast" 
             subtitle="Model confidence and supply signals"
           >

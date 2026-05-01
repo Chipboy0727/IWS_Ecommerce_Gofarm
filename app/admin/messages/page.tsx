@@ -84,7 +84,7 @@ export default function AdminMessagesPage() {
       title="Messages"
       subtitle="View and manage customer inquiries"
     >
-      <div className="rounded-[30px] border border-gofarm-light-green/40 bg-white p-6 shadow-[0_20px_60px_rgba(16,185,129,0.10)]">
+      <div className="rounded-[30px] border border-gofarm-light-green/40 bg-white p-6 shadow-[0_20px_60px_rgba(0,168,68,0.12)]">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-black text-gofarm-black">Inquiry Inbox</h2>
           <button
@@ -134,9 +134,11 @@ export default function AdminMessagesPage() {
                     </td>
                     <td className="px-4 sm:px-6 py-4">
                       <span className={`inline-block rounded-full px-2 sm:px-3 py-1 text-[9px] sm:text-[10px] font-bold whitespace-nowrap ${
-                        msg.status === 'unread' ? 'bg-amber-100 text-amber-700' : 
-                        msg.status === 'replied' ? 'bg-blue-100 text-blue-700' :
-                        'bg-green-100 text-green-700'
+                        msg.status === "unread"
+                          ? "bg-amber-100 text-amber-700"
+                          : msg.status === "replied"
+                            ? "bg-gofarm-green/10 text-gofarm-green"
+                            : "bg-gray-100 text-gofarm-gray"
                       }`}>
                         {msg.status.toUpperCase()}
                       </span>
@@ -147,7 +149,7 @@ export default function AdminMessagesPage() {
                           setSelectedMessage(msg);
                           setReplyText(msg.replyMessage || "");
                         }}
-                        className="rounded-full bg-gofarm-green px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-lg shadow-gofarm-green/30 transition hover:scale-105 active:scale-95 whitespace-nowrap"
+                        className="rounded-full bg-gofarm-green px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-lg shadow-gofarm-green/50 transition hover:scale-105 active:scale-95 whitespace-nowrap"
                       >
                         {msg.status === 'replied' ? 'View' : 'Reply'}
                       </button>
@@ -212,7 +214,7 @@ export default function AdminMessagesPage() {
                 <button
                   onClick={handleReply}
                   disabled={isSubmitting || !replyText.trim()}
-                  className="rounded-full bg-gofarm-green px-8 py-2 text-sm font-black text-white shadow-xl shadow-gofarm-green/40 transition hover:scale-105 active:scale-95 disabled:opacity-50"
+                  className="rounded-full bg-gofarm-green px-8 py-2 text-sm font-black text-white shadow-xl shadow-gofarm-green/50 transition hover:scale-105 active:scale-95 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Sending...' : (selectedMessage.status === 'replied' ? 'Update Response' : 'Send Response')}
                 </button>
