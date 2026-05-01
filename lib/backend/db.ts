@@ -171,6 +171,9 @@ function rowToMessage(row: Record<string, unknown>): any {
     subject: String(row.subject ?? ""),
     message: String(row.message ?? ""),
     status: String(row.status ?? "unread"),
+    replyMessage: row.replyMessage === null || row.replyMessage === undefined ? null : String(row.replyMessage),
+    repliedAt: row.repliedAt === null || row.repliedAt === undefined ? null : String(row.repliedAt),
+    userRead: !!row.userRead,
     createdAt: String(row.createdAt ?? nowIso()),
     updatedAt: String(row.updatedAt ?? nowIso()),
   };
@@ -285,10 +288,23 @@ async function ensureMysqlSchema() {
       subject VARCHAR(255) NOT NULL,
       message TEXT NOT NULL,
       status VARCHAR(32) NOT NULL DEFAULT 'unread',
+      replyMessage TEXT NULL,
+      repliedAt VARCHAR(32) NULL,
+      userRead BOOLEAN DEFAULT FALSE,
       createdAt VARCHAR(32) NOT NULL,
       updatedAt VARCHAR(32) NOT NULL
     )
   `);
+
+  try {
+    await pool.execute("ALTER TABLE messages ADD COLUMN replyMessage TEXT NULL");
+  } catch {}
+  try {
+    await pool.execute("ALTER TABLE messages ADD COLUMN repliedAt VARCHAR(32) NULL");
+  } catch {}
+  try {
+    await pool.execute("ALTER TABLE messages ADD COLUMN userRead BOOLEAN DEFAULT FALSE");
+  } catch {}
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS meta (
@@ -327,20 +343,22 @@ async function ensureMysqlSeedData() {
 
 async function initializeMysql() {
   if (mysqlReady === true) return true;
-  if (mysqlReady === false) return false;
   if (mysqlInitPromise) return mysqlInitPromise;
 
   mysqlInitPromise = (async () => {
     try {
       const schemaReady = await ensureMysqlSchema();
       if (!schemaReady) {
+        console.error("[DB] MySQL schema initialization failed");
         mysqlReady = false;
         return false;
       }
       await ensureMysqlSeedData();
       mysqlReady = true;
+      console.log("[DB] MySQL initialized successfully");
       return true;
-    } catch {
+    } catch (err) {
+      console.error("[DB] MySQL initialization error:", err);
       mysqlReady = false;
       return false;
     } finally {
@@ -358,33 +376,38 @@ async function readMysqlState(): Promise<BackendDb | null> {
   const pool = getPool();
   if (!pool) return null;
 
-  const [productsResult] = await pool.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
-  const [categoriesResult] = await pool.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
-  const [usersResult] = await pool.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
-  const [ordersResult] = await pool.query("SELECT * FROM orders ORDER BY updatedAt DESC, createdAt DESC");
-  const [storesResult] = await pool.query("SELECT * FROM stores ORDER BY updatedAt DESC, createdAt DESC");
-  const [messagesResult] = await pool.query("SELECT * FROM messages ORDER BY createdAt DESC");
+  try {
+    const [productsResult] = await pool.query("SELECT * FROM products ORDER BY updatedAt DESC, createdAt DESC");
+    const [categoriesResult] = await pool.query("SELECT * FROM categories ORDER BY updatedAt DESC, createdAt DESC");
+    const [usersResult] = await pool.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
+    const [ordersResult] = await pool.query("SELECT * FROM orders ORDER BY updatedAt DESC, createdAt DESC");
+    const [storesResult] = await pool.query("SELECT * FROM stores ORDER BY updatedAt DESC, createdAt DESC");
+    const [messagesResult] = await pool.query("SELECT * FROM messages ORDER BY createdAt DESC");
 
-  const products = (productsResult as Array<Record<string, unknown>>).map(rowToProduct);
-  const categories = (categoriesResult as Array<Record<string, unknown>>).map(rowToCategory);
-  const users = (usersResult as Array<Record<string, unknown>>).map(rowToUser);
-  const orders = (ordersResult as Array<Record<string, unknown>>).map(rowToOrder);
-  const stores = (storesResult as Array<Record<string, unknown>>).map(rowToStore);
-  const messages = (messagesResult as Array<Record<string, unknown>>).map(rowToMessage);
+    const products = (productsResult as Array<Record<string, unknown>>).map(rowToProduct);
+    const categories = (categoriesResult as Array<Record<string, unknown>>).map(rowToCategory);
+    const users = (usersResult as Array<Record<string, unknown>>).map(rowToUser);
+    const orders = (ordersResult as Array<Record<string, unknown>>).map(rowToOrder);
+    const stores = (storesResult as Array<Record<string, unknown>>).map(rowToStore);
+    const messages = (messagesResult as Array<Record<string, unknown>>).map(rowToMessage);
 
-  const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
-  const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
-  const meta = metaValue ? (JSON.parse(metaValue) as BackendDb["meta"]) : { version: 1, updatedAt: nowIso() };
+    const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
+    const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
+    const meta = metaValue ? (JSON.parse(metaValue) as BackendDb["meta"]) : { version: 1, updatedAt: nowIso() };
 
-  return {
-    products,
-    categories: normalizeProductCategories(products, categories),
-    users,
-    orders,
-    stores,
-    messages,
-    meta,
-  };
+    return {
+      products,
+      categories: normalizeProductCategories(products, categories),
+      users,
+      orders,
+      stores,
+      messages,
+      meta,
+    };
+  } catch (error) {
+    console.error("[DB] Error reading MySQL state:", error);
+    return null;
+  }
 }
 
 async function persistMysqlState(state: BackendDb) {
@@ -550,8 +573,8 @@ async function persistMysqlState(state: BackendDb) {
       await connection.execute(
         `
           INSERT INTO messages (
-            id, name, email, subject, message, status, createdAt, updatedAt
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            id, name, email, subject, message, status, replyMessage, repliedAt, userRead, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
           message.id,
@@ -560,6 +583,9 @@ async function persistMysqlState(state: BackendDb) {
           message.subject,
           message.message,
           message.status,
+          message.replyMessage ?? null,
+          message.repliedAt ?? null,
+          message.userRead ? 1 : 0,
           message.createdAt,
           message.updatedAt,
         ]
@@ -589,6 +615,8 @@ async function persistFallbackState(state: BackendDb) {
 export async function readDb(): Promise<BackendDb> {
   const mysqlState = await readMysqlState();
   if (mysqlState) return mysqlState;
+  
+  console.warn("[DB] Falling back to local catalog seed");
   return loadSeedCatalog();
 }
 

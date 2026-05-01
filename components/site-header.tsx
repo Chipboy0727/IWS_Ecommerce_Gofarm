@@ -106,6 +106,15 @@ function IconLogout() {
   );
 }
 
+function IconBell() {
+  return (
+    <svg width="24" height="24" className="sm:w-[26px] sm:h-[26px] md:w-[28px] md:h-[28px] lg:w-[30px] lg:h-[30px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  );
+}
+
 function IconHelp() {
   return (
     <svg width="14" height="14" className="sm:w-[16px] sm:h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -246,6 +255,7 @@ export default function SiteHeader() {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [orderCount, setOrderCount] = useState(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   
   const [mounted, setMounted] = useState(false);
   const isRefreshingRef = useRef(false);
@@ -265,6 +275,22 @@ export default function SiteHeader() {
       } catch (e) {}
     }
   }, []);
+
+  useEffect(() => {
+    if (userEmail) {
+      const fetchUnreadCount = async () => {
+        try {
+          const res = await fetch(`/api/user/messages/unread-count?email=${encodeURIComponent(userEmail)}`);
+          const data = await res.json();
+          setUnreadMessages(data.count || 0);
+        } catch (e) {}
+      };
+      fetchUnreadCount();
+      // Refresh every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [userEmail]);
 
   // Load order count from localStorage - runs once when userEmail is set
   useEffect(() => {
@@ -495,6 +521,16 @@ export default function SiteHeader() {
                   {mounted && wishlistCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
                       {wishlistCount > 99 ? "99+" : wishlistCount}
+                    </span>
+                  )}
+                </Link>
+
+                {/* Notifications Bell */}
+                <Link href="/account/messages" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
+                  <IconBell />
+                  {mounted && unreadMessages > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1 animate-bounce">
+                      {unreadMessages}
                     </span>
                   )}
                 </Link>
