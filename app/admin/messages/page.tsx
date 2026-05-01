@@ -54,7 +54,7 @@ export default function AdminMessagesPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Không thể gửi phản hồi");
+        throw new Error(result.error || "Failed to send response");
       }
       
       // Update local state
@@ -66,9 +66,9 @@ export default function AdminMessagesPage() {
       
       setSelectedMessage(null);
       setReplyText("");
-      alert("Đã lưu phản hồi thành công!");
+      alert("Response saved successfully!");
     } catch (err: any) {
-      alert("Lỗi: " + err.message);
+      alert("Error: " + err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -149,7 +149,7 @@ export default function AdminMessagesPage() {
                         }}
                         className="rounded-full bg-gofarm-green px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-lg shadow-gofarm-green/30 transition hover:scale-105 active:scale-95 whitespace-nowrap"
                       >
-                        {msg.status === 'replied' ? 'Xem lại' : 'Trả lời'}
+                        {msg.status === 'replied' ? 'View' : 'Reply'}
                       </button>
                     </td>
                   </tr>
@@ -196,7 +196,7 @@ export default function AdminMessagesPage() {
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Gõ nội dung phản hồi tại đây..."
+                  placeholder="Type your response here..."
                   className="mt-2 w-full rounded-2xl border-2 border-gray-100 bg-white p-4 text-sm outline-none transition focus:border-gofarm-green"
                   rows={5}
                 />
@@ -207,14 +207,14 @@ export default function AdminMessagesPage() {
                   onClick={() => setSelectedMessage(null)}
                   className="rounded-full border border-gray-200 px-6 py-2 text-sm font-bold text-gray-500 hover:bg-gray-50"
                 >
-                  Đóng
+                  Close
                 </button>
                 <button
                   onClick={handleReply}
                   disabled={isSubmitting || !replyText.trim()}
                   className="rounded-full bg-gofarm-green px-8 py-2 text-sm font-black text-white shadow-xl shadow-gofarm-green/40 transition hover:scale-105 active:scale-95 disabled:opacity-50"
                 >
-                  {isSubmitting ? 'Đang gửi...' : (selectedMessage.status === 'replied' ? 'Cập nhật phản hồi' : 'Gửi phản hồi')}
+                  {isSubmitting ? 'Sending...' : (selectedMessage.status === 'replied' ? 'Update Response' : 'Send Response')}
                 </button>
               </div>
             </div>

@@ -15,7 +15,7 @@ export async function POST(
     const user = await getAuthenticatedUser(request);
     if (!user || user.role !== "admin") {
       console.error("[Reply API] Unauthorized: User is not an admin", user);
-      return NextResponse.json({ error: "Phiên đăng nhập Admin hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại." }, { status: 401 });
+      return NextResponse.json({ error: "Admin session expired or invalid. Please sign in again." }, { status: 401 });
     }
 
     // 2. Parse body
@@ -23,7 +23,7 @@ export async function POST(
     const { replyMessage } = body;
 
     if (!replyMessage || !replyMessage.trim()) {
-      return NextResponse.json({ error: "Vui lòng nhập nội dung phản hồi." }, { status: 400 });
+      return NextResponse.json({ error: "Please enter a response message." }, { status: 400 });
     }
 
     // 3. Update database
@@ -113,7 +113,7 @@ export async function POST(
 
     if (!success) {
       return NextResponse.json({ 
-        error: "Không tìm thấy tin nhắn này trong hệ thống.",
+        error: "Message not found in the system.",
         debug: { id: targetId } 
       }, { status: 404 });
     }
@@ -122,7 +122,7 @@ export async function POST(
   } catch (error: any) {
     console.error("[Reply API Critical Error]:", error);
     return NextResponse.json(
-      { error: "Lỗi hệ thống: " + (error.message || "Unknown error") },
+      { error: "System error: " + (error.message || "Unknown error") },
       { status: 500 }
     );
   }
