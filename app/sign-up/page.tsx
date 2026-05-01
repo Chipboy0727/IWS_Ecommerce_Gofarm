@@ -10,7 +10,7 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -98,7 +98,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -127,16 +127,9 @@ export default function SignUpPage() {
       if (!response.ok) {
         throw new Error(data.error || "Registration failed");
       }
-      
-      // Update local storage with real user data from API
-      localStorage.setItem("user", JSON.stringify(data.user));
-      
-      // Notify other components about auth change
-      window.dispatchEvent(new Event("auth-changed"));
-      
-      // Redirect to home
-      router.push("/");
-      router.refresh();
+
+      // Redirect to sign in with success message
+      router.push("/sign-in?success=" + encodeURIComponent("Registration successful! Please sign in with your new account."));
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {
@@ -148,11 +141,11 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10 py-8 sm:py-10 md:py-12 lg:py-16">
       <div className="w-full px-3 sm:px-4 md:px-5 lg:px-6">
         <div className="max-w-2xl mx-auto">
-          
+
           {/* Back to Home Link */}
           <div className="mb-5 sm:mb-6 md:mb-7 lg:mb-8">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-gofarm-green transition-colors group"
             >
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,7 +157,7 @@ export default function SignUpPage() {
 
           {/* Main Card */}
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-5 md:p-6 lg:p-8">
-            
+
             {/* Header */}
             <div className="text-center mb-5 sm:mb-6 md:mb-7 lg:mb-8">
               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
@@ -184,7 +177,7 @@ export default function SignUpPage() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
-              
+
               {/* Full Name */}
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-1.5 md:mb-2">
@@ -370,7 +363,7 @@ export default function SignUpPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 sm:py-3 bg-gofarm-green text-white font-semibold rounded-lg sm:rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mt-2 sm:mt-3 text-sm sm:text-base"
+                className="w-full py-2.5 sm:py-3 bg-gofarm-green text-white font-semibold rounded-lg sm:rounded-xl hover:bg-gofarm-light-green transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mt-4 sm:mt-6 text-sm sm:text-base"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -387,7 +380,7 @@ export default function SignUpPage() {
             </form>
 
             {/* Sign In Link */}
-            <div className="mt-5 sm:mt-6 text-center">
+            <div className="mt-6 sm:mt-8 text-center">
               <p className="text-xs sm:text-sm text-gray-500">
                 Already have an account?{" "}
                 <Link href="/sign-in" className="text-gofarm-green font-semibold hover:underline">

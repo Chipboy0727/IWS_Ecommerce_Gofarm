@@ -46,19 +46,8 @@ export async function POST(request: NextRequest) {
     users: [...current.users, user],
   }));
 
-  const token = createSessionToken({ id: user.id, email: user.email, role: user.role });
-  const response = NextResponse.json(
-    { user: { id: user.id, name: user.name, email: user.email, role: user.role }, token },
+  return NextResponse.json(
+    { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
     { status: 201 }
   );
-
-  response.cookies.set("gofarm_session", token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-    secure: process.env.NODE_ENV === "production",
-  });
-
-  return response;
 }

@@ -151,19 +151,19 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-6xl bg-white rounded-[32px] shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-6xl bg-white rounded-2xl sm:rounded-[32px] shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header Area */}
             <div
               style={{ background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)" }}
-              className="p-6 lg:p-8 text-white"
+              className="p-4 sm:p-6 lg:p-8 text-white"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-white/20 rounded-2xl backdrop-blur-md border border-white/20">
-                    <IconSearch className="w-6 h-6 text-white" />
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-2 sm:p-2.5 bg-white/20 rounded-xl sm:rounded-2xl backdrop-blur-md border border-white/20">
+                    <IconSearch className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold">Search Products</h2>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">Search Products</h2>
                   <div className="hidden sm:flex items-center gap-1.5 bg-white/20 px-2.5 py-1 rounded-lg text-[11px] font-mono border border-white/20 font-bold">
                     <span>⌘</span>
                     <span>+</span>
@@ -176,8 +176,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               </div>
 
               <div className="relative">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#16a34a]">
-                  <IconSearch className="w-6 h-6" />
+                <div className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-[#16a34a]">
+                  <IconSearch className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <input
                   ref={inputRef}
@@ -185,36 +185,36 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   placeholder="Type product name, category, or keyword..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-14 pr-12 py-4 bg-white text-gray-900 rounded-2xl shadow-xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all text-lg font-medium"
+                  className="w-full pl-10 sm:pl-14 pr-10 sm:pr-12 py-3 sm:py-4 bg-white text-gray-900 rounded-xl sm:rounded-2xl shadow-xl focus:outline-none focus:ring-4 focus:ring-white/30 transition-all text-base sm:text-lg font-medium"
                 />
               </div>
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-auto bg-white p-6 no-scrollbar">
+            <div className="flex-1 overflow-auto bg-white p-3 sm:p-4 lg:p-6 no-scrollbar">
               {!searchTerm && !loading ? (
-                <div className="py-20 flex flex-col items-center text-center">
-                  <div style={{ backgroundColor: "#22c55e" }} className="w-20 h-20 rounded-3xl flex items-center justify-center text-white mb-6 shadow-xl">
-                    <IconSearch className="w-10 h-10" />
+                <div className="py-12 sm:py-16 lg:py-20 flex flex-col items-center text-center">
+                  <div style={{ backgroundColor: "#22c55e" }} className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center text-white mb-4 sm:mb-6 shadow-xl">
+                    <IconSearch className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10" />
                   </div>
-                  <h3 className="text-3xl font-extrabold text-gray-900 mb-2">Discover Amazing Products</h3>
-                  <p className="text-gray-500 mb-8">Start typing to search through our fresh catalog</p>
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 mb-2">Discover Amazing Products</h3>
+                  <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">Start typing to search through our fresh catalog</p>
                 </div>
               ) : (
-                <div className="min-w-[800px]">
-                  <table className="w-full text-left border-separate border-spacing-y-4">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-separate border-spacing-y-2 sm:border-spacing-y-4 min-w-[600px] sm:min-w-[700px]">
                     <thead>
                       <tr style={{ backgroundColor: "#22c55e" }} className="text-white">
-                        <th className="p-4 rounded-l-2xl font-extrabold uppercase text-xs tracking-wider">Image</th>
-                        <th className="p-4 font-extrabold uppercase text-xs tracking-wider">Product Name</th>
-                        <th className="p-4 font-extrabold uppercase text-xs tracking-wider">Price</th>
-                        <th className="p-4 font-extrabold uppercase text-xs tracking-wider">Status</th>
-                        <th className="p-4 rounded-r-2xl font-extrabold uppercase text-xs tracking-wider text-center">Action</th>
+                        <th className="p-2.5 sm:p-4 rounded-l-xl sm:rounded-l-2xl font-extrabold uppercase text-[10px] sm:text-xs tracking-wider">Image</th>
+                        <th className="p-2.5 sm:p-4 font-extrabold uppercase text-[10px] sm:text-xs tracking-wider">Product Name</th>
+                        <th className="p-2.5 sm:p-4 font-extrabold uppercase text-[10px] sm:text-xs tracking-wider">Price</th>
+                        <th className="p-2.5 sm:p-4 font-extrabold uppercase text-[10px] sm:text-xs tracking-wider hidden sm:table-cell">Status</th>
+                        <th className="p-2.5 sm:p-4 rounded-r-xl sm:rounded-r-2xl font-extrabold uppercase text-[10px] sm:text-xs tracking-wider text-center">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {loading ? (
-                        <tr><td colSpan={5} className="text-center py-20 text-gray-400">Searching...</td></tr>
+                        <tr><td colSpan={5} className="text-center py-12 sm:py-20 text-gray-400 text-sm sm:text-base">Searching...</td></tr>
                       ) : results.length > 0 ? (
                         results.map((product) => {
                           const salePrice = product.discount
@@ -226,8 +226,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               onClick={() => setSelectedProduct(product)}
                               className="group hover:bg-gray-100 transition-colors cursor-pointer"
                             >
-                              <td className="p-4">
-                                <div className="relative w-24 h-24 bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+                              <td className="p-2.5 sm:p-4">
+                                <div className="relative w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-xl sm:rounded-2xl border border-gray-100 p-1.5 sm:p-2 shadow-sm">
                                   <img src={product.imageSrc} alt={product.name} className="w-full h-full object-contain" />
                                   {product.discount > 0 && (
                                     <div className="absolute -top-1 -left-1 bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-lg border-2 border-white shadow-sm">
@@ -236,35 +236,35 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                   )}
                                 </div>
                               </td>
-                              <td className="p-4">
-                                <h4 className="font-extrabold text-gray-900 group-hover:text-[#22c55e] transition-colors">{product.name}</h4>
+                              <td className="p-2.5 sm:p-4">
+                                <h4 className="font-extrabold text-gray-900 group-hover:text-[#22c55e] transition-colors text-sm sm:text-base">{product.name}</h4>
                               </td>
-                              <td className="p-4">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[#22c55e] font-black text-xl">${salePrice.toFixed(2)}</span>
+                              <td className="p-2.5 sm:p-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2">
+                                  <span className="text-[#22c55e] font-black text-base sm:text-xl">${salePrice.toFixed(2)}</span>
                                   {product.discount > 0 && (
-                                    <span className="text-gray-400 line-through text-sm font-bold">${product.price.toFixed(2)}</span>
+                                    <span className="text-gray-400 line-through text-xs sm:text-sm font-bold">${product.price.toFixed(2)}</span>
                                   )}
                                 </div>
                               </td>
-                              <td className="p-4">
-                                <div style={{ backgroundColor: "#22c55e" }} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-white rounded-full text-[10px] font-black uppercase tracking-wider">
+                              <td className="p-2.5 sm:p-4 hidden sm:table-cell">
+                                <div style={{ backgroundColor: "#22c55e" }} className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 text-white rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider">
                                   <IconStar /> Sale
                                 </div>
                               </td>
-                              <td className="p-4 text-center">
+                              <td className="p-2.5 sm:p-4 text-center">
                                 <button
                                   onClick={(e) => handleAddToCart(e, product)}
-                                  className="inline-flex items-center gap-2 bg-white border-2 border-[#22c55e] hover:!bg-[#16a34a] hover:!text-white text-[#22c55e] font-bold py-2.5 px-5 rounded-2xl transition-all shadow-sm active:scale-95"
+                                  className="inline-flex items-center gap-1.5 sm:gap-2 bg-white border-2 border-[#22c55e] hover:!bg-[#16a34a] hover:!text-white text-[#22c55e] font-bold py-1.5 sm:py-2.5 px-3 sm:px-5 rounded-xl sm:rounded-2xl transition-all shadow-sm active:scale-95"
                                 >
-                                  <span className="text-sm">Add to Cart</span>
+                                  <span className="text-xs sm:text-sm">Add to Cart</span>
                                 </button>
                               </td>
                             </tr>
                           );
                         })
                       ) : (
-                        <tr><td colSpan={5} className="text-center py-20 text-gray-500 font-bold">No products found for "{searchTerm}"</td></tr>
+                        <tr><td colSpan={5} className="text-center py-12 sm:py-20 text-gray-500 font-bold text-sm sm:text-base">No products found for "{searchTerm}"</td></tr>
                       )}
                     </tbody>
                   </table>
