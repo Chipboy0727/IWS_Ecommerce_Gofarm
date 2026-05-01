@@ -163,6 +163,19 @@ function rowToStore(row: Record<string, unknown>): BackendStore {
   };
 }
 
+function rowToMessage(row: Record<string, unknown>): any {
+  return {
+    id: String(row.id ?? ""),
+    name: String(row.name ?? ""),
+    email: String(row.email ?? ""),
+    subject: String(row.subject ?? ""),
+    message: String(row.message ?? ""),
+    status: String(row.status ?? "unread"),
+    createdAt: String(row.createdAt ?? nowIso()),
+    updatedAt: String(row.updatedAt ?? nowIso()),
+  };
+}
+
 function getPool() {
   return getMysqlPool();
 }
@@ -263,6 +276,19 @@ async function ensureMysqlSchema() {
       updatedAt VARCHAR(32) NOT NULL
     )
   `);
+  
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id VARCHAR(64) PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      subject VARCHAR(255) NOT NULL,
+      message TEXT NOT NULL,
+      status VARCHAR(32) NOT NULL DEFAULT 'unread',
+      createdAt VARCHAR(32) NOT NULL,
+      updatedAt VARCHAR(32) NOT NULL
+    )
+  `);
 
   await pool.execute(`
     CREATE TABLE IF NOT EXISTS meta (
@@ -337,12 +363,14 @@ async function readMysqlState(): Promise<BackendDb | null> {
   const [usersResult] = await pool.query("SELECT * FROM users ORDER BY updatedAt DESC, createdAt DESC");
   const [ordersResult] = await pool.query("SELECT * FROM orders ORDER BY updatedAt DESC, createdAt DESC");
   const [storesResult] = await pool.query("SELECT * FROM stores ORDER BY updatedAt DESC, createdAt DESC");
+  const [messagesResult] = await pool.query("SELECT * FROM messages ORDER BY createdAt DESC");
 
   const products = (productsResult as Array<Record<string, unknown>>).map(rowToProduct);
   const categories = (categoriesResult as Array<Record<string, unknown>>).map(rowToCategory);
   const users = (usersResult as Array<Record<string, unknown>>).map(rowToUser);
   const orders = (ordersResult as Array<Record<string, unknown>>).map(rowToOrder);
   const stores = (storesResult as Array<Record<string, unknown>>).map(rowToStore);
+  const messages = (messagesResult as Array<Record<string, unknown>>).map(rowToMessage);
 
   const [metaRows] = await pool.query("SELECT value FROM meta WHERE `key` = 'state' LIMIT 1");
   const metaValue = (metaRows as Array<{ value: string }>)[0]?.value;
@@ -354,6 +382,7 @@ async function readMysqlState(): Promise<BackendDb | null> {
     users,
     orders,
     stores,
+    messages,
     meta,
   };
 }
@@ -370,6 +399,7 @@ async function persistMysqlState(state: BackendDb) {
     await connection.query("DELETE FROM users");
     await connection.query("DELETE FROM orders");
     await connection.query("DELETE FROM stores");
+    await connection.query("DELETE FROM messages");
     await connection.query("DELETE FROM meta");
 
     const usedProductSlugs = new Set<string>();
@@ -516,6 +546,26 @@ async function persistMysqlState(state: BackendDb) {
       );
     }
 
+    for (const message of (state as any).messages ?? []) {
+      await connection.execute(
+        `
+          INSERT INTO messages (
+            id, name, email, subject, message, status, createdAt, updatedAt
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+          message.id,
+          message.name,
+          message.email,
+          message.subject,
+          message.message,
+          message.status,
+          message.createdAt,
+          message.updatedAt,
+        ]
+      );
+    }
+
     await connection.execute("INSERT INTO meta (`key`, value) VALUES (?, ?)", [
       "state",
       JSON.stringify(state.meta ?? { version: 1, updatedAt: nowIso() }),
@@ -574,3 +624,4 @@ export async function updateDb(mutator: (db: BackendDb) => BackendDb | Promise<B
 export function cloneDb<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
+

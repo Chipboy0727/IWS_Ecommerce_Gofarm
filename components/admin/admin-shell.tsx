@@ -29,6 +29,7 @@ const navItems: AdminNavItem[] = [
   { href: "/admin/stores", label: "Stores", icon: <IconStore /> },
   { href: "/admin/customers", label: "Users", icon: <IconUsers /> },
   { href: "/admin/products", label: "Products", icon: <IconPackage /> },
+  { href: "/admin/messages", label: "Messages", icon: <IconMessage /> },
   { href: "/admin/analytics", label: "Analytics", icon: <IconChart /> },
 ];
 
@@ -803,33 +804,67 @@ export function AdminShell({
       display: block;
       margin-bottom: 4px;
     }
-    .mobile-hamburger {
+    .mobile-topbar {
       display: none;
       position: fixed;
-      top: 16px;
-      left: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
       z-index: 45;
-      width: 42px;
-      height: 42px;
-      border: 0;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.85);
-      color: #4f5c4c;
-      cursor: pointer;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .mobile-hamburger-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(34, 56, 29, 0.12), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #fff;
+      border-radius: 10px;
+      color: #223021;
+      cursor: pointer;
     }
-    .mobile-hamburger:hover {
-      background: rgba(255, 255, 255, 0.95);
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-user {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: #f0f4e8;
+      border: 1px solid rgba(0,0,0,0.06);
+      color: #223021;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
     }
     .sidebar-overlay {
       display: none;
     }
     @media (max-width: 1200px) {
-      .mobile-hamburger {
+      .mobile-topbar {
         display: flex;
+      }
+      .topbar-row {
+        display: none !important;
       }
       .admin-layout {
         grid-template-columns: 1fr !important;
@@ -956,17 +991,29 @@ export function AdminShell({
     <div className="admin-root" data-sidebar-collapsed={sidebarCollapsed ? "true" : "false"}>
       <style>{css}</style>
 
-      {/* Mobile hamburger button */}
-      <button
-        type="button"
-        className="mobile-hamburger"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
-      >
-        <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
-          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </button>
+      {/* Mobile Header */}
+      <header className="mobile-topbar">
+        <button
+          type="button"
+          className="mobile-hamburger-btn"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open menu"
+        >
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        <div className="mobile-logo">
+          <img src="/images/gofarmnamelogo.png" alt="GoFarm Logo" style={{ height: "24px", width: "auto" }} />
+        </div>
+
+        <div className="mobile-user">
+          <div className="mobile-avatar">
+            {userName ? userName.charAt(0).toUpperCase() : "A"}
+          </div>
+        </div>
+      </header>
 
       {/* Mobile overlay backdrop */}
       <div
@@ -1330,6 +1377,14 @@ export function IconSidebarExpand({ className = "h-4.5 w-4.5" }: { className?: s
     <svg viewBox="0 0 24 24" fill="none" className={className}>
       <path d="M9 5 15 12l-6 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M19 5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconMessage({ className = "h-4.5 w-4.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M4 4h16v12H7l-3 3V4Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

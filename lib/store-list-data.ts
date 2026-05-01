@@ -10,6 +10,8 @@ export type StoreItem = {
   pinX: number;
   pinY: number;
   tint: "green" | "red";
+  lat?: number;
+  lng?: number;
 };
 
 export const storeItems: StoreItem[] = [
@@ -25,6 +27,8 @@ export const storeItems: StoreItem[] = [
     pinX: 32,
     pinY: 54,
     tint: "red",
+    lat: 40.7128,
+    lng: -74.0060,
   },
   {
     id: "go-farm-llc",
@@ -38,6 +42,8 @@ export const storeItems: StoreItem[] = [
     pinX: 22,
     pinY: 58,
     tint: "green",
+    lat: 41.8781,
+    lng: -87.6298,
   },
   {
     id: "loyalty",
@@ -51,6 +57,8 @@ export const storeItems: StoreItem[] = [
     pinX: 28,
     pinY: 46,
     tint: "green",
+    lat: 42.3601,
+    lng: -71.0589,
   },
   {
     id: "new-store",
@@ -64,6 +72,8 @@ export const storeItems: StoreItem[] = [
     pinX: 8,
     pinY: 68,
     tint: "red",
+    lat: 32.7157,
+    lng: -117.1611,
   },
   {
     id: "super-deal",
@@ -77,6 +87,8 @@ export const storeItems: StoreItem[] = [
     pinX: 56,
     pinY: 30,
     tint: "green",
+    lat: 51.5074,
+    lng: -0.1278,
   },
   {
     id: "back-store",
@@ -90,6 +102,8 @@ export const storeItems: StoreItem[] = [
     pinX: 54,
     pinY: 34,
     tint: "red",
+    lat: 48.8566,
+    lng: 2.3522,
   },
 ];
 
