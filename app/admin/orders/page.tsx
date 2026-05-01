@@ -286,10 +286,18 @@ export default async function OrdersPage() {
       text-transform: uppercase;
       color: #748171;
     }
+    .orders-table th:last-child {
+      width: 230px;
+      text-align: center;
+    }
     .orders-table td {
       padding: 18px 22px;
       border-bottom: 1px solid #edf1e5;
       vertical-align: middle;
+    }
+    .orders-table td:last-child {
+      width: 230px;
+      text-align: center;
     }
     .orders-table tbody tr:last-child td {
       border-bottom: 0;
@@ -363,6 +371,91 @@ export default async function OrdersPage() {
     .orders-status-pill.delivered { background: #bbf7d0; color: #166534; }
     .orders-status-pill.cancelled { background: #fecaca; color: #991b1b; }
     .orders-status-pill.awaiting_payment { background: #ffe5b8; color: #9d6810; }
+    .orders-mini-actions {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .orders-mini-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      line-height: 1;
+      white-space: nowrap;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.75);
+      color: #3a4a36;
+    }
+    .orders-mini-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: inset 0 0 0 1px rgba(25,126,24,0.14), 0 10px 18px rgba(88, 109, 65, 0.10);
+    }
+    .orders-mini-btn:active:not(:disabled) {
+      transform: translateY(0px);
+    }
+    .orders-mini-btn:disabled {
+      opacity: 0.55;
+      cursor: default;
+      transform: none;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+    }
+    .orders-mini-btn.primary {
+      background: linear-gradient(180deg, rgba(26, 126, 25, 0.95) 0%, rgba(18, 108, 18, 0.95) 100%);
+      color: #fff;
+      box-shadow: 0 12px 18px rgba(25, 126, 24, 0.18);
+    }
+    .orders-mini-btn.primary:hover:not(:disabled) {
+      box-shadow: 0 16px 24px rgba(25, 126, 24, 0.22);
+    }
+    .orders-mini-btn.danger {
+      background: linear-gradient(180deg, rgba(220, 38, 38, 0.96) 0%, rgba(185, 28, 28, 0.96) 100%);
+      color: #fff;
+      box-shadow: 0 12px 18px rgba(220, 38, 38, 0.16);
+    }
+    .orders-mini-btn.purple {
+      background: linear-gradient(180deg, rgba(147, 51, 234, 0.95) 0%, rgba(124, 58, 237, 0.95) 100%);
+      color: #fff;
+      box-shadow: 0 12px 18px rgba(147, 51, 234, 0.16);
+    }
+    .orders-mini-btn.orange {
+      background: linear-gradient(180deg, rgba(249, 115, 22, 0.96) 0%, rgba(234, 88, 12, 0.96) 100%);
+      color: #fff;
+      box-shadow: 0 12px 18px rgba(249, 115, 22, 0.16);
+    }
+    .orders-mini-btn.indigo {
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.95) 0%, rgba(79, 70, 229, 0.95) 100%);
+      color: #fff;
+      box-shadow: 0 12px 18px rgba(99, 102, 241, 0.16);
+    }
+    .orders-mini-btn.gray {
+      background: linear-gradient(180deg, #ffffff 0%, #f3f7ea 100%);
+      color: #41513d;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), 0 10px 18px rgba(88, 109, 65, 0.08);
+    }
+    .orders-mini-btn.blue-outline {
+      background: rgba(255,255,255,0.72);
+      color: #2f5ea1;
+      box-shadow: inset 0 0 0 1px rgba(47, 94, 161, 0.22);
+    }
+    .orders-mini-btn.blue-outline:hover:not(:disabled) {
+      background: rgba(237, 246, 255, 0.85);
+      box-shadow: inset 0 0 0 1px rgba(47, 94, 161, 0.28), 0 10px 18px rgba(88, 109, 65, 0.08);
+    }
     .orders-row-actions {
       position: relative;
       display: inline-flex;
@@ -524,6 +617,15 @@ export default async function OrdersPage() {
       }
       .orders-filterbar {
         padding: 12px 14px;
+      }
+      .orders-mini-actions {
+        justify-content: flex-start;
+        gap: 6px;
+      }
+      .orders-mini-btn {
+        min-height: 24px;
+        padding: 0 9px;
+        font-size: 10px;
       }
     }
   `;

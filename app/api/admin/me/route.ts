@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { updateDb, cloneDb, readDb } from "@/lib/backend/db";
+import { updateDb, cloneDb, readDb, type BackendDb } from "@/lib/backend/db";
 import { jsonError } from "@/lib/backend/http";
 import { requireAdmin } from "@/lib/backend/session";
 import { hashPassword, verifyPassword } from "@/lib/backend/auth";
@@ -79,7 +79,7 @@ export async function PUT(request: NextRequest) {
       return jsonError("Invalid email format", 400);
     }
 
-    const updatedDb = await updateDb((db) => {
+    const updatedDb: BackendDb = await updateDb((db) => {
       const next = cloneDb(db);
       const idx = next.users.findIndex((u) => u.id === admin.id);
       if (idx === -1) throw new Error("User not found");
@@ -93,15 +93,16 @@ export async function PUT(request: NextRequest) {
     });
 
     const updatedUser = updatedDb.users.find((u) => u.id === admin.id);
+    if (!updatedUser) return jsonError("User not found", 404);
     return NextResponse.json({
       success: true,
       message: "Profile updated successfully",
       user: {
-        id: updatedUser?.id,
-        name: updatedUser?.name,
-        email: updatedUser?.email,
-        role: updatedUser?.role,
-        updatedAt: updatedUser?.updatedAt,
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        updatedAt: updatedUser.updatedAt,
       },
     });
   }

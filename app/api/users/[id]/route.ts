@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { updateDb, cloneDb } from "@/lib/backend/db";
+import { updateDb, cloneDb, type BackendDb } from "@/lib/backend/db";
 import { jsonError, sanitizeOptionalString } from "@/lib/backend/http";
 import { requireAdmin } from "@/lib/backend/session";
 import { hashPassword } from "@/lib/backend/auth";
@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   try {
-    const updatedUser = await updateDb((db) => {
+    const updatedDb: BackendDb = await updateDb((db) => {
       const next = cloneDb(db);
       const userIndex = next.users.findIndex((u) => u.id === id);
       
@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return next;
     });
     
-    const user = updatedUser.users.find((u) => u.id === id);
+    const user = updatedDb.users.find((u) => u.id === id);
     return NextResponse.json({
       id: user?.id,
       name: user?.name,
@@ -85,7 +85,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const { id } = await params;
   if (!id) return jsonError("User ID required", 400);
   
-  if (admin.sub === id) {
+  if (admin.id === id) {
     return jsonError("Cannot delete your own account", 400);
   }
 

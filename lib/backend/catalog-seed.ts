@@ -16,6 +16,7 @@ export type BackendUser = {
   updatedAt: string;
   resetTokenHash?: string | null;
   resetTokenExpiresAt?: string | null;
+  status?: string;
 };
 
 export type BackendOrderStatus = "pending" | "processing" | "preparing" | "shipped" | "delivered" | "cancelled" | "awaiting_payment";

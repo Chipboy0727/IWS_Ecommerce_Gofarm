@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import type { LocalCategory, LocalProduct } from "@/lib/local-catalog";
-import { AdminActionButton, Pill, SectionCard } from "@/components/admin/admin-shell";
+import { Pill, SectionCard } from "@/components/admin/admin-shell";
 
 type ProductFormState = {
   name: string;
@@ -91,6 +91,18 @@ export default function ProductManager() {
   const [uploading, setUploading] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<null | "category" | "stock">(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [modalError, setModalError] = useState("");
+  const [previewError, setPreviewError] = useState(false);
+
+  const resolveCategory = (product: LocalProduct) => {
+    const rawId = (product.categoryId ?? "").trim();
+    const rawTitle = (product.categoryTitle ?? "").trim().toLowerCase();
+    return (
+      categories.find((item) => item.id === rawId || item.slug === rawId) ??
+      categories.find((item) => item.title.trim().toLowerCase() === rawTitle) ??
+      null
+    );
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -134,9 +146,20 @@ export default function ProductManager() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isOpen || !form.categoryId || categories.length === 0) return;
+    const matched = categories.find((item) => item.id === form.categoryId || item.slug === form.categoryId);
+    if (matched && form.categoryId !== matched.id) {
+      setForm((current) => ({ ...current, categoryId: matched.id, categoryTitle: matched.title }));
+    }
+  }, [isOpen, form.categoryId, categories]);
+
   const openCreate = () => {
     setEditingSlug(null);
     setForm(emptyForm());
+    setError("");
+    setModalError("");
+    setPreviewError(false);
     setNotice("");
     setIsOpen(true);
   };
@@ -144,6 +167,9 @@ export default function ProductManager() {
   const openEdit = (product: LocalProduct) => {
     setEditingSlug(product.slug);
     setForm(toForm(product));
+    setError("");
+    setModalError("");
+    setPreviewError(false);
     setNotice("");
     setIsOpen(true);
   };
@@ -151,11 +177,17 @@ export default function ProductManager() {
   const closeModal = () => {
     setIsOpen(false);
     setSaving(false);
+    setError("");
+    setModalError("");
+    setPreviewError(false);
   };
 
   const updateField = (field: keyof ProductFormState, value: string) => {
     setForm((current) => {
       const next = { ...current, [field]: value };
+      if (field === "imageSrc") {
+        setPreviewError(false);
+      }
       if (field === "categoryId") {
         const category = categories.find((item) => item.id === value || item.slug === value);
         next.categoryTitle = category?.title ?? "";
@@ -193,13 +225,35 @@ export default function ProductManager() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setModalError("");
     setSaving(true);
     setError("");
     setNotice("");
 
+    const normalizedName = form.name.trim();
+    if (!normalizedName) {
+      setModalError("Product name is required.");
+      setSaving(false);
+      return;
+    }
+
+    const parsedPrice = Number(form.price);
+    if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+      setModalError("Price must be zero or greater.");
+      setSaving(false);
+      return;
+    }
+
+    if (!form.imageSrc.trim()) {
+      setModalError("Image URL is required.");
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       ...form,
-      price: Number(form.price),
+      name: normalizedName,
+      price: parsedPrice,
       discount: form.discount ? Number(form.discount) : null,
       rating: Number(form.rating),
       reviews: Number(form.reviews),
@@ -222,10 +276,13 @@ export default function ProductManager() {
       }
 
       setNotice(editingSlug ? "Product updated successfully." : "Product created successfully.");
+      setModalError("");
       setIsOpen(false);
       await loadData();
     } catch (err: any) {
-      setError(err.message || "Failed to save product");
+      const message = err.message || "Failed to save product";
+      setError(message);
+      setModalError(message);
     } finally {
       setSaving(false);
     }
@@ -279,7 +336,8 @@ export default function ProductManager() {
       p.slug.toLowerCase().includes(term) ||
       (p.categoryTitle && p.categoryTitle.toLowerCase().includes(term))
     );
-    const matchesCategory = categoryFilter === "All" || p.categoryId === categoryFilter;
+    const resolvedCategory = resolveCategory(p);
+    const matchesCategory = categoryFilter === "All" || resolvedCategory?.id === categoryFilter;
     
     let matchesStock = true;
     const stock = p.stock || 0;
@@ -301,7 +359,10 @@ export default function ProductManager() {
         subtitle="Manage your agricultural catalog and monitor stock levels in real-time."
         right={
           <div className="flex flex-wrap gap-2">
-            <AdminActionButton tone="primary" onClick={openCreate}>+ Add New Product</AdminActionButton>
+            <button type="button" className="pm-add-button" onClick={openCreate}>
+              <span className="pm-add-icon">+</span>
+              <span>Add New Product</span>
+            </button>
           </div>
         }
       >
@@ -409,7 +470,7 @@ export default function ProductManager() {
           </div>
         ) : (
           <>
-            <div className="overflow-hidden rounded-[18px] ring-1 ring-black/5 border border-[#edf1e5]">
+            <div className="overflow-hidden rounded-[18px] border border-[#e1ebd4] bg-white shadow-[0_14px_28px_rgba(77,107,53,0.08)]">
               <div className="max-h-[800px] overflow-y-auto">
                 <table className="page-table min-w-full text-left">
                 <thead className="bg-[#f0f5e4]">
@@ -444,7 +505,7 @@ export default function ProductManager() {
                           </div>
                         </td>
                         <td className="px-5 py-4">
-                          <Pill tone="green">{product.categoryTitle ?? "Uncategorized"}</Pill>
+                          <Pill tone="green">{resolveCategory(product)?.title ?? product.categoryTitle ?? "Uncategorized"}</Pill>
                         </td>
                         <td className="px-5 py-4 text-[13px] text-[#4d5d4b]">
                           <div className="flex items-center gap-3">
@@ -533,17 +594,17 @@ export default function ProductManager() {
 
       {isOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1a2619]/60 p-4 backdrop-blur-md">
-          <div className="flex h-full max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-[32px] bg-white shadow-[0_30px_70px_-10px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+          <div className="pm-modal-shell flex h-full max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-[38px] bg-white shadow-[0_30px_70px_-10px_rgba(38,64,30,0.28)]">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#edf1e5] bg-white px-8 py-6">
+            <div className="pm-modal-header flex items-center justify-between border-b border-[#dfead2] px-8 py-6">
               <div>
                 <h3 className="text-2xl font-extrabold tracking-tight text-[#1a2619]">{editingSlug ? "Edit Product" : "Create New Product"}</h3>
-                <p className="text-[14px] text-[#6f7b6d]">{editingSlug ? "Update the product details below." : "Add a fresh new product to your catalog."}</p>
+                <p className="text-[14px] text-[#547252]">{editingSlug ? "Update the product details below." : "Add a fresh new product to your catalog."}</p>
               </div>
               <button
                 type="button"
                 onClick={closeModal}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0f5e4] text-[#4d5d4b] transition-all hover:bg-[#e2efda] hover:text-[#1a2619] active:scale-90"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/75 text-[#4d5d4b] ring-1 ring-[#d7e5c8] transition-all hover:bg-white hover:text-[#1a2619] hover:ring-[#b9d6ab] active:scale-90"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -553,9 +614,14 @@ export default function ProductManager() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto bg-white p-8">
+            <div className="pm-modal-body flex-1 overflow-y-auto p-8">
+              {modalError ? (
+                <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {modalError}
+                </div>
+              ) : null}
               <form id="product-form" onSubmit={handleSubmit} className="grid gap-8 md:grid-cols-2">
-                <div className="md:col-span-2 space-y-6 rounded-[24px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
+                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
                   <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -575,7 +641,7 @@ export default function ProductManager() {
                   </div>
                 </div>
 
-                <div className="space-y-6 rounded-[24px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
+                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between border-b border-[#edf1e5] pb-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
@@ -584,8 +650,8 @@ export default function ProductManager() {
                       <h4 className="text-[14px] font-bold uppercase tracking-widest text-[#1a2619]">Media</h4>
                     </div>
                     <div className="flex rounded-full bg-[#f0f5e4] p-1 scale-90">
-                      <button type="button" onClick={() => setImageMode("url")} className={`rounded-full px-4 py-1.5 text-[11px] font-bold transition-all ${imageMode === "url" ? "bg-white text-[#16781f] shadow-sm" : "text-[#6f7b6d]"}`}>LINK</button>
-                      <button type="button" onClick={() => setImageMode("upload")} className={`rounded-full px-4 py-1.5 text-[11px] font-bold transition-all ${imageMode === "upload" ? "bg-white text-[#16781f] shadow-sm" : "text-[#6f7b6d]"}`}>UPLOAD</button>
+                      <button type="button" onClick={() => setImageMode("url")} className={`pm-toggle-btn ${imageMode === "url" ? "is-active" : ""}`}>LINK</button>
+                      <button type="button" onClick={() => setImageMode("upload")} className={`pm-toggle-btn ${imageMode === "upload" ? "is-active" : ""}`}>UPLOAD</button>
                     </div>
                   </div>
                   <div className="space-y-5">
@@ -611,18 +677,27 @@ export default function ProductManager() {
                     <Field label="Alt Text">
                       <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" placeholder="Image description" required />
                     </Field>
-                    {form.imageSrc && (
-                      <div className="relative group overflow-hidden rounded-2xl border border-[#dce4d1]">
-                        <img src={form.imageSrc} alt="Preview" className="h-32 w-full object-cover" />
+                    {form.imageSrc && !previewError ? (
+                      <div className="relative mt-3 group overflow-hidden rounded-[24px] border border-[#dce4d1]">
+                        <img
+                          src={form.imageSrc}
+                          alt="Preview"
+                          className="h-32 w-full object-cover"
+                          onError={() => setPreviewError(true)}
+                        />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <span className="text-white text-xs font-bold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">Image Preview</span>
                         </div>
                       </div>
-                    )}
+                    ) : form.imageSrc ? (
+                      <div className="mt-3 flex h-32 items-center justify-center rounded-[24px] border border-dashed border-[#d3dfc5] bg-[#f7fbf1] text-[13px] font-semibold text-[#6f7b6d]">
+                        Invalid image URL. Please use another link or upload a file.
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
-                <div className="space-y-6 rounded-[24px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
+                <div className="pm-form-panel space-y-6 rounded-[30px] bg-white p-8 border border-[#edf1e5] shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -645,7 +720,7 @@ export default function ProductManager() {
                   </div>
                 </div>
 
-                <div className="md:col-span-2 space-y-6 rounded-[24px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
+                <div className="pm-form-panel md:col-span-2 space-y-6 rounded-[30px] bg-[#f8fbf2] p-8 border border-[#edf1e5]">
                   <div className="flex items-center gap-3 border-b border-[#edf1e5] pb-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2efda] text-[#16781f]">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -671,32 +746,155 @@ export default function ProductManager() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-4 border-t border-[#edf1e5] bg-white px-8 py-6">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="rounded-xl px-8 py-3 text-[14px] font-bold text-[#5b6658] transition-all hover:bg-[#f0f5e4] active:scale-95"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                form="product-form"
-                disabled={saving}
-                style={{ backgroundColor: "#0f9716", color: "#ffffff" }}
-                className="flex items-center justify-center rounded-xl px-10 py-3 text-[14px] font-bold shadow-lg shadow-green-100 transition-all hover:bg-[#0d8213] hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
-              >
-                {saving ? "Saving..." : editingSlug ? "Save Changes" : "Save Product"}
-              </button>
+            <div className="pm-modal-footer border-t border-[#e2ecd8] px-8 py-7">
+              <div className="pm-footer-actions flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="pm-cancel-btn flex items-center justify-center rounded-xl px-7 py-2.5 text-[14px] font-bold transition-all active:scale-95"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="product-form"
+                  disabled={saving || !form.name.trim() || !form.imageSrc.trim()}
+                  className="pm-save-btn flex items-center justify-center rounded-xl px-7 py-2.5 text-[14px] font-bold transition-all disabled:opacity-50"
+                >
+                  {saving ? "Saving Product..." : editingSlug ? "Save Changes" : "Save Product"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       ) : null}
 
       <style jsx>{`
+        .pm-modal-shell {
+          background:
+            radial-gradient(circle at top right, rgba(161, 227, 139, 0.24), transparent 38%),
+            radial-gradient(circle at bottom left, rgba(195, 240, 177, 0.22), transparent 40%),
+            #ffffff;
+          border: 1px solid #dbe8cf;
+        }
+        .pm-modal-header {
+          background: linear-gradient(180deg, #f7fcef 0%, #eef7e3 100%);
+        }
+        .pm-modal-body {
+          background: linear-gradient(180deg, #fdfefb 0%, #f7fbf2 100%);
+          padding-bottom: 14px;
+        }
+        .pm-modal-footer {
+          background: linear-gradient(180deg, #f7fbf2 0%, #f2f8e8 100%);
+          overflow: visible;
+          border-top: 0 !important;
+          margin-top: -6px;
+          padding-top: 16px;
+        }
+        .pm-footer-actions {
+          padding-right: 24px;
+        }
+        .pm-form-panel {
+          border-radius: 42px !important;
+          overflow: hidden;
+          box-shadow: 0 14px 30px rgba(83, 112, 58, 0.07);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+        .pm-form-panel:hover {
+          transform: translateY(-2px);
+          border-color: #d8e7ca;
+          box-shadow: 0 18px 34px rgba(83, 112, 58, 0.12);
+        }
+        .pm-save-btn {
+          position: relative;
+          z-index: 1;
+          flex: 0 0 auto;
+          min-height: 42px;
+          min-width: 140px;
+          white-space: nowrap;
+          color: #ffffff;
+          background: linear-gradient(180deg, #21ad1b 0%, #138e13 100%);
+          box-shadow: 0 6px 10px rgba(18, 142, 19, 0.18);
+        }
+        .pm-save-btn:hover:not(:disabled) {
+          filter: saturate(1.03) brightness(1.01);
+          box-shadow: 0 7px 11px rgba(18, 142, 19, 0.2);
+        }
+        .pm-save-btn:disabled {
+          cursor: not-allowed;
+          filter: grayscale(0.08);
+          box-shadow: 0 8px 16px rgba(18, 142, 19, 0.18);
+        }
+        .pm-cancel-btn {
+          flex: 0 0 auto;
+          min-height: 42px;
+          min-width: 96px;
+          white-space: nowrap;
+          color: #4f5d4d;
+          background: linear-gradient(180deg, #ffffff 0%, #f3f8eb 100%);
+          box-shadow: inset 0 0 0 1px rgba(146, 168, 126, 0.35), 0 6px 10px rgba(96, 122, 70, 0.1);
+        }
+        .pm-cancel-btn:hover {
+          color: #2f3f2c;
+          box-shadow: inset 0 0 0 1px rgba(120, 150, 98, 0.45), 0 8px 12px rgba(96, 122, 70, 0.12);
+        }
+        .pm-toggle-btn {
+          border: 0;
+          border-radius: 999px;
+          padding: 6px 16px;
+          font-size: 11px;
+          font-weight: 800;
+          color: #6f7b6d;
+          background: transparent;
+          cursor: pointer;
+          transition: all 0.18s ease;
+        }
+        .pm-toggle-btn:hover {
+          color: #2f5f2a;
+          background: rgba(255, 255, 255, 0.58);
+        }
+        .pm-toggle-btn.is-active {
+          background: #ffffff;
+          color: #16781f;
+          box-shadow: 0 6px 12px rgba(90, 117, 66, 0.18);
+        }
+        .pm-add-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          min-height: 46px;
+          border: 0;
+          border-radius: 12px;
+          padding: 0 16px;
+          cursor: pointer;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 800;
+          background: linear-gradient(180deg, #21ad1b 0%, #138e13 100%);
+          box-shadow: 0 14px 24px rgba(18, 142, 19, 0.25);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+        }
+        .pm-add-button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 18px 28px rgba(18, 142, 19, 0.3);
+          filter: saturate(1.03);
+        }
+        .pm-add-button:active {
+          transform: translateY(0);
+        }
+        .pm-add-icon {
+          width: 20px;
+          height: 20px;
+          display: grid;
+          place-items: center;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.2);
+          line-height: 1;
+          font-size: 14px;
+        }
         .input {
           width: 100%;
-          border-radius: 16px;
+          border-radius: 22px;
           border: 1.5px solid #dce4d1;
           background: #fff;
           padding: 14px 18px;
@@ -711,7 +909,7 @@ export default function ProductManager() {
         }
         .input:focus {
           border-color: #0f9716;
-          box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.1), 0 2px 4px rgba(0,0,0,0.02);
+          box-shadow: 0 0 0 4px rgba(15, 151, 22, 0.14), 0 6px 16px rgba(15, 151, 22, 0.1);
         }
         .input:hover:not(:focus) {
           border-color: #b5c4a7;
@@ -853,6 +1051,22 @@ export default function ProductManager() {
           background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
           color: #fff;
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+        }
+        .icon-actions button {
+          width: 32px;
+          height: 32px;
+          display: grid;
+          place-items: center;
+          border-radius: 10px;
+          background: linear-gradient(180deg, #ffffff 0%, #f3f8eb 100%);
+          box-shadow: inset 0 0 0 1px rgba(146, 168, 126, 0.32);
+          transition: transform 0.16s ease, box-shadow 0.16s ease, color 0.16s ease, background 0.16s ease;
+        }
+        .icon-actions button:hover {
+          transform: translateY(-1px);
+          color: #1f7d16;
+          background: linear-gradient(180deg, #fbfff7 0%, #eef8e1 100%);
+          box-shadow: inset 0 0 0 1px rgba(23, 126, 20, 0.25), 0 8px 14px rgba(96, 122, 70, 0.14);
         }
         @keyframes pmMenuIn {
           from {
