@@ -99,7 +99,7 @@ export default async function AdminDashboardPage() {
           subtitle="Latest order activity across all farms"
           right={<AdminActionButton tone="ghost">View All</AdminActionButton>}
         >
-          <div className="table-scroll-wrap rounded-[18px] ring-1 ring-black/5">
+          <div className="admin-data-table-shell">
             <table className="page-table">
               <thead>
                 <tr>
