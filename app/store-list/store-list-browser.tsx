@@ -112,10 +112,10 @@ function StoreCard({ store }: { store: StoreItem }) {
   };
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col h-full">
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-gofarm-green/0 via-gofarm-green/10 to-gofarm-green/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      <div className="relative p-4 sm:p-5">
+
+      <div className="relative p-4 sm:p-5 flex flex-col flex-1">
         <div className="mb-3 sm:mb-4 flex items-center justify-between">
           <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-gofarm-green/15 to-gofarm-light-green/10">
             <IconStore className="h-5 w-5 sm:h-6 sm:w-6 text-gofarm-green" />
@@ -131,7 +131,7 @@ function StoreCard({ store }: { store: StoreItem }) {
             </span>
           </div>
         </div>
-        
+
         <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-0.5 sm:mb-1 group-hover:text-gofarm-green transition-colors line-clamp-1">
           {store.name}
         </h3>
@@ -139,7 +139,7 @@ function StoreCard({ store }: { store: StoreItem }) {
           <IconMapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-400" />
           <p className="text-[10px] sm:text-xs text-gray-500">{store.city}, {store.country}</p>
         </div>
-        
+
         <div className="space-y-1.5 sm:space-y-2 text-sm border-t border-gray-100 pt-2.5 sm:pt-3">
           <div className="flex items-start gap-1.5 sm:gap-2 text-gray-600">
             <IconMapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 mt-0.5 shrink-0 text-gofarm-green" />
@@ -156,15 +156,17 @@ function StoreCard({ store }: { store: StoreItem }) {
             <span className="text-[10px] sm:text-xs line-clamp-1">{store.hours}</span>
           </div>
         </div>
-        
-        <button
-          onClick={openGoogleMaps}
-          className="mt-3 sm:mt-4 flex w-full items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gray-900 px-2.5 sm:px-3 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold text-white transition-all hover:bg-gofarm-green hover:gap-2 sm:hover:gap-3"
-        >
-          <IconMapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          Get Directions
-          <IconExternal className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-70" />
-        </button>
+
+        <div className="mt-auto pt-4 sm:pt-5">
+          <button
+            onClick={openGoogleMaps}
+            className="flex w-full items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gray-900 px-2.5 sm:px-3 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold text-white transition-all hover:bg-gofarm-green hover:gap-2 sm:hover:gap-3"
+          >
+            <IconMapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            Get Directions
+            <IconExternal className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-70" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -199,25 +201,23 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
       </div>
 
       <div className="flex flex-col md:flex-row">
-        <div className="border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/30 max-h-64 md:max-h-96 overflow-y-auto">
+        <div className="border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/30 max-h-64 md:max-h-96 overflow-y-auto md:w-[40%] shrink-0">
           <div className="p-2 sm:p-3">
             <div className="space-y-1 sm:space-y-1.5">
               {stores.map((store, idx) => (
                 <button
                   key={store.id}
                   onClick={() => setSelectedStore(store)}
-                  className={`w-full text-left rounded-xl p-2.5 sm:p-3 transition-all duration-200 ${
-                    selectedStore?.id === store.id
-                      ? "bg-gofarm-green text-white shadow-md"
-                      : "bg-white hover:bg-gofarm-green/5 border border-gray-100 hover:border-gofarm-green/30"
-                  }`}
+                  className={`w-full text-left rounded-xl p-2.5 sm:p-3 transition-all duration-200 ${selectedStore?.id === store.id
+                    ? "bg-gofarm-green text-white shadow-md"
+                    : "bg-white hover:bg-gofarm-green/5 border border-gray-100 hover:border-gofarm-green/30"
+                    }`}
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <div className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg text-[10px] sm:text-xs font-bold ${
-                      selectedStore?.id === store.id
-                        ? "bg-white/20 text-white"
-                        : "bg-gofarm-green/10 text-gofarm-green"
-                    }`}>
+                    <div className={`flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg text-[10px] sm:text-xs font-bold ${selectedStore?.id === store.id
+                      ? "bg-white/20 text-white"
+                      : "bg-gofarm-green/10 text-gofarm-green"
+                      }`}>
                       {idx + 1}
                     </div>
                     <div className="flex-1 text-left">
@@ -241,7 +241,7 @@ function MapPanel({ stores }: { stores: StoreItem[] }) {
               <div className="mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gofarm-green/10 mx-auto">
                 <IconStore className="h-7 w-7 sm:h-8 sm:w-8 text-gofarm-green" />
               </div>
-              
+
               <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-0.5 sm:mb-1">{selectedStore.name}</h3>
               <p className="text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 break-words">{selectedStore.address}</p>
 
@@ -315,7 +315,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        
+
         let nearestStore = stores[0];
         let minDistance = Infinity;
 
@@ -323,7 +323,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
           if (store.lat && store.lng) {
             // Simplified distance calculation for relative comparison
             const dist = Math.sqrt(
-              Math.pow(store.lat - latitude, 2) + 
+              Math.pow(store.lat - latitude, 2) +
               Math.pow(store.lng - longitude, 2)
             );
             if (dist < minDistance) {
@@ -354,7 +354,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
 
   const filteredStores = useMemo(() => {
     return stores.filter(store => {
-      const matchesSearch = searchQuery === "" || 
+      const matchesSearch = searchQuery === "" ||
         store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         store.city.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCountry = selectedCountry === "all" || store.country === selectedCountry;
@@ -372,7 +372,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50/50 to-white pb-8 sm:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-        
+
         {/* Hero Section */}
         <div className="mb-6 sm:mb-8 md:mb-10 text-center">
           <button
@@ -401,12 +401,12 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
         {/* Search and Filter Bar - ĐÃ SỬA LỖI ĐÈ CHỮ */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-md">
-            
+
             <div className="flex flex-col sm:flex-row gap-3">
-              
+
               {/* Search Input */}
               <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4.5 pointer-events-none">
                   <IconSearch className="h-4 w-4 text-gray-400" />
                 </div>
                 <input
@@ -428,7 +428,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
 
               {/* Country Select - ĐÃ SỬA LỖI ĐÈ CHỮ */}
               <div className="relative w-full sm:w-48">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-4.5 pointer-events-none">
                   <IconGlobe className="h-4 w-4 text-gray-400" />
                 </div>
                 <select
@@ -485,7 +485,7 @@ export default function StoreListBrowser({ stores }: { stores: StoreItem[] }) {
           </div>
         ) : (
           <>
-            <div className="mb-6 sm:mb-8 grid gap-3 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mb-6 sm:mb-8 grid gap-3 sm:gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
               {filteredStores.map((store) => (
                 <StoreCard key={store.id} store={store} />
               ))}

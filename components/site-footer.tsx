@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function FooterColumn({ title, items }: { title: string; items: string[] }) {
   const categoryRoutes: Record<string, string> = {
@@ -41,16 +45,48 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
 }
 
 export default function SiteFooter() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      setStatus("error");
+      setMessage("Please enter your email address");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus("error");
+      setMessage("Please enter a valid email address");
+      return;
+    }
+
+    // Simulate success
+    setStatus("success");
+    setMessage("Successfully subscribed to our newsletter!");
+    setEmail("");
+
+    // Reset status after a few seconds
+    setTimeout(() => {
+      setStatus("idle");
+      setMessage("");
+    }, 5000);
+  };
+
   const quickLinks = ["About us", "Contact us", "Terms & Conditions", "Privacy Policy", "FAQs", "Help"];
   const categories = ["Fruits", "Vegetables", "Juices", "Spices & Herbs"];
 
   return (
     <footer className="bg-gofarm-white border-t border-gofarm-light-gray mt-10">
       <div className="mx-auto max-w-7xl px-3 sm:px-4 md:px-5 lg:px-6">
-        
+
         {/* Contact Info Grid - Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 border-b">
-          
+
           {/* Visit Us */}
           <a
             href="https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA"
@@ -107,19 +143,19 @@ export default function SiteFooter() {
         </div>
 
         {/* Main Footer Content */}
-        <div className="py-8 sm:py-10 lg:py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          
+        <div className="py-8 sm:py-10 lg:py-12 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+
           {/* Logo & Description */}
-          <div className="space-y-3 sm:space-y-4">
+          <div className="col-span-2 sm:col-span-1 space-y-3 sm:space-y-4">
             <div className="flex justify-start">
               <Link href="/">
-                <img 
-                  alt="logo" 
-                  loading="lazy" 
-                  width="160" 
-                  height="48" 
-                  className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto" 
-                  src="/images/gofarmnamelogo.png" 
+                <img
+                  alt="logo"
+                  loading="lazy"
+                  width="160"
+                  height="48"
+                  className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto"
+                  src="/images/gofarmnamelogo.png"
                 />
               </Link>
             </div>
@@ -130,28 +166,53 @@ export default function SiteFooter() {
 
           {/* Quick Links */}
           <FooterColumn title="Quick Links" items={quickLinks} />
-          
+
           {/* Categories */}
           <FooterColumn title="Categories" items={categories} />
 
           {/* Newsletter */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <h3 className="font-semibold text-gofarm-black mb-3 sm:mb-4 text-base sm:text-lg text-center sm:text-left">Newsletter</h3>
             <p className="text-gofarm-gray text-xs sm:text-sm mb-3 sm:mb-4 text-center sm:text-left">
               Subscribe to our newsletter to receive updates and exclusive offers.
             </p>
-            <form className="space-y-2 sm:space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
               <input
                 type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (status === "error") setStatus("idle");
+                }}
                 placeholder="Enter your email"
                 className="w-full px-3 sm:px-4 py-2 text-xs sm:text-sm border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green disabled:bg-gofarm-light-gray/50 disabled:cursor-not-allowed transition-all text-gofarm-black placeholder:text-gofarm-gray"
               />
-              <button 
-                type="submit" 
-                className="w-full bg-gofarm-green text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
-              >
-                Subscribe
-              </button>
+              <div className="relative">
+                <AnimatePresence mode="wait">
+                  {status !== "idle" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, height: 0 }}
+                      animate={{ opacity: 1, y: 0, height: "auto" }}
+                      exit={{ opacity: 0, y: -10, height: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="overflow-hidden"
+                    >
+                      <p className={`text-[10px] sm:text-xs mb-2 font-medium ${status === "success" ? "text-green-600" : "text-red-500"
+                        }`}>
+                        {message}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <motion.button
+                  layout
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="w-full bg-gofarm-green text-white px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg hover:bg-gofarm-light-green transition-colors disabled:bg-gofarm-gray disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+                >
+                  Subscribe
+                </motion.button>
+              </div>
             </form>
           </div>
         </div>

@@ -10,6 +10,7 @@ function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/");
@@ -22,6 +23,12 @@ function SignInForm() {
 
   useEffect(() => {
     const redirectParam = searchParams.get("redirect");
+    const successParam = searchParams.get("success");
+
+    if (successParam) {
+      setSuccess(successParam);
+    }
+
     if (redirectParam) {
       setRedirectTo(decodeURIComponent(redirectParam));
     } else {
@@ -126,6 +133,13 @@ function SignInForm() {
           {error && (
             <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
               {error}
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
+              {success}
             </div>
           )}
 
