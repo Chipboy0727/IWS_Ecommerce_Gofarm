@@ -318,28 +318,5 @@ export function transformHomeBody({
     ""
   );
 
-  transformedBody += `
-    <a href="/shop" class="fixed bottom-6 right-6 z-50 group">
-      <div class="relative">
-        <div class="absolute inset-0 bg-linear-to-r from-gofarm-green to-emerald-500 rounded-full animate-pulse opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div class="relative flex items-center gap-2.5 bg-linear-to-r from-gofarm-green to-emerald-600 text-white px-5 py-3.5 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105 overflow-hidden">
-          <span class="absolute inset-0 bg-gofarm-orange -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></span>
-          <div class="relative z-10 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            <span class="font-semibold group-hover:text-yellow-200 transition-colors duration-300"></span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles w-3 h-3 absolute -top-1 -right-1 animate-pulse text-yellow-300" aria-hidden="true">
-            <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
-            <path d="M20 2v4"></path>
-            <path d="M22 4h-4"></path>
-            <circle cx="4" cy="20" r="2"></circle>
-          </svg>
-        </div>
-      </div>
-    </a>
-  `;
-
   return transformedBody;
 }
