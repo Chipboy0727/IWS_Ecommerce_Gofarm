@@ -575,12 +575,12 @@ export default function CollectionPage() {
                 <div className="flex flex-col lg:flex-row gap-3">
 
                   <div className="flex-1 relative">
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={(e) => handleSearchChange(e.target.value)}
-                      className="w-full border bg-transparent pl-9 pr-3 py-2 text-sm border-gofarm-light-green/30 focus:border-gofarm-green focus:ring-gofarm-green rounded-lg outline-none"
+                      className="w-full border bg-white pl-10 pr-3 py-2 text-sm border-gofarm-light-green/30 focus:border-gofarm-green focus:ring-gofarm-green rounded-lg outline-none shadow-sm transition-all"
                       placeholder="Search products..."
                     />
                   </div>
