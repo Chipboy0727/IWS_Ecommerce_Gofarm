@@ -102,11 +102,14 @@ export default async function InventoryPage() {
       border-radius: 12px;
       min-height: 138px;
       padding: 22px 24px;
-      box-shadow: 0 14px 28px rgba(48, 76, 37, 0.05);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 10px 28px rgba(17, 24, 39, 0.06);
     }
     .inventory-stat-card.green {
-      background: linear-gradient(180deg, #1d9c13 0%, #188b12 100%);
+      background: linear-gradient(180deg, #00a844 0%, #008038 100%);
       color: #fff;
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 14px 34px rgba(0, 168, 68, 0.22);
     }
     .inventory-stat-header {
       display: flex;
@@ -118,7 +121,7 @@ export default async function InventoryPage() {
       font-size: 13px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: #6f7b6c;
+      color: #6b7280;
     }
     .inventory-stat-card.green .inventory-stat-label {
       color: rgba(255, 255, 255, 0.76);
@@ -129,8 +132,8 @@ export default async function InventoryPage() {
       display: grid;
       place-items: center;
       border-radius: 6px;
-      background: #d8f0c8;
-      color: #2c9721;
+      background: rgba(0, 168, 68, 0.14);
+      color: #00a844;
     }
     .inventory-stat-icon.red {
       background: #ffe0da;
@@ -146,7 +149,7 @@ export default async function InventoryPage() {
       line-height: 0.95;
       font-weight: 800;
       letter-spacing: -0.06em;
-      color: #207e1e;
+      color: #00a844;
     }
     .inventory-stat-card.red .inventory-stat-value {
       color: #b72727;
@@ -157,15 +160,16 @@ export default async function InventoryPage() {
     .inventory-stat-meta {
       margin-top: 8px;
       font-size: 14px;
-      color: #556152;
+      color: #6b7280;
     }
     .inventory-stat-card.green .inventory-stat-meta {
       color: rgba(255, 255, 255, 0.72);
     }
     .inventory-table-card {
-      background: rgba(255, 255, 255, 0.86);
+      background: #ffffff;
       border-radius: 22px;
-      box-shadow: 0 18px 36px rgba(48, 76, 37, 0.05);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 14px 36px rgba(17, 24, 39, 0.06);
       overflow: hidden;
     }
     .inventory-toolbar {
@@ -190,20 +194,22 @@ export default async function InventoryPage() {
       min-height: 48px;
       padding: 0 14px;
       border-radius: 12px;
-      background: linear-gradient(180deg, #f4f8ed 0%, #eaf2de 100%);
-      color: #4f604b;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+      color: #4b5563;
       font-size: 15px;
       text-decoration: none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.82), 0 10px 18px rgba(117, 139, 89, 0.08);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 6px 16px rgba(17, 24, 39, 0.05);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
     }
     .inventory-filter:hover {
       transform: translateY(-1px);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 12px 22px rgba(98, 125, 69, 0.12);
-      background: linear-gradient(180deg, #f7fbf0 0%, #edf5e2 100%);
+      border-color: rgba(0, 168, 68, 0.22);
+      box-shadow: 0 10px 22px rgba(17, 24, 39, 0.08);
+      background: linear-gradient(180deg, #ffffff 0%, #fff7ee 100%);
     }
     .inventory-filter:focus-within {
-      box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.22), 0 12px 22px rgba(98, 125, 69, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(0, 168, 68, 0.25), 0 12px 22px rgba(17, 24, 39, 0.06);
     }
     .inventory-filter-select {
       min-width: 190px;
@@ -213,9 +219,9 @@ export default async function InventoryPage() {
       padding-right: 40px;
     }
     .inventory-filter-select.is-open {
-      border-color: rgba(47, 151, 42, 0.24);
-      background: linear-gradient(180deg, #f8fcf3 0%, #eef7e5 100%);
-      box-shadow: inset 0 0 0 1px rgba(23, 137, 29, 0.08), 0 16px 28px rgba(98, 125, 69, 0.14);
+      border-color: rgba(0, 168, 68, 0.28);
+      background: linear-gradient(180deg, #ffffff 0%, rgba(0, 168, 68, 0.06) 100%);
+      box-shadow: 0 12px 28px rgba(17, 24, 39, 0.08);
     }
     .inventory-filter-button {
       border: 0;
@@ -227,13 +233,13 @@ export default async function InventoryPage() {
       right: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #73916c;
+      color: #6b7280;
       pointer-events: none;
       transition: transform 0.18s ease, color 0.18s ease;
     }
     .inventory-filter-select.is-open .inventory-select-arrow {
       transform: translateY(-50%) rotate(180deg);
-      color: #2d8c2f;
+      color: #00a844;
     }
     .inventory-menu {
       position: absolute;
@@ -244,8 +250,8 @@ export default async function InventoryPage() {
       padding: 6px;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.98);
-      border: 1px solid rgba(173, 191, 152, 0.55);
-      box-shadow: 0 14px 24px rgba(93, 118, 67, 0.12), 0 4px 10px rgba(93, 118, 67, 0.06);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 14px 28px rgba(17, 24, 39, 0.12), 0 4px 10px rgba(17, 24, 39, 0.06);
       backdrop-filter: blur(16px);
       overflow: hidden;
       box-sizing: border-box;
@@ -260,7 +266,7 @@ export default async function InventoryPage() {
       background: transparent;
       border-radius: 9px;
       padding: 9px 12px;
-      color: #4d6247;
+      color: #374151;
       font-size: 14px;
       font-weight: 600;
       line-height: 1.25;
@@ -269,11 +275,11 @@ export default async function InventoryPage() {
       transition: background 0.16s ease, color 0.16s ease;
     }
     .inventory-menu-item:hover {
-      background: linear-gradient(180deg, #f3f9ea 0%, #ebf5df 100%);
-      color: #24752a;
+      background: linear-gradient(180deg, #f9fafb 0%, rgba(0, 168, 68, 0.08) 100%);
+      color: #00a844;
     }
     .inventory-menu-item.active {
-      background: linear-gradient(180deg, #25a01d 0%, #1e8e18 100%);
+      background: linear-gradient(180deg, #3b9c3c 0%, #00a844 100%);
       color: #fff;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
     }
@@ -292,7 +298,7 @@ export default async function InventoryPage() {
       border-collapse: collapse;
     }
     .inventory-table thead {
-      background: #ebf1dc;
+      background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
     }
     .inventory-table th {
       padding: 14px 18px;
@@ -301,11 +307,11 @@ export default async function InventoryPage() {
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #51604e;
+      color: #6b7280;
     }
     .inventory-table td {
       padding: 16px 18px;
-      border-bottom: 1px solid #edf2e5;
+      border-bottom: 1px solid #e5e7eb;
       vertical-align: middle;
     }
     .inventory-table tr:last-child td {
@@ -327,12 +333,12 @@ export default async function InventoryPage() {
       font-size: 14px;
       font-weight: 700;
       line-height: 1.28;
-      color: #2b3428;
+      color: #111827;
     }
     .inventory-product-sku {
       margin-top: 4px;
       font-size: 12px;
-      color: #72806e;
+      color: #6b7280;
       line-height: 1.3;
     }
     .inventory-category-pill,
@@ -349,20 +355,21 @@ export default async function InventoryPage() {
       white-space: nowrap;
     }
     .inventory-category-pill {
-      background: linear-gradient(180deg, #edf5e3 0%, #e1ebd5 100%);
-      color: #63845f;
+      background: linear-gradient(180deg, #f9fafb 0%, #fff7ee 100%);
+      color: #6b7280;
+      box-shadow: inset 0 0 0 1px rgba(229, 231, 235, 0.9);
     }
     .inventory-status-pill.optimal {
-      background: #baf28f;
-      color: #38862f;
+      background: rgba(0, 168, 68, 0.16);
+      color: #008038;
     }
     .inventory-status-pill.healthy {
-      background: #e7eed7;
-      color: #66775d;
+      background: #f3f4f6;
+      color: #4b5563;
     }
     .inventory-status-pill.warning {
-      background: #baf28f;
-      color: #588f31;
+      background: rgba(0, 168, 68, 0.12);
+      color: #00a844;
     }
     .inventory-status-pill.critical {
       background: #ffdeda;
@@ -377,7 +384,7 @@ export default async function InventoryPage() {
       width: 116px;
       height: 6px;
       border-radius: 999px;
-      background: #e2ebdc;
+      background: #e5e7eb;
       overflow: hidden;
       flex: 0 0 auto;
     }
@@ -385,7 +392,7 @@ export default async function InventoryPage() {
       display: block;
       height: 100%;
       border-radius: inherit;
-      background: #1f7c1a;
+      background: #00a844;
       min-width: 30px;
     }
     .inventory-stock-fill.critical {
@@ -393,22 +400,22 @@ export default async function InventoryPage() {
       min-width: 10px;
     }
     .inventory-stock-fill.warning {
-      background: #38b12d;
+      background: #3b9c3c;
       min-width: 32px;
     }
     .inventory-stock-fill.healthy {
-      background: #2ea126;
+      background: #00a844;
       min-width: 34px;
     }
     .inventory-stock-text,
     .inventory-price {
       font-size: 14px;
       font-weight: 700;
-      color: #394337;
+      color: #111827;
     }
     .inventory-empty {
       text-align: center;
-      color: #64725f;
+      color: #6b7280;
       font-size: 14px;
       padding: 28px 18px;
     }
@@ -418,7 +425,7 @@ export default async function InventoryPage() {
       align-items: center;
       gap: 16px;
       padding: 18px 18px 20px;
-      color: #64725f;
+      color: #6b7280;
       font-size: 14px;
     }
     .inventory-pagination {
@@ -431,11 +438,11 @@ export default async function InventoryPage() {
       height: 30px;
       display: grid;
       place-items: center;
-      border-radius: 4px;
+      border-radius: 6px;
       border: 0;
       background: #fff;
-      color: #51604c;
-      box-shadow: inset 0 0 0 1px rgba(45, 58, 40, 0.08);
+      color: #4b5563;
+      box-shadow: inset 0 0 0 1px #e5e7eb;
       cursor: pointer;
     }
     .inventory-page-btn:disabled {
@@ -443,7 +450,7 @@ export default async function InventoryPage() {
       cursor: default;
     }
     .inventory-page-btn.active {
-      background: #1a7e19;
+      background: #00a844;
       color: #fff;
       box-shadow: none;
     }

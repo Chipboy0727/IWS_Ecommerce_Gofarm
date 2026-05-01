@@ -47,7 +47,7 @@ export function SalesPerformanceCard({
       title={title}
       subtitle={subtitle}
       right={
-        <div className="flex gap-2 rounded-lg bg-[#eef4e2] p-1">
+        <div className="flex gap-2 rounded-lg bg-gofarm-light-orange/50 p-1">
           {periods.map((item) => {
             const selected = period === item.key;
             return (
@@ -58,8 +58,8 @@ export function SalesPerformanceCard({
                 className={[
                   "rounded-md px-4 py-1.5 text-[12px] font-semibold transition-all duration-200",
                   selected
-                    ? "bg-white text-[#0b7312] shadow-sm shadow-[#b8cba8]/40"
-                    : "text-[#6f7b6d] hover:bg-white/60 hover:text-[#263224]",
+                    ? "bg-white text-gofarm-green shadow-sm shadow-gofarm-green/50"
+                    : "text-gofarm-gray hover:bg-white/60 hover:text-gofarm-black",
                 ].join(" ")}
               >
                 {item.label}

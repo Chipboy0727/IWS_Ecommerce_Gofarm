@@ -219,7 +219,7 @@ export function buildCustomerRows(users: BackendUser[]) {
     role: user.role === "admin" ? "Admin" : "Customer",
     joinDate: user.createdAt,
     status: (user as any).status || "Active",
-    tone: ((user as any).status === "Banned" ? "red" : "green") as const,
+    tone: (user as any).status === "Banned" ? ("red" as const) : ("green" as const),
     avatar: user.name
       .split(" ")
       .slice(0, 2)

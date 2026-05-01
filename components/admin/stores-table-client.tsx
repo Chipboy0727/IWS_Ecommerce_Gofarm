@@ -154,8 +154,8 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
             }}
             className={`rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[13px] font-semibold transition-colors ${
               statusFilter === filterName 
-                ? "bg-white text-[#0b7312] shadow-sm border border-[#dbead2]" 
-                : "bg-transparent text-[#5b6658] hover:bg-[#edf5e7]"
+                ? "bg-white text-gofarm-green shadow-sm border border-gofarm-light-green/35" 
+                : "bg-transparent text-gofarm-gray hover:bg-gray-100"
             }`}
           >
             {filterName}
@@ -167,41 +167,41 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
       <div className="admin-data-table-shell">
         <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium">
           <thead>
-            <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Store Info</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Location</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Manager</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Status</th>
-              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">
+            <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Store Info</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Location</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Manager</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
+              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
                 <div className="page-table-actions-head">Actions</div>
               </th>
             </tr>
           </thead>
           <tbody>
             {pageStores.map((store) => (
-              <tr key={store.id} className="border-b border-[#eef2eb] last:border-0 hover:bg-gradient-to-r hover:from-[#fbfdf8] hover:to-[#f4faef] transition-all duration-200">
+              <tr key={store.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <a 
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${store.name}, ${store.address}`)}`}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ backgroundColor: store.status === "Active" ? '#e6f7de' : '#fde3df', color: store.status === "Active" ? '#159720' : '#d6524a' }} 
+                      style={{ backgroundColor: store.status === "Active" ? "rgba(0, 168, 68, 0.12)" : "#fde3df", color: store.status === "Active" ? "#00a844" : "#d6524a" }} 
                       className="grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-[12px] shrink-0 hover:opacity-80 transition-opacity"
                       title="View on map"
                     >
                       <IconStore className="h-4 w-4 sm:h-5 sm:w-5" />
                     </a>
                     <div className="min-w-0">
-                      <div className="text-[12px] sm:text-[13px] font-bold text-[#243322] truncate">{store.name}</div>
-                      <div className="text-[10px] sm:text-[12px] text-[#748171] truncate">{store.phone || store.email}</div>
+                      <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black truncate">{store.name}</div>
+                      <div className="text-[10px] sm:text-[12px] text-gofarm-gray truncate">{store.phone || store.email}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-[#4d5d4b] whitespace-nowrap">
+                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-gray-700 whitespace-nowrap">
                   {store.city}, {store.country}
                 </td>
-                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-[#4d5d4b] whitespace-nowrap">
+                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-gray-700 whitespace-nowrap">
                   {store.manager}
                 </td>
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
@@ -238,7 +238,7 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
             ))}
             {pageStores.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-[#748171]">
+                <td colSpan={5} className="px-4 py-8 text-center text-sm text-gofarm-gray">
                   No stores found.
                 </td>
               </tr>
@@ -253,17 +253,17 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
           <button 
             disabled={page === 1}
             onClick={() => setPage(p => Math.max(1, p - 1))}
-            className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-[#0b7312] hover:bg-[#eaf6e5] active:scale-[0.98] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-gofarm-green hover:bg-gofarm-green/10 active:scale-[0.98] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
             &larr; Previous
           </button>
-          <span className="text-[13px] font-medium text-[#748171]">
+          <span className="text-[13px] font-medium text-gofarm-gray">
             Page {page} of {totalPages}
           </span>
           <button 
             disabled={page === totalPages}
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-[#0b7312] hover:bg-[#eaf6e5] active:scale-[0.98] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            className="inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-semibold text-gofarm-green hover:bg-gofarm-green/10 active:scale-[0.98] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           >
             Next &rarr;
           </button>
@@ -274,33 +274,33 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-[#223021] mb-4">Add New Store Location</h3>
+            <h3 className="text-lg font-bold text-gofarm-black mb-4">Add New Store Location</h3>
             <form onSubmit={handleAddSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">Store Name *</label>
-                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">Store Name *</label>
+                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">Address *</label>
-                <input required type="text" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">Address *</label>
+                <input required type="text" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">City *</label>
-                <input required type="text" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">City *</label>
+                <input required type="text" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#5b6658] mb-1">Manager</label>
-                  <input type="text" value={formData.manager} onChange={(e) => setFormData({...formData, manager: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                  <label className="block text-xs font-semibold text-gofarm-gray mb-1">Manager</label>
+                  <input type="text" value={formData.manager} onChange={(e) => setFormData({...formData, manager: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#5b6658] mb-1">Phone</label>
-                  <input type="text" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                  <label className="block text-xs font-semibold text-gofarm-gray mb-1">Phone</label>
+                  <input type="text" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
                 </div>
               </div>
               <div className="flex gap-3 justify-end mt-6">
-                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-[#5b6658] hover:bg-[#f0f5e4] rounded-lg active:scale-[0.99] transition-all duration-200">Cancel</button>
-                <button type="submit" style={{ backgroundColor: '#0b7312' }} className="px-4 py-2 text-sm font-semibold text-white rounded-lg shadow hover:bg-[#0a6610] hover:shadow-md active:scale-[0.99] transition-all duration-200">Create Store</button>
+                <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gofarm-gray hover:bg-gray-100 rounded-lg active:scale-[0.99] transition-all duration-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 text-sm font-semibold text-white rounded-lg shadow bg-gofarm-green hover:bg-gofarm-light-green hover:shadow-md active:scale-[0.99] transition-all duration-200">Create Store</button>
               </div>
             </form>
           </div>
@@ -311,33 +311,33 @@ export default function StoresTableClient({ initialStores }: { initialStores: Ba
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-200">
-            <h3 className="text-lg font-bold text-[#223021] mb-4">Edit Store Details</h3>
+            <h3 className="text-lg font-bold text-gofarm-black mb-4">Edit Store Details</h3>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">Store Name *</label>
-                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">Store Name *</label>
+                <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">Address *</label>
-                <input required type="text" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">Address *</label>
+                <input required type="text" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#5b6658] mb-1">City *</label>
-                <input required type="text" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                <label className="block text-xs font-semibold text-gofarm-gray mb-1">City *</label>
+                <input required type="text" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#5b6658] mb-1">Manager</label>
-                  <input type="text" value={formData.manager} onChange={(e) => setFormData({...formData, manager: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                  <label className="block text-xs font-semibold text-gofarm-gray mb-1">Manager</label>
+                  <input type="text" value={formData.manager} onChange={(e) => setFormData({...formData, manager: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#5b6658] mb-1">Phone</label>
-                  <input type="text" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#0b7312]" />
+                  <label className="block text-xs font-semibold text-gofarm-gray mb-1">Phone</label>
+                  <input type="text" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gofarm-green" />
                 </div>
               </div>
               <div className="flex gap-3 justify-end mt-6">
-                <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-[#5b6658] hover:bg-[#f0f5e4] rounded-lg active:scale-[0.99] transition-all duration-200">Cancel</button>
-                <button type="submit" style={{ backgroundColor: '#0b7312' }} className="px-4 py-2 text-sm font-semibold text-white rounded-lg shadow hover:bg-[#0a6610] hover:shadow-md active:scale-[0.99] transition-all duration-200">Save Changes</button>
+                <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-gofarm-gray hover:bg-gray-100 rounded-lg active:scale-[0.99] transition-all duration-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 text-sm font-semibold text-white rounded-lg shadow bg-gofarm-green hover:bg-gofarm-light-green hover:shadow-md active:scale-[0.99] transition-all duration-200">Save Changes</button>
               </div>
             </form>
           </div>

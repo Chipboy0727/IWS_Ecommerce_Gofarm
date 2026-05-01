@@ -586,7 +586,7 @@ export default function OrdersTableClient({
                         ${selectedOrder.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-500/20' : ''}
                         ${selectedOrder.status === 'processing' ? 'bg-blue-50 text-blue-700 border-blue-200 focus:ring-blue-500/20' : ''}
                         ${selectedOrder.status === 'shipped' ? 'bg-indigo-50 text-indigo-700 border-indigo-200 focus:ring-indigo-500/20' : ''}
-                        ${selectedOrder.status === 'delivered' ? 'bg-green-50 text-green-700 border-green-200 focus:ring-green-500/20' : ''}
+                        ${selectedOrder.status === "delivered" ? "bg-gofarm-green/5 text-gofarm-green border-gofarm-green/25 focus:ring-gofarm-green/20" : ""}
                         ${selectedOrder.status === 'cancelled' ? 'bg-red-50 text-red-700 border-red-200 focus:ring-red-500/20' : ''}
                         ${selectedOrder.status === 'awaiting_payment' ? 'bg-orange-50 text-orange-700 border-orange-200 focus:ring-orange-500/20' : ''}
                       `}
@@ -674,7 +674,7 @@ export default function OrdersTableClient({
                 type="button"
                 onClick={commitUpdateStatus}
                 className="px-3 py-1.5 rounded-md text-sm font-semibold transition-colors flex items-center justify-center min-w-[70px]"
-                style={{ backgroundColor: '#16a34a', color: '#ffffff' }}
+                style={{ backgroundColor: "#00a844", color: "#ffffff" }}
                 disabled={isUpdating}
               >
                 {isUpdating ? (
@@ -737,15 +737,15 @@ export default function OrdersTableClient({
 
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-[70] animate-in slide-in-from-bottom-4 fade-in duration-300">
-          <div className="px-6 py-4 rounded-lg shadow-xl flex items-center gap-3" style={{ backgroundColor: '#16a34a', color: '#ffffff' }}>
-            <div className="rounded-full p-1" style={{ backgroundColor: '#22c55e' }}>
+          <div className="px-6 py-4 rounded-lg shadow-xl flex items-center gap-3" style={{ backgroundColor: "#00a844", color: "#ffffff" }}>
+            <div className="rounded-full p-1" style={{ backgroundColor: "#3b9c3c" }}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
             <div>
               <p className="font-bold text-sm">{toastMessage.title}</p>
-              <p className="text-xs text-[#dcfce7] mt-0.5">{toastMessage.message}</p>
+              <p className="text-xs text-white/90 mt-0.5">{toastMessage.message}</p>
             </div>
           </div>
         </div>

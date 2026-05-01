@@ -119,21 +119,21 @@ export default async function AdminDashboardPage() {
               <tbody>
                 {transactions.map((item) => (
                   <tr key={item.id}>
-                    <td className="text-[10px] sm:text-[13px] font-semibold text-[#86a07b]" style={{ maxWidth: 120, wordBreak: 'break-all' }}>{item.id}</td>
+                    <td className="text-[10px] sm:text-[13px] font-semibold text-gofarm-green" style={{ maxWidth: 120, wordBreak: "break-all" }}>{item.id}</td>
                     <td>
                       <div className="product-row">
                         <Image src={item.image} alt={item.product} width={40} height={40} className="product-thumb" />
                         <div style={{ minWidth: 0 }}>
-                          <div className="text-[11px] sm:text-[13px] font-semibold text-[#253323] truncate" style={{ maxWidth: 140 }}>{item.product}</div>
-                          <div className="text-[10px] sm:text-[12px] text-[#758272]">Order #{item.id.slice(-4)}</div>
+                          <div className="text-[11px] sm:text-[13px] font-semibold text-gofarm-black truncate" style={{ maxWidth: 140 }}>{item.product}</div>
+                          <div className="text-[10px] sm:text-[12px] text-gofarm-gray">Order #{item.id.slice(-4)}</div>
                         </div>
                       </div>
                     </td>
                     <td className="hidden sm:table-cell">
-                      <div className="text-[11px] sm:text-[13px] font-semibold text-[#253323]">{item.customer}</div>
-                      <div className="text-[10px] sm:text-[12px] text-[#758272] truncate" style={{ maxWidth: 160 }}>{item.location}</div>
+                      <div className="text-[11px] sm:text-[13px] font-semibold text-gofarm-black">{item.customer}</div>
+                      <div className="text-[10px] sm:text-[12px] text-gofarm-gray truncate" style={{ maxWidth: 160 }}>{item.location}</div>
                     </td>
-                    <td className="hidden md:table-cell text-[11px] sm:text-[13px] text-[#4d5d4b] whitespace-nowrap">{item.date}</td>
+                    <td className="hidden md:table-cell text-[11px] sm:text-[13px] text-gray-700 whitespace-nowrap">{item.date}</td>
                     <td className="table-amount whitespace-nowrap" style={{ fontSize: 'inherit' }}>{formatMoney(item.amount)}</td>
                     <td>
                       <Pill tone={item.status === "completed" ? "green" : item.status === "cancelled" ? "red" : "pink"}>

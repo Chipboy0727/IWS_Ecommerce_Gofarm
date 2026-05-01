@@ -11,7 +11,7 @@ export type CustomerRow = {
   role: string;
   joinDate: string;
   status: string;
-  tone: "green" | "gray" | "red" | "yellow" | "blue" | "pink";
+  tone: "green" | "gray" | "red" | "amber" | "pink" | "emerald";
   avatar: string;
 };
 
@@ -208,8 +208,8 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
             }}
             className={`rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[13px] font-semibold transition-colors ${
               roleFilter === filterName 
-                ? "bg-white text-[#0b7312] shadow-sm border border-[#dbead2]" 
-                : "bg-transparent text-[#5b6658] hover:bg-[#edf5e7]"
+                ? "bg-white text-gofarm-green shadow-sm border border-gofarm-light-green/35" 
+                : "bg-transparent text-gofarm-gray hover:bg-gray-100"
             }`}
           >
             {filterName}
@@ -221,34 +221,34 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
       <div className="admin-data-table-shell">
         <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium">
           <thead>
-            <tr className="border-b border-[#e3ebdf] bg-gradient-to-r from-[#f8fbf4] to-[#f2f8ec]">
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">User Profile</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Role</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Join Date</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">Status</th>
-              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-[#5b6658]">
+            <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">User Profile</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Role</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Join Date</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
+              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
                 <div className="page-table-actions-head">Actions</div>
               </th>
             </tr>
           </thead>
           <tbody>
             {pageUsers.map((user) => (
-              <tr key={user.id} className="border-b border-[#eef2eb] last:border-0 hover:bg-gradient-to-r hover:from-[#fbfdf8] hover:to-[#f4faef] transition-all duration-200">
+              <tr key={user.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-[#203028] text-[10px] sm:text-[12px] font-bold text-white shrink-0">
                       {user.avatar}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[12px] sm:text-[13px] font-bold text-[#243322] truncate">{user.name}</div>
-                      <div className="text-[10px] sm:text-[12px] text-[#748171] truncate">{user.email}</div>
+                      <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black truncate">{user.name}</div>
+                      <div className="text-[10px] sm:text-[12px] text-gofarm-gray truncate">{user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                   <Pill tone={user.role === "Admin" ? "green" : "gray"}>{user.role}</Pill>
                 </td>
-                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-[#4d5d4b] whitespace-nowrap">
+                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-gray-700 whitespace-nowrap">
                   {new Date(user.joinDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
                 </td>
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
@@ -285,7 +285,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
             ))}
             {pageUsers.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-[#748171]">
+                <td colSpan={5} className="px-4 py-8 text-center text-sm text-gofarm-gray">
                   No users found.
                 </td>
               </tr>
@@ -296,13 +296,13 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
 
       {/* Pagination */}
       {filteredUsers.length > 0 && (
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#6f7b6d] px-2">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-gofarm-gray px-2">
           <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredUsers.length)} of {filteredUsers.length} users</div>
           <div className="flex items-center gap-2">
             <button 
               onClick={() => setPage(Math.max(1, page - 1))}
               disabled={page === 1}
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
             >
               ‹
             </button>
@@ -317,12 +317,12 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
                   style={{
-                    backgroundColor: page === pageNum ? '#0b7312' : '',
+                    backgroundColor: page === pageNum ? "#00a844" : "",
                     color: page === pageNum ? '#ffffff' : ''
                   }}
                   className={`flex h-8 w-8 items-center justify-center rounded-md ${
                     page !== pageNum 
-                      ? "bg-white ring-1 ring-[#dbead2] hover:bg-[#edf5e7] text-[#243322]" 
+                      ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black" 
                       : "font-bold"
                   }`}
                 >
@@ -333,7 +333,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
             <button 
               onClick={() => setPage(Math.min(pageCount, page + 1))}
               disabled={page === pageCount}
-              className="flex h-8 w-8 items-center justify-center rounded-md bg-[#f2f6ea] hover:bg-[#e4ebd8] disabled:opacity-50"
+              className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
             >
               ›
             </button>
@@ -345,15 +345,15 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
-            <div className="px-6 py-4 border-b border-[#e3ebdf] flex justify-between items-center bg-[#fdfefc]">
+            <div className="px-6 py-4 border-b border-gofarm-light-gray flex justify-between items-center bg-[#fdfefc]">
               <h3 className="text-lg font-bold text-[#1a2519]">
                 {isEditing ? "Edit User" : "Create New User"}
               </h3>
               <button 
                 onClick={closeModal} 
-                className="text-[#6f7b6d] hover:text-[#243322] rounded-full p-1 hover:bg-[#edf5e7] transition-colors"
+                className="text-gofarm-gray hover:text-gofarm-black rounded-full p-1 hover:bg-gray-100 transition-colors"
               >
-                ✕
+                âœ•
               </button>
             </div>
             
@@ -372,7 +372,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="text" 
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
-                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-gofarm-light-gray rounded-lg outline-none focus:ring-2 focus:ring-gofarm-green/30 focus:border-gofarm-green"
                     placeholder="John Doe"
                   />
                 </div>
@@ -384,7 +384,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="email" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
-                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-gofarm-light-gray rounded-lg outline-none focus:ring-2 focus:ring-gofarm-green/30 focus:border-gofarm-green"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -398,7 +398,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                     type="password" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
-                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312]"
+                    className="w-full px-3 py-2 border border-gofarm-light-gray rounded-lg outline-none focus:ring-2 focus:ring-gofarm-green/30 focus:border-gofarm-green"
                     placeholder={isEditing ? "••••••••" : "Create a password"}
                   />
                 </div>
@@ -408,7 +408,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                   <select 
                     value={role} 
                     onChange={(e) => setRole(e.target.value)} 
-                    className="w-full px-3 py-2 border border-[#d4e0ca] rounded-lg outline-none focus:ring-2 focus:ring-[#0b7312]/30 focus:border-[#0b7312] bg-white appearance-none"
+                    className="w-full px-3 py-2 border border-gofarm-light-gray rounded-lg outline-none focus:ring-2 focus:ring-gofarm-green/30 focus:border-gofarm-green bg-white appearance-none"
                   >
                     <option value="Customer">Customer</option>
                     <option value="Admin">Admin</option>
@@ -420,15 +420,14 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                 <button 
                   type="button" 
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-semibold text-[#5b6658] hover:bg-[#f0f5e4] rounded-lg transition-all duration-200"
+                  className="px-4 py-2 text-sm font-semibold text-gofarm-gray hover:bg-gray-100 rounded-lg transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  style={{ backgroundColor: '#0b7312', color: 'white' }}
-                  className="px-6 py-2 text-sm font-semibold rounded-lg hover:bg-[#09610f] hover:shadow-md active:scale-[0.99] transition-all duration-200 disabled:opacity-70 flex items-center justify-center min-w-[100px]"
+                  className="px-6 py-2 text-sm font-semibold rounded-lg bg-gofarm-green text-white hover:bg-gofarm-light-green hover:shadow-md active:scale-[0.99] transition-all duration-200 disabled:opacity-70 flex items-center justify-center min-w-[100px]"
                 >
                   {isSubmitting ? "Saving..." : "Save"}
                 </button>
