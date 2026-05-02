@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ShopBrowser from "./shop-browser";
 import { loadLocalCatalog } from "@/lib/local-catalog";
 
@@ -12,10 +13,9 @@ export default async function ShopPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-white via-white to-gofarm-light-orange/10">
       <main>
-        <ShopBrowser
-          products={products}
-          categories={categories}
-        />
+        <Suspense fallback={<div className="min-h-[50vh]" aria-hidden />}>
+          <ShopBrowser products={products} categories={categories} />
+        </Suspense>
       </main>
     </div>
   );

@@ -55,6 +55,32 @@ export async function GET(request: NextRequest) {
     orders = orders.filter((order) => order.status.toLowerCase() === statusFilter);
   }
 
+  const minTotalRaw = url.searchParams.get("minTotal");
+  const maxTotalRaw = url.searchParams.get("maxTotal");
+  if (minTotalRaw !== null && minTotalRaw !== "") {
+    const minT = Number(minTotalRaw);
+    if (Number.isFinite(minT)) orders = orders.filter((o) => o.total >= minT);
+  }
+  if (maxTotalRaw !== null && maxTotalRaw !== "") {
+    const maxT = Number(maxTotalRaw);
+    if (Number.isFinite(maxT)) orders = orders.filter((o) => o.total <= maxT);
+  }
+
+  const fromDate = sanitizeOptionalString(url.searchParams.get("fromDate"));
+  const toDate = sanitizeOptionalString(url.searchParams.get("toDate"));
+  if (fromDate) {
+    const fromMs = Date.parse(fromDate);
+    if (Number.isFinite(fromMs)) {
+      orders = orders.filter((o) => Date.parse(o.createdAt) >= fromMs);
+    }
+  }
+  if (toDate) {
+    const toMs = Date.parse(toDate);
+    if (Number.isFinite(toMs)) {
+      orders = orders.filter((o) => Date.parse(o.createdAt) <= toMs);
+    }
+  }
+
   // ─── Sorting ───
   const sortBy = parseOrderSortBy(url.searchParams.get("sortBy"));
   const sortOrder = url.searchParams.get("sortOrder") === "asc" ? "asc" : "desc";

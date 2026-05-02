@@ -403,7 +403,6 @@ export async function POST(req: NextRequest) {
       case "stock": return NextResponse.json({ reply: stockResponse(infos, vi) });
       case "sale": return NextResponse.json({ reply: saleResponse(products.map(toInfo), vi) });
       case "trending": return NextResponse.json({ reply: trendingResponse(products.map(toInfo), vi) });
-      case "recommend": return NextResponse.json({ reply: recommendResponse(products.map(toInfo), vi) });
       default: return NextResponse.json({ reply: detailResponse(infos, vi) });
     }
   } catch (error) {

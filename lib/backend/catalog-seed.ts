@@ -76,6 +76,9 @@ export type BackendMessage = {
   status: "unread" | "read" | "replied";
   createdAt: string;
   updatedAt: string;
+  replyMessage?: string;
+  repliedAt?: string;
+  userRead?: boolean;
 };
 
 export type SeedCatalog = {
