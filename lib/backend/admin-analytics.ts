@@ -194,22 +194,6 @@ export function buildRecentOrders(db: SeedCatalog) {
     }));
 }
 
-export function buildOrderRows(db: SeedCatalog) {
-  return [...db.orders]
-    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-    .map((order) => ({
-      id: order.id,
-      customer: order.customerName,
-      email: order.customerEmail,
-      date: order.date,
-      amount: money(order.total),
-      status: order.status,
-      items: order.items,
-      products: order.products,
-      shippingAddress: order.shippingAddress,
-      paymentMethod: order.paymentMethod,
-    }));
-}
 
 export function buildCustomerRows(users: BackendUser[]) {
   return users.map((user) => ({
@@ -229,9 +213,3 @@ export function buildCustomerRows(users: BackendUser[]) {
   }));
 }
 
-export function buildStoreRows(stores: BackendStore[]) {
-  return stores.map((store) => ({
-    ...store,
-    tint: store.status === "Maintenance" ? ("red" as const) : ("green" as const),
-  }));
-}

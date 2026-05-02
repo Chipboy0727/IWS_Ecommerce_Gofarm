@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export type SessionRole = "admin" | "user";
 
-export type SessionUser = {
+type SessionUser = {
   sub: string;
   email: string;
   role: SessionRole;
@@ -71,12 +71,6 @@ export function verifySessionToken(token: string): SessionUser | null {
   }
 }
 
-/** Build a Set-Cookie header string for the session token. */
-export function buildSessionCookie(token: string) {
-  const maxAge = 60 * 60 * 24 * 7;
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
-}
 
 /** Build a Set-Cookie header that clears/expires the session cookie. */
 export function clearSessionCookie() {
