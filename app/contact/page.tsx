@@ -87,34 +87,34 @@ type ContactItem = {
 
 const contactItems: ContactItem[] = [
   {
-    title: "Visit Our Store",
+    title: "Visit Our Office",
     value: (
       <>
-        123 Shopping Street, Commerce District
+        259, Doi Can Street, Lieu Giai Ward,
         <br />
-        New York, NY 10001, USA
+        Ba Dinh District, Hanoi, Vietnam
       </>
     ),
     note: "",
-    href: "https://maps.google.com/?q=123%20Shopping%20Street%2C%20Commerce%20District%2C%20New%20York%2C%20NY%2010001%2C%20USA",
+    href: "https://maps.google.com/?q=259,%20Doi%20Can%20Street,%20Lieu%20Giai%20Ward,%20Ba%20Dinh%20District,%20Hanoi,%20Vietnam",
     icon: <IconMapPin className="h-5 w-5 text-gofarm-green" />,
     boxClass: "bg-gofarm-green/10",
     titleClass: "text-gofarm-green",
   },
   {
     title: "Call Us",
-    value: "+1 (555) 123-4567",
+    value: "+84123456789",
     note: "Monday - Friday: 9AM - 6PM",
-    href: "tel:15551234567",
+    href: "tel:+84123456789",
     icon: <IconPhone className="h-5 w-5 text-gofarm-light-green" />,
     boxClass: "bg-gofarm-light-green/10",
     titleClass: "text-gofarm-green",
   },
   {
     title: "Email Support",
-    value: "support@gofarm.com",
+    value: "withus@gofarm.com",
     note: "We reply within 24 hours",
-    href: "mailto:support@gofarm.com",
+    href: "mailto:withus@gofarm.com",
     icon: <IconMail className="h-5 w-5 text-gofarm-orange" />,
     boxClass: "bg-gofarm-orange/10",
     titleClass: "text-gofarm-green",
@@ -133,7 +133,7 @@ const faqs = [
   {
     question: "What are your shipping policies?",
     answer:
-      "We offer free shipping on orders over $50 within the continental US. International shipping is available with additional charges.",
+      "We offer free shipping on orders over $20 within Vietnam. International shipping is available with additional charges.",
   },
   {
     question: "How can I track my order?",
@@ -143,7 +143,7 @@ const faqs = [
   {
     question: "What is your return policy?",
     answer:
-      "We accept returns within 30 days of purchase. Items must be unused and in original packaging for a full refund.",
+      "We accept returns within 15 days of purchase. Items must be unused and in original packaging for a full refund.",
   },
   {
     question: "Do you offer customer support?",
@@ -166,7 +166,7 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name"),
@@ -213,7 +213,7 @@ export default function ContactPage() {
               <p className="font-bold text-gofarm-green">Message Sent!</p>
               <p className="text-xs text-gray-500">We'll get back to you shortly.</p>
             </div>
-            <button 
+            <button
               onClick={() => setShowSuccess(false)}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
@@ -369,4 +369,4 @@ export default function ContactPage() {
       </main>
     </div>
   );
-}
+}
