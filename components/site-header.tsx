@@ -62,7 +62,7 @@ function IconOrders() {
 
 function IconSearch() {
   return (
-    <svg width="18" height="18" className="sm:w-[20px] sm:h-[20px] md:w-[22px] md:h-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="20" height="20" className="sm:w-[22px] sm:h-[22px] md:w-[24px] md:h-[24px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.35-4.35" />
     </svg>
@@ -141,7 +141,7 @@ function PromoMarquee() {
           </div>
         ))}
       </div>
-      
+
       <div className="absolute left-0 top-0 bottom-0 w-6 sm:w-8 md:w-10 lg:w-12 bg-gradient-to-r from-gofarm-green to-transparent pointer-events-none" />
       <div className="absolute right-0 top-0 bottom-0 w-6 sm:w-8 md:w-10 lg:w-12 bg-gradient-to-l from-emerald-600 to-transparent pointer-events-none" />
     </div>
@@ -160,11 +160,11 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
     >
       {isHelp && <IconHelp />}
       <span>{label}</span>
-      <span 
+      <span
         className={[
           "absolute bottom-0 left-0 h-0.5 bg-gofarm-green transition-all duration-300",
           active ? "w-full" : "w-0 group-hover:w-full"
-        ].join(" ")} 
+        ].join(" ")}
       />
     </Link>
   );
@@ -211,7 +211,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                   onClick={async () => {
                     try {
                       await fetch("/api/auth/logout", { method: "POST" });
-                    } catch (e) {}
+                    } catch (e) { }
                     localStorage.removeItem("user");
                     localStorage.removeItem("cart");
                     localStorage.removeItem("wishlist");
@@ -246,7 +246,7 @@ export default function SiteHeader() {
   if (pathname.startsWith("/admin") || pathname === "/checkout" || pathname === "/cart") {
     return null;
   }
-  
+
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -257,7 +257,7 @@ export default function SiteHeader() {
   const [userEmail, setUserEmail] = useState("");
   const [orderCount, setOrderCount] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
-  
+
   const [mounted, setMounted] = useState(false);
   const isRefreshingRef = useRef(false);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -273,7 +273,7 @@ export default function SiteHeader() {
         setIsLoggedIn(true);
         setUserName(userData.name || userData.email?.split("@")[0] || "User");
         setUserEmail(userData.email || "");
-      } catch (e) {}
+      } catch (e) { }
     }
   }, []);
 
@@ -284,7 +284,7 @@ export default function SiteHeader() {
           const res = await fetch(`/api/user/messages/unread-count?email=${encodeURIComponent(userEmail)}`);
           const data = await res.json();
           setUnreadMessages(data.count || 0);
-        } catch (e) {}
+        } catch (e) { }
       };
       fetchUnreadCount();
       // Refresh every 30 seconds
@@ -305,9 +305,9 @@ export default function SiteHeader() {
             (order: any) => order.customerEmail === userEmail && order.status !== "cancelled"
           );
           setOrderCount(activeOrders.length);
-        } catch (e) {}
+        } catch (e) { }
       }
-      
+
       // Fetch from API on first load
       const fetchInitialOrders = async () => {
         try {
@@ -331,13 +331,13 @@ export default function SiteHeader() {
   // Reuse the same order refresh logic across header events.
   const fetchOrdersCount = useCallback(async () => {
     if (!userEmail || isRefreshingRef.current) return;
-    
+
     isRefreshingRef.current = true;
-    
+
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
     }
-    
+
     try {
       const response = await fetch("/api/orders", { credentials: "include" });
       if (response.ok) {
@@ -362,7 +362,7 @@ export default function SiteHeader() {
     const handleOrdersUpdate = () => {
       fetchOrdersCount();
     };
-    
+
     window.addEventListener("orders-updated", handleOrdersUpdate);
     return () => {
       window.removeEventListener("orders-updated", handleOrdersUpdate);
@@ -376,7 +376,7 @@ export default function SiteHeader() {
         setOrderCount(prev => Math.max(0, prev - 1));
       }
     };
-    
+
     window.addEventListener("order-cancelled", handleOrderCancelled);
     return () => window.removeEventListener("order-cancelled", handleOrderCancelled);
   }, [userEmail]);
@@ -388,7 +388,7 @@ export default function SiteHeader() {
         setOrderCount(0);
       }
     };
-    
+
     window.addEventListener("orders-cleared", handleOrdersCleared);
     return () => window.removeEventListener("orders-cleared", handleOrdersCleared);
   }, [userEmail]);
@@ -405,7 +405,7 @@ export default function SiteHeader() {
           setUserEmail(userData.email || "");
           initialLoadRef.current = true;
           setTimeout(() => fetchOrdersCount(), 500);
-        } catch (e) {}
+        } catch (e) { }
       } else {
         setIsLoggedIn(false);
         setUserName("");
@@ -441,21 +441,21 @@ export default function SiteHeader() {
     } catch (e) {
       toast.error("Logout failed. Please try again.");
     }
-    
+
     // Clear local storage
     localStorage.removeItem("user");
     localStorage.removeItem("cart");
     localStorage.removeItem("wishlist");
-    
+
     // Reset local state
     setIsLoggedIn(false);
     setUserName("");
     setUserEmail("");
     setOrderCount(0);
-    
+
     // Notify other components
     window.dispatchEvent(new Event("auth-changed"));
-    
+
     // Go to home page
     router.push("/");
     setIsUserDropdownOpen(false);
@@ -471,25 +471,25 @@ export default function SiteHeader() {
         <div className="border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
             <div className="flex items-center justify-between py-3 sm:py-4 lg:py-5 gap-3 sm:gap-4 md:gap-5">
-              
+
               {/* Logo */}
               <Link href="/" className="shrink-0">
                 <img alt="logo" className="w-auto h-8 sm:h-10 md:h-12 lg:h-14 xl:h-16" src="/images/gofarmnamelogo.png" />
               </Link>
 
               {/* Search bar - Desktop */}
-              <div className="hidden md:flex flex-1 max-w-sm sm:max-w-md lg:max-w-xl mx-2 sm:mx-3 lg:mx-4">
+              <div className="hidden md:flex flex-1 max-w-lg lg:max-w-2xl xl:max-w-3xl mx-3 sm:mx-4 lg:mx-6">
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="group flex items-center w-full gap-2 sm:gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gofarm-light-green rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 transition-all"
+                  className="group flex items-center w-full gap-2 sm:gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gofarm-light-green rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 transition-all"
                 >
                   <span className="text-gray-400 group-hover:text-gofarm-green">
                     <IconSearch />
                   </span>
-                  <span className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700 flex-1 text-left">
+                  <span className="text-sm sm:text-base text-gray-500 group-hover:text-gray-700 flex-1 text-left">
                     Search products...
                   </span>
-                  <div className="hidden sm:flex items-center gap-1 bg-white border border-gray-200 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs text-gray-500 font-mono">
+                  <div className="hidden sm:flex items-center gap-1 bg-white border border-gray-200 px-2 py-1 rounded-lg text-[11px] sm:text-xs text-gray-500 font-mono">
                     <span>Ctrl</span>
                     <span>K</span>
                   </div>
@@ -507,7 +507,7 @@ export default function SiteHeader() {
                 </button>
 
                 {/* Cart - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
-                <Link href="/cart" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
+                <Link href="/cart" className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconCart />
                   {mounted && cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-gofarm-green text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
@@ -517,7 +517,7 @@ export default function SiteHeader() {
                 </Link>
 
                 {/* Wishlist - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
-                <Link href="/wishlist" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
+                <Link href="/wishlist" className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconHeart />
                   {mounted && wishlistCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
@@ -527,7 +527,7 @@ export default function SiteHeader() {
                 </Link>
 
                 {/* Notifications Bell */}
-                <Link href="/account/messages" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
+                <Link href="/account/messages" className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconBell />
                   {mounted && unreadMessages > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1 animate-bounce">
@@ -537,7 +537,7 @@ export default function SiteHeader() {
                 </Link>
 
                 {/* Orders - ĐÃ TĂNG KÍCH THƯỚC BADGE */}
-                <Link href="/orders" className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gofarm-green transition-colors">
+                <Link href="/orders" className="relative p-2 sm:p-2.5 hover:bg-gray-100 rounded-xl text-gray-600 hover:text-gofarm-green transition-colors">
                   <IconOrders />
                   {mounted && orderCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] sm:text-[11px] md:text-xs font-semibold rounded-full min-w-[18px] h-[18px] sm:min-w-[20px] sm:h-[20px] md:min-w-[22px] md:h-[22px] flex items-center justify-center px-1">
@@ -608,7 +608,7 @@ export default function SiteHeader() {
         {/* Navigation bar */}
         <div className="hidden md:block bg-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
-            <nav className="flex items-center justify-center gap-5 sm:gap-7 md:gap-9 lg:gap-12 py-3 sm:py-3.5 lg:py-4">
+            <nav className="flex items-center justify-center gap-5 sm:gap-7 md:gap-9 lg:gap-12 py-1.5 sm:py-2 lg:py-2.5">
               {navItems.map((item) => (
                 <NavLink
                   key={item.href}

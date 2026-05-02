@@ -48,7 +48,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     boxShadow: "0 6px 28px rgba(45, 143, 78, 0.45), 0 2px 8px rgba(0,0,0,0.12)",
-    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s, bottom 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
     zIndex: 9999,
   },
   fabHover: {
@@ -395,12 +395,29 @@ export default function ChatBox() {
   const [inputFocused, setInputFocused] = useState(false);
   const [hoveredChip, setHoveredChip] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [toastVisible, setToastVisible] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     injectKeyframes();
+  }, []);
+
+  // Watch toast containers via MutationObserver
+  useEffect(() => {
+    const checkToast = () => {
+      // Detect custom cart toasts (data-cart-toast) and Sonner library toasts
+      const toastEl =
+        document.querySelector("[data-cart-toast]") ||
+        document.querySelector("[data-sonner-toast]");
+      setToastVisible(!!toastEl);
+    };
+
+    const observer = new MutationObserver(checkToast);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: false });
+    checkToast(); // initial check
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -630,6 +647,7 @@ export default function ChatBox() {
         style={{
           ...styles.fab,
           ...(fabHovered ? styles.fabHover : {}),
+          bottom: toastVisible ? 88 : 24,
         }}
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setFabHovered(true)}

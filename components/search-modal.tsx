@@ -59,7 +59,7 @@ function ToastMessage({ productName, onClose }: { productName: string; onClose: 
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
+    <div data-cart-toast className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
       <div className="bg-gofarm-green text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
         <div className="bg-white/20 p-1 rounded-full">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,13 +216,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       {loading ? (
                         <tr><td colSpan={5} className="text-center py-12 sm:py-20 text-gray-400 text-sm sm:text-base">Searching...</td></tr>
                       ) : results.length > 0 ? (
-                        results.map((product) => {
+                        results.map((product, index) => {
                           const salePrice = product.discount
                             ? product.price - (product.price * product.discount) / 100
                             : product.price;
                           return (
                             <tr
-                              key={product.id}
+                              key={product.id ? `${product.id}-${index}` : `product-${index}`}
                               onClick={() => setSelectedProduct(product)}
                               className="group hover:bg-gray-100 transition-colors cursor-pointer"
                             >

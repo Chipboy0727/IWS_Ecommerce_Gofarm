@@ -36,7 +36,7 @@ function ToastMessage({ message, onClose }: { message: string; onClose: () => vo
   }, [onClose]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
+    <div data-cart-toast className="fixed bottom-4 right-4 z-[60] animate-in slide-in-from-right-5 duration-300">
       <div className="bg-gofarm-green text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
         <div className="bg-white/20 p-1 rounded-full">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
