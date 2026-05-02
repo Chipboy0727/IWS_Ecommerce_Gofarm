@@ -48,7 +48,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     boxShadow: "0 6px 28px rgba(45, 143, 78, 0.45), 0 2px 8px rgba(0,0,0,0.12)",
-    transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+    transition: "bottom 0.35s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
     zIndex: 9999,
   },
   fabHover: {
@@ -395,12 +395,27 @@ export default function ChatBox() {
   const [inputFocused, setInputFocused] = useState(false);
   const [hoveredChip, setHoveredChip] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [toastVisible, setToastVisible] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     injectKeyframes();
+  }, []);
+
+  // Watch for toast notifications to avoid overlapping with the chat bubble
+  useEffect(() => {
+    const checkToast = () => {
+      // Check for common toast positioning classes or sonner
+      const toastEl = document.querySelector("div.fixed.bottom-4.right-4") || document.querySelector("[data-sonner-toast]");
+      setToastVisible(!!toastEl);
+    };
+
+    const observer = new MutationObserver(checkToast);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: false });
+    checkToast();
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -629,6 +644,7 @@ export default function ChatBox() {
         className={!isOpen ? "cb-fab-pulse" : ""}
         style={{
           ...styles.fab,
+          bottom: toastVisible && !isOpen ? 88 : 24, // Move up if toast is visible and chat is closed
           ...(fabHovered ? styles.fabHover : {}),
         }}
         onClick={() => setIsOpen(!isOpen)}
