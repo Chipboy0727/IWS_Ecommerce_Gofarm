@@ -222,7 +222,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             <p className="text-sm text-gofarm-gray mt-1 line-clamp-1 hidden sm:block">{product.description}</p>
             <div className="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
               <span className="text-sm sm:text-base font-bold text-gofarm-green">${salePrice.toFixed(2)}</span>
-              {product.discount > 0 && (
+              {(product.discount ?? 0) > 0 && (
                 <>
                   <span className="text-[10px] sm:text-xs text-gray-400 line-through">${product.price.toFixed(2)}</span>
                   <span className="bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>

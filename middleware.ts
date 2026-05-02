@@ -3,11 +3,21 @@ import type { NextRequest } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/backend/rate-limit";
 
 /**
- * Next.js Edge Middleware
- * -----------------------
- * 1. Rate-limits API endpoints (100 req / 60 s per IP).
- * 2. Adds security headers to every response (CSP, HSTS, X-Frame-Options, …).
- * 3. Protects admin routes — redirects unauthenticated users.
+ * Next.js Edge Middleware — Security & Access Control
+ * ---------------------------------------------------
+ * Implements multiple OWASP Top 10 mitigations:
+ *
+ *  • A01:2021 – Broken Access Control
+ *    → Admin route protection: unauthenticated users are redirected to /sign-in.
+ *    → CORS preflight (OPTIONS) returns a strict Allow-Origin policy.
+ *
+ *  • A05:2021 – Security Misconfiguration
+ *    → Every response receives hardened security headers (CSP, HSTS,
+ *      X-Frame-Options, X-Content-Type-Options, Permissions-Policy).
+ *
+ *  • A07:2021 – Identification and Authentication Failures
+ *    → Rate-limiting on API routes (100 req/min general, 20 req/min for
+ *      /api/auth/* to mitigate brute-force and credential-stuffing attacks).
  */
 
 const RATE_LIMIT_CONFIG = { windowMs: 60_000, maxRequests: 100 };
@@ -17,6 +27,22 @@ const AUTH_RATE_LIMIT_CONFIG = { windowMs: 60_000, maxRequests: 20 };
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ─── CORS Preflight (OPTIONS) for API routes ───
+  // Returns an immediate 204 with the required Access-Control-* headers
+  // so that cross-origin requests from the allowed frontend origin succeed.
+  if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN || "http://localhost:3000",
+        "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }
 
   // ─── Rate Limiting (API routes only) ───
   if (pathname.startsWith("/api/")) {

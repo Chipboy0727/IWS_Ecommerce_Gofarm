@@ -1,3 +1,22 @@
+/**
+ * Authentication & Cryptographic Utilities
+ *
+ * OWASP Top 10 Mitigations implemented in this module:
+ *
+ *  • A02:2021 – Cryptographic Failures
+ *    → Passwords are hashed with PBKDF2-SHA256 (120 000 iterations) using
+ *      a per-user random salt. Verification uses `timingSafeEqual` to
+ *      prevent timing side-channel attacks.
+ *    → JWT tokens are signed with HMAC-SHA256 and include expiration claims.
+ *    → Reset tokens use cryptographically random bytes (`crypto.randomBytes`).
+ *
+ *  • A07:2021 – Identification and Authentication Failures
+ *    → Session cookies are `HttpOnly`, `SameSite=Lax`, and `Secure` in
+ *      production, preventing XSS-based session theft and CSRF attacks.
+ *    → Token expiry (7 days) limits the window of compromise.
+ *    → Reset tokens are hashed before storage and expire after 1 hour.
+ */
+
 import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
 
