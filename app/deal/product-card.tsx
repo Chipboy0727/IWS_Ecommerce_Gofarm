@@ -190,7 +190,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
             </button>
 
             <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-              <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
+              <div className="w-fit inline-flex items-center rounded-md bg-gofarm-green text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
                 {status}
               </div>
             </div>

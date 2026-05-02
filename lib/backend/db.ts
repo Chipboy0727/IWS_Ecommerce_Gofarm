@@ -615,7 +615,7 @@ async function persistFallbackState(state: BackendDb) {
 export async function readDb(): Promise<BackendDb> {
   const mysqlState = await readMysqlState();
   if (mysqlState) return mysqlState;
-  
+
   console.warn("[DB] Falling back to local catalog seed");
   return loadSeedCatalog();
 }
