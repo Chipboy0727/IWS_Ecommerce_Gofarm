@@ -190,7 +190,7 @@ export function AdminSettingsClient() {
             </button>
           </div>
 
-          <h2 className="mt-5 text-xl font-bold text-gofarm-black">{profile.name}</h2>
+          <h2 className="mt-8 text-xl font-bold text-gofarm-black">{profile.name}</h2>
           <p className="text-[13px] text-gofarm-gray mt-1 capitalize">{profile.role} Access</p>
 
           <div className="mt-6 w-full space-y-3">

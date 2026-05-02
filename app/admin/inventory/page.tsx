@@ -159,7 +159,7 @@ export default async function InventoryPage() {
     }
     .inventory-stat-meta {
       margin-top: 8px;
-      font-size: 14px;
+      font-size: 17px;
       color: #6b7280;
     }
     .inventory-stat-card.green .inventory-stat-meta {
@@ -504,7 +504,7 @@ export default async function InventoryPage() {
         margin-top: 12px;
       }
       .inventory-stat-meta {
-        font-size: 12px;
+        font-size: 15px;
       }
       .inventory-toolbar {
         padding: 14px 14px 12px;

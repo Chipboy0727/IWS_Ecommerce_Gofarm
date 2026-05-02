@@ -56,14 +56,14 @@ export default function AdminMessagesPage() {
       if (!response.ok) {
         throw new Error(result.error || "Failed to send response");
       }
-      
+
       // Update local state
-      setMessages(prev => prev.map(m => 
-        m.id === selectedMessage.id 
-          ? { ...m, status: 'replied', replyMessage: replyText.trim(), repliedAt: new Date().toISOString() } 
+      setMessages(prev => prev.map(m =>
+        m.id === selectedMessage.id
+          ? { ...m, status: 'replied', replyMessage: replyText.trim(), repliedAt: new Date().toISOString() }
           : m
       ));
-      
+
       setSelectedMessage(null);
       setReplyText("");
       alert("Response saved successfully!");
@@ -124,22 +124,21 @@ export default function AdminMessagesPage() {
                 messages.map((msg) => (
                   <tr key={msg.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-bold text-gofarm-black text-[16px]">{msg.name}</div>
-                      <div className="text-[13px] text-gray-500 truncate max-w-[120px] sm:max-w-none">{msg.email}</div>
-                      <div className="text-[12px] text-gray-400 mt-1">{new Date(msg.createdAt).toLocaleString()}</div>
+                      <div className="font-bold text-gofarm-black text-[17px]">{msg.name}</div>
+                      <div className="text-[15px] text-gray-500 truncate max-w-[120px] sm:max-w-none">{msg.email}</div>
+                      <div className="text-[14px] text-gray-400 mt-1">{new Date(msg.createdAt).toLocaleString()}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-semibold text-gofarm-green truncate max-w-[150px] sm:max-w-none text-[16px]">{msg.subject}</div>
-                      <div className="text-[15px] text-gray-600 line-clamp-1">{msg.message}</div>
+                      <div className="font-semibold text-gofarm-green truncate max-w-[150px] sm:max-w-none text-[17px]">{msg.subject}</div>
+                      <div className="text-[16px] text-gray-600 line-clamp-1">{msg.message}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <span className={`inline-block rounded-full px-2 sm:px-3 py-1 text-[11px] sm:text-[12px] font-bold whitespace-nowrap ${
-                        msg.status === "unread"
+                      <span className={`inline-block rounded-full px-2 sm:px-3 py-1 text-[12px] sm:text-[14px] font-bold whitespace-nowrap ${msg.status === "unread"
                           ? "bg-amber-100 text-amber-700"
                           : msg.status === "replied"
                             ? "bg-gofarm-green/10 text-gofarm-green"
                             : "bg-gray-100 text-gofarm-gray"
-                      }`}>
+                        }`}>
                         {msg.status.toUpperCase()}
                       </span>
                     </td>
@@ -179,22 +178,22 @@ export default function AdminMessagesPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="p-6 sm:p-8 overflow-y-auto max-h-[60vh]">
               <div className="mb-5 sm:mb-6">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Subject</label>
+                <label className="text-[13px] font-bold uppercase tracking-widest text-gray-400">Subject</label>
                 <div className="mt-1 text-base sm:text-lg font-bold text-gofarm-black">{selectedMessage.subject}</div>
               </div>
-              
+
               <div className="mb-5 sm:mb-6">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Message Content</label>
+                <label className="text-[13px] font-bold uppercase tracking-widest text-gray-400">Message Content</label>
                 <div className="mt-2 rounded-2xl bg-gray-50 p-4 text-sm sm:text-base text-gray-700 italic border border-gray-100">
                   "{selectedMessage.message}"
                 </div>
               </div>
 
               <div className="mb-5 sm:mb-6">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Your Response</label>
+                <label className="text-[13px] font-bold uppercase tracking-widest text-gray-400">Your Response</label>
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}

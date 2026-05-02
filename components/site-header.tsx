@@ -478,18 +478,18 @@ export default function SiteHeader() {
               </Link>
 
               {/* Search bar - Desktop */}
-              <div className="hidden md:flex flex-1 max-w-sm sm:max-w-md lg:max-w-xl mx-2 sm:mx-3 lg:mx-4">
+              <div className="hidden md:flex flex-1 max-w-lg lg:max-w-2xl xl:max-w-3xl mx-3 sm:mx-4 lg:mx-6">
                 <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="group flex items-center w-full gap-2 sm:gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gofarm-light-green rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 transition-all"
+                  className="group flex items-center w-full gap-2 sm:gap-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gofarm-light-green rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 transition-all"
                 >
                   <span className="text-gray-400 group-hover:text-gofarm-green">
                     <IconSearch />
                   </span>
-                  <span className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700 flex-1 text-left">
+                  <span className="text-sm sm:text-base text-gray-500 group-hover:text-gray-700 flex-1 text-left">
                     Search products...
                   </span>
-                  <div className="hidden sm:flex items-center gap-1 bg-white border border-gray-200 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs text-gray-500 font-mono">
+                  <div className="hidden sm:flex items-center gap-1 bg-white border border-gray-200 px-2 py-1 rounded-lg text-[11px] sm:text-xs text-gray-500 font-mono">
                     <span>Ctrl</span>
                     <span>K</span>
                   </div>
@@ -608,7 +608,7 @@ export default function SiteHeader() {
         {/* Navigation bar */}
         <div className="hidden md:block bg-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
-            <nav className="flex items-center justify-center gap-5 sm:gap-7 md:gap-9 lg:gap-12 py-3 sm:py-3.5 lg:py-4">
+            <nav className="flex items-center justify-center gap-5 sm:gap-7 md:gap-9 lg:gap-12 py-1.5 sm:py-2 lg:py-2.5">
               {navItems.map((item) => (
                 <NavLink
                   key={item.href}

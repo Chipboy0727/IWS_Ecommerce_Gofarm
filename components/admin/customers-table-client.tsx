@@ -206,7 +206,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
               setRoleFilter(filterName);
               setPage(1);
             }}
-            className={`rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-[13px] font-semibold transition-colors ${
+            className={`rounded-md px-3 sm:px-4 py-1.5 sm:py-2 text-[12px] sm:text-[14px] font-semibold transition-colors ${
               roleFilter === filterName 
                 ? "bg-white text-gofarm-green shadow-sm border border-gofarm-light-green/35" 
                 : "bg-transparent text-gofarm-gray hover:bg-gray-100"
@@ -222,11 +222,11 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
         <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium">
           <thead>
             <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">User Profile</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Role</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Join Date</th>
-              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
-              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[12px] sm:text-[14px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">User Profile</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[12px] sm:text-[14px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Role</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[12px] sm:text-[14px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Join Date</th>
+              <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[12px] sm:text-[14px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
+              <th className="page-table-col-actions w-[180px] py-2.5 sm:py-3 text-[12px] sm:text-[14px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
                 <div className="page-table-actions-head">Actions</div>
               </th>
             </tr>
@@ -240,15 +240,15 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
                       {user.avatar}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black truncate">{user.name}</div>
-                      <div className="text-[10px] sm:text-[12px] text-gofarm-gray truncate">{user.email}</div>
+                      <div className="text-[13px] sm:text-[15px] font-bold text-gofarm-black truncate">{user.name}</div>
+                      <div className="text-[11px] sm:text-[13px] text-gofarm-gray truncate">{user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
                   <Pill tone={user.role === "Admin" ? "green" : "gray"}>{user.role}</Pill>
                 </td>
-                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] text-gray-700 whitespace-nowrap">
+                <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[14px] text-gray-700 whitespace-nowrap">
                   {new Date(user.joinDate).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}
                 </td>
                 <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
@@ -296,7 +296,7 @@ export default function CustomersTableClient({ initialUsers }: { initialUsers: C
 
       {/* Pagination */}
       {filteredUsers.length > 0 && (
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-gofarm-gray px-2">
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[14px] text-gofarm-gray px-2">
           <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredUsers.length)} of {filteredUsers.length} users</div>
           <div className="flex items-center gap-2">
             <button 

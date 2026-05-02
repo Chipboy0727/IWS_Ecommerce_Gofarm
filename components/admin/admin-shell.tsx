@@ -535,7 +535,7 @@ export function AdminShell({
     }
     .card-subtitle {
       margin-top: 6px;
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.45;
       color: var(--gf-text-muted);
     }
@@ -560,7 +560,7 @@ export function AdminShell({
       gap: 12px;
     }
     .stat-label {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.16em;
@@ -684,7 +684,7 @@ export function AdminShell({
     .page-table th {
       padding: 16px 22px;
       text-align: left;
-      font-size: 13px;
+      font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 0.15em;
       color: var(--gf-text-muted);
