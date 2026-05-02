@@ -102,7 +102,6 @@ export function productCardHtml(product: LocalProduct) {
             <div class="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
               <div class="absolute left-2 sm:left-3 top-2 sm:top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
                 <span class="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">${status}</span>
-                ${product.discount ? `<span class="w-fit inline-flex items-center rounded-full bg-red-500 px-1 sm:px-1.5 py-0.5 text-[8px] sm:text-[10px] font-semibold text-white shadow">-${product.discount}%</span>` : ''}
               </div>
               <img src="${product.imageSrc}" class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105" alt="${product.imageAlt || product.name}" loading="lazy" />
             </div>
@@ -123,12 +122,15 @@ export function productCardHtml(product: LocalProduct) {
             </h3>
           </a>
           <div class="mt-1 flex flex-wrap items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
-            ${Array.from({ length: 5 }, (_, index) => `<svg class="w-2 h-2 sm:w-2.5 sm:h-2.5 ${index < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="${index < Math.round(product.rating) ? "currentColor" : "none"}" stroke="currentColor" strokeWidth="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>`).join('')}
+            ${Array.from({ length: 5 }, (_, index) => `<svg class="w-5 h-5 sm:w-6 sm:h-6 ${index < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}" viewBox="0 0 24 24" fill="${index < Math.round(product.rating) ? "currentColor" : "none"}" stroke="currentColor" strokeWidth="1.5"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>`).join('')}
             <span class="text-gray-500 ml-0.5 sm:ml-1">(${product.reviews})</span>
           </div>
-          <div class="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
+          <div class="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
             <span class="text-base sm:text-lg font-bold text-gofarm-green">${formattedSalePrice}</span>
-            ${product.discount ? `<span class="text-xs sm:text-sm text-gray-400 line-through">${formattedPrice}</span>` : ''}
+            ${product.discount ? `
+              <span class="text-xs sm:text-sm text-gray-400 line-through">${formattedPrice}</span>
+              <span class="ml-auto bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-${product.discount}%</span>
+            ` : ''}
           </div>
           <button class="add-to-cart-btn mt-3 w-full rounded-lg border border-transparent bg-gofarm-green text-white px-2 py-1.5 text-[11px] sm:text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50" data-product-id="${product.id}" data-product-name="${product.name.replace(/'/g, "\\'")}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">Add to Cart</button>
         </div>
@@ -223,11 +225,6 @@ export function ProductCard({ product }: { product: LocalProduct }) {
                   <span className="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
                     {status}
                   </span>
-                  {(product.discount ?? 0) > 0 && (
-                    <span className="w-fit inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
-                      -{product.discount}%
-                    </span>
-                  )}
                 </div>
                 <img
                   src={product.imageSrc}
@@ -267,15 +264,18 @@ export function ProductCard({ product }: { product: LocalProduct }) {
 
             <div className="mt-1 flex flex-wrap items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
               {[...Array(5)].map((_, i) => (
-                <StarIcon key={i} className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
+                <StarIcon key={i} className={`w-5 h-5 sm:w-6 sm:h-6 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
               ))}
               <span className="text-gray-500 ml-0.5 sm:ml-1">({product.reviews})</span>
             </div>
 
-            <div className="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
               <span className="text-base sm:text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
               {(product.discount ?? 0) > 0 && (
-                <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
+                <>
+                  <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
+                  <span className="ml-auto bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>
+                </>
               )}
             </div>
 

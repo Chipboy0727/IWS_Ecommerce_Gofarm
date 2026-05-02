@@ -193,11 +193,6 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
               <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
                 {status}
               </div>
-              {product.discount ? (
-                <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-bold">
-                  -{product.discount}%
-                </div>
-              ) : null}
             </div>
 
             {/* Nút Wishlist và Share - NỀN TRẮNG, KHÔNG VIỀN */}
@@ -232,17 +227,20 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
             <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
               <div className="flex items-center">
                 {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${index < Math.round(product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
+                  <StarIcon key={index} className={`w-5 h-5 sm:w-6 sm:h-6 ${index < Math.round(product.rating || 0) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
               <span className="text-[8px] sm:text-[10px] text-gofarm-gray">({product.reviews})</span>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-5">
-              <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+              <div className="flex flex-wrap items-center gap-1 sm:gap-2 w-full">
                 <span className="text-gofarm-green text-xs sm:text-base font-bold">{formatPrice(salePrice)}</span>
                 {product.discount ? (
-                  <span className="line-through text-zinc-500 text-[10px] sm:text-base font-bold">{formatPrice(product.price)}</span>
+                  <>
+                    <span className="line-through text-zinc-500 text-[10px] sm:text-base font-bold">{formatPrice(product.price)}</span>
+                    <span className="ml-auto bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>
+                  </>
                 ) : null}
               </div>
             </div>

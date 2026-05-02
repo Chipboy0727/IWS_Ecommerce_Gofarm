@@ -684,9 +684,11 @@ export default function ProductManager() {
                         </div>
                       </div>
                     )}
-                    <Field label="Alt Text">
-                      <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" placeholder="Image description" required />
-                    </Field>
+                    <div className="pt-6">
+                      <Field label="Alt Text">
+                        <input value={form.imageAlt} onChange={(e) => updateField("imageAlt", e.target.value)} className="input" placeholder="Image description" required />
+                      </Field>
+                    </div>
                     {form.imageSrc && !previewError ? (
                       <div className="relative mt-3 group overflow-hidden rounded-[24px] border border-gray-200">
                         <img
@@ -1060,7 +1062,7 @@ function Field({
   className?: string;
 }) {
   return (
-    <label className={className}>
+    <label className={`block w-full ${className}`}>
       <span className="mb-3 block text-[12px] font-bold uppercase tracking-[0.12em] text-gofarm-gray">{label}</span>
       {children}
     </label>
