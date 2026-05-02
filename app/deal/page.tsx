@@ -143,10 +143,12 @@ function FeatureCard({
 export default async function DealPage() {
   const { products } = await loadLocalCatalog();
 
-  const dealSlugs = ["brownie-flavor", "cake-mix", "cauliflower", "fresh-apple", "waffle-homestyle"];
-  const dealProducts = dealSlugs
-    .map((slug) => products.find((product) => product.slug === slug))
-    .filter((product): product is LocalProduct => Boolean(product));
+  const storefrontProducts = products.filter(
+    (product) => product.price > 0 && product.name.trim() && product.imageSrc.trim()
+  );
+
+  const dealProducts = storefrontProducts
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-linear-to-b from-red-50 to-orange-50">
@@ -176,7 +178,7 @@ export default async function DealPage() {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
-                    <StatBox label="Products" value="5" />
+                    <StatBox label="Products" value={dealProducts.length.toString()} />
                     <StatBox label="Avg. Discount" value="10%" />
                     <StatBox label="Happy Customers" value="2.5K+" />
                   </div>
