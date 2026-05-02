@@ -356,7 +356,6 @@ async function initializeMysql() {
       }
       await ensureMysqlSeedData();
       mysqlReady = true;
-      console.log("[DB] MySQL initialized successfully");
       return true;
     } catch (err) {
       console.error("[DB] MySQL initialization error:", err);
