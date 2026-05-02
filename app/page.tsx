@@ -21,6 +21,33 @@ export default async function HomePage() {
     (product) => product.price > 0 && product.name.trim() && product.imageSrc.trim()
   );
   const usedSlugs = new Set<string>();
+  const normalize = (value: string | null | undefined) => value?.toLowerCase() ?? "";
+
+  const isJuiceProduct = (product: (typeof storefrontProducts)[number]) => {
+    const category = normalize(product.categoryTitle);
+    const name = normalize(product.name);
+    return category === "juices" || /juice|juices|smoothie|nước ép|sinh tố|nước|sữa/i.test(name);
+  };
+
+  const isVegetableProduct = (product: (typeof storefrontProducts)[number]) => {
+    const category = normalize(product.categoryTitle);
+    const name = normalize(product.name);
+    return (
+      (category === "vegetables" ||
+        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce|cà chua|cải|khoai|hành|tỏi|bí|rau|ớt chuông|măng tây|súp lơ|dưa leo/i.test(name)) &&
+      !isJuiceProduct(product)
+    );
+  };
+
+  const isFruitProduct = (product: (typeof storefrontProducts)[number]) => {
+    const category = normalize(product.categoryTitle);
+    const name = normalize(product.name);
+    return (
+      (category === "fruits" ||
+        /fruit|apple|pear|mango|banana|watermelon|orange|berry|táo|lê|xoài|chuối|dưa|cam|nho|bơ|dâu|thanh long|bưởi|kiwi|măng cụt|sầu riêng|chôm chôm|việt quất|ổi|lựu|nhãn|vải/i.test(name)) &&
+      !isJuiceProduct(product)
+    );
+  };
 
   const takeSectionProducts = (matches: typeof storefrontProducts, limit = 10) => {
     const items: typeof storefrontProducts = [];
@@ -43,27 +70,15 @@ export default async function HomePage() {
   };
 
   const vegetableProducts = takeSectionProducts(
-    storefrontProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "vegetables" ||
-        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce|cà chua|cải|khoai|hành|tỏi|bí|rau|ớt chuông|măng tây|súp lơ|dưa leo/i.test(product.name)
-    )
+    storefrontProducts.filter((product) => isVegetableProduct(product))
   );
 
   const fruitsProducts = takeSectionProducts(
-    storefrontProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "fruits" ||
-        /fruit|apple|pear|mango|banana|watermelon|orange|berry|táo|lê|xoài|chuối|dưa|cam|nho|bơ|dâu|thanh long|bưởi|kiwi|măng cụt|sầu riêng|chôm chôm|việt quất|ổi|lựu|nhãn|vải/i.test(product.name)
-    )
+    storefrontProducts.filter((product) => isFruitProduct(product))
   );
 
   const juicesProducts = takeSectionProducts(
-    storefrontProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "juices" ||
-        /juice|juices|smoothie|nước ép|sinh tố|nước|sữa/i.test(product.name)
-    )
+    storefrontProducts.filter((product) => isJuiceProduct(product))
   );
 
   const spicesProducts = takeSectionProducts(
