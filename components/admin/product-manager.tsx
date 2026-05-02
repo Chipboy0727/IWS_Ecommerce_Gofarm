@@ -339,13 +339,13 @@ export default function ProductManager() {
     );
     const resolvedCategory = resolveCategory(p);
     const matchesCategory = categoryFilter === "All" || resolvedCategory?.id === categoryFilter;
-    
+
     let matchesStock = true;
     const stock = p.stock || 0;
     if (stockFilter === "Low") matchesStock = stock <= 25;
     else if (stockFilter === "Medium") matchesStock = stock > 25 && stock <= 100;
     else if (stockFilter === "High") matchesStock = stock > 100;
-    
+
     return matchesSearch && matchesCategory && matchesStock;
   });
 
@@ -370,9 +370,9 @@ export default function ProductManager() {
         <div className="pm-toolbar">
           <label className="pm-search">
             <IconSearch />
-            <input 
-              type="text" 
-              placeholder="Search products, SKU or category..." 
+            <input
+              type="text"
+              placeholder="Search products, SKU or category..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -474,91 +474,91 @@ export default function ProductManager() {
             <div className="admin-data-table-shell">
               <div className="max-h-[800px] overflow-y-auto overflow-x-auto">
                 <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium text-left">
-                <thead>
-                  <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">SKU</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Product</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Category</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Stock Level</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
-                    <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Price</th>
-                    <th className="page-table-col-actions w-[130px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
-                      <div className="page-table-actions-head">Actions</div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedProducts.map((product) => {
-                    const stock = typeof product.stock === "number" ? product.stock : 0;
-                    const tone = stockTone(stock);
-                    return (
-                      <tr key={product.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-gofarm-gray">
-                          {product.slug.toUpperCase()}
-                        </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <img
-                              src={product.imageSrc || "/images/logo.svg"}
-                              alt={product.name}
-                              className="h-8 w-8 sm:h-10 sm:w-10 rounded-[10px] object-cover shrink-0"
-                              onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
-                            />
-                            <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black">{product.name}</div>
-                          </div>
-                        </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
-                          <Pill tone="green">{resolveCategory(product)?.title ?? product.categoryTitle ?? "Uncategorized"}</Pill>
-                        </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] text-gray-700">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="progress">
-                              <span
-                                className={tone === "green" ? "status-green" : tone === "amber" ? "status-amber" : "status-red"}
-                                style={{ width: `${stockWidth(stock)}%` }}
+                  <thead>
+                    <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">SKU</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Product</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Category</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Stock Level</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Status</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Price</th>
+                      <th className="page-table-col-actions w-[130px] py-2.5 sm:py-3 text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">
+                        <div className="page-table-actions-head">Actions</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedProducts.map((product) => {
+                      const stock = typeof product.stock === "number" ? product.stock : 0;
+                      const tone = stockTone(stock);
+                      return (
+                        <tr key={product.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-gofarm-gray">
+                            {product.slug.toUpperCase()}
+                          </td>
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <img
+                                src={product.imageSrc || "/images/logo.svg"}
+                                alt={product.name}
+                                className="h-8 w-8 sm:h-10 sm:w-10 rounded-[10px] object-cover shrink-0"
+                                onError={(e) => (e.currentTarget.src = "/images/logo.svg")}
                               />
+                              <div className="text-[12px] sm:text-[13px] font-bold text-gofarm-black">{product.name}</div>
                             </div>
-                            <div className="text-[12px] sm:text-[13px] font-semibold text-gofarm-black">{stock}</div>
-                          </div>
-                        </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
-                          <Pill tone={tone}>{(product.status ?? "ACTIVE").toUpperCase()}</Pill>
-                        </td>
-                        <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-semibold text-gofarm-black whitespace-nowrap">
-                          ${product.price.toFixed(2)}
-                        </td>
-                        <td className="page-table-col-actions w-[130px] py-2.5 sm:py-3 whitespace-nowrap">
-                          <div className="page-table-actions-cell">
-                            <div className="admin-icon-actions">
-                              <button type="button" onClick={() => openEdit(product)} title="Edit product" aria-label={`Edit ${product.name}`}>
-                                <InvIconEdit />
-                              </button>
-                              <button
-                                type="button"
-                                className="admin-icon-actions-danger"
-                                onClick={() => handleDelete(product)}
-                                title="Delete product"
-                                aria-label={`Delete ${product.name}`}
-                              >
-                                <InvIconTrash />
-                              </button>
+                          </td>
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
+                            <Pill tone="green">{resolveCategory(product)?.title ?? product.categoryTitle ?? "Uncategorized"}</Pill>
+                          </td>
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] text-gray-700">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <div className="progress">
+                                <span
+                                  className={tone === "green" ? "status-green" : tone === "amber" ? "status-amber" : "status-red"}
+                                  style={{ width: `${stockWidth(stock)}%` }}
+                                />
+                              </div>
+                              <div className="text-[12px] sm:text-[13px] font-semibold text-gofarm-black">{stock}</div>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 whitespace-nowrap">
+                            <Pill tone={tone}>{(product.status ?? "ACTIVE").toUpperCase()}</Pill>
+                          </td>
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-semibold text-gofarm-black whitespace-nowrap">
+                            ${product.price.toFixed(2)}
+                          </td>
+                          <td className="page-table-col-actions w-[130px] py-2.5 sm:py-3 whitespace-nowrap">
+                            <div className="page-table-actions-cell">
+                              <div className="admin-icon-actions">
+                                <button type="button" onClick={() => openEdit(product)} title="Edit product" aria-label={`Edit ${product.name}`}>
+                                  <InvIconEdit />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="admin-icon-actions-danger"
+                                  onClick={() => handleDelete(product)}
+                                  title="Delete product"
+                                  aria-label={`Delete ${product.name}`}
+                                >
+                                  <InvIconTrash />
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
             {/* Pagination */}
             {filteredProducts.length > 0 && (
               <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-gofarm-gray px-2">
                 <div>Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, filteredProducts.length)} of {filteredProducts.length} products</div>
                 <div className="flex items-center gap-2">
-                  <button 
+                  <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                     className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
@@ -579,17 +579,16 @@ export default function ProductManager() {
                           backgroundColor: page === pageNum ? "#00a844" : "",
                           color: page === pageNum ? '#ffffff' : ''
                         }}
-                        className={`flex h-8 w-8 items-center justify-center rounded-md ${
-                          page !== pageNum 
-                            ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black" 
-                            : "font-bold"
-                        }`}
+                        className={`flex h-8 w-8 items-center justify-center rounded-md ${page !== pageNum
+                          ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black"
+                          : "font-bold"
+                          }`}
                       >
                         {pageNum}
                       </button>
                     );
                   })}
-                  <button 
+                  <button
                     onClick={() => setPage(Math.min(pageCount, page + 1))}
                     disabled={page === pageCount}
                     className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
@@ -1062,7 +1061,7 @@ function Field({
 }) {
   return (
     <label className={className}>
-      <span className="mb-2.5 block text-[12px] font-bold uppercase tracking-[0.12em] text-gofarm-gray">{label}</span>
+      <span className="mb-3 block text-[12px] font-bold uppercase tracking-[0.12em] text-gofarm-gray">{label}</span>
       {children}
     </label>
   );

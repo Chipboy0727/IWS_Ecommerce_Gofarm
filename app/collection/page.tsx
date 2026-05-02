@@ -206,7 +206,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
         <div className="flex gap-3 p-3 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
           <div className="relative w-20 h-20 shrink-0">
             <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-cover rounded-lg" />
-            {(product.discount ?? 0) > 0 && <span className="absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
+            {(product.discount ?? 0) > 0 && <span className="w-fit absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
           </div>
           <div className="flex-1 min-w-0">
             <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
@@ -248,8 +248,8 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             </Link>
 
             <div className="absolute top-2 left-2 flex flex-col gap-1">
-              <div className="inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">{status}</div>
-              {(product.discount ?? 0) > 0 && <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
+              <div className="w-fit inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">{status}</div>
+              {(product.discount ?? 0) > 0 && <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
             </div>
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">

@@ -599,7 +599,8 @@ export function AdminShell({
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
+      font-size: 16px;
+      font-weight: 500;
       color: var(--gf-text-muted);
     }
     .stat-card.active .stat-meta {
@@ -610,7 +611,7 @@ export function AdminShell({
       align-items: center;
       border-radius: 999px;
       padding: 4px 12px;
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.02em;
       white-space: nowrap;
@@ -658,26 +659,18 @@ export function AdminShell({
       align-items: flex-end;
       justify-content: center;
     }
-    .chart-back {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      border-radius: 8px 8px 0 0;
-      background: #e5e7eb;
-    }
     .chart-front {
       position: relative;
       z-index: 1;
       width: 72%;
       border-radius: 8px 8px 0 0;
-      background: linear-gradient(to top, var(--gf-primary-dark), var(--gf-primary), var(--gf-primary-hover));
-      box-shadow: 0 10px 22px rgba(0, 168, 68, 0.28);
+      background: var(--gf-primary);
     }
     .chart-label {
-      font-size: 10px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.1em;
       color: var(--gf-text-muted);
     }
     .page-table {
@@ -691,9 +684,9 @@ export function AdminShell({
     .page-table th {
       padding: 16px 22px;
       text-align: left;
-      font-size: 11px;
+      font-size: 13px;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.15em;
       color: var(--gf-text-muted);
       white-space: nowrap;
     }
@@ -701,6 +694,7 @@ export function AdminShell({
       padding: 18px 22px;
       vertical-align: middle;
       border-bottom: 1px solid var(--admin-border);
+      font-size: 15px;
     }
     .page-table tr:last-child td {
       border-bottom: 0;
@@ -904,12 +898,12 @@ export function AdminShell({
     .status-amber { background: #d59b00; }
     .status-red { background: #d6403b; }
     .table-amount {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--gf-text);
     }
     .table-muted {
-      font-size: 13px;
+      font-size: 15px;
       color: var(--gf-text-muted);
     }
     .icon-actions {
@@ -1424,7 +1418,6 @@ export function BarChart({
       {bars.map((height, index) => (
         <div key={`${labels[index]}-${index}`} className="chart-bar">
           <div className="chart-track">
-            <div className="chart-back" style={{ height: `${Math.min(100, height + 22)}%` }} />
             <div className="chart-front" style={{ height: `${height}%` }} />
           </div>
           <div className="chart-label">{labels[index]}</div>

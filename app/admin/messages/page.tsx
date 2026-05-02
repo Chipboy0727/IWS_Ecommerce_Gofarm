@@ -102,9 +102,9 @@ export default function AdminMessagesPage() {
         )}
 
         <div className="overflow-hidden rounded-3xl border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200 text-left text-[13px] sm:text-sm">
+          <table className="min-w-full divide-y divide-gray-200 text-left text-[15px] sm:text-[16px]">
             <thead className="bg-gofarm-light-orange/20">
-              <tr className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gofarm-gray">
+              <tr className="text-[12px] sm:text-[13px] uppercase tracking-[0.2em] text-gofarm-gray">
                 <th className="px-4 sm:px-6 py-4">Customer</th>
                 <th className="px-4 sm:px-6 py-4">Inquiry</th>
                 <th className="px-4 sm:px-6 py-4">Status</th>
@@ -124,16 +124,16 @@ export default function AdminMessagesPage() {
                 messages.map((msg) => (
                   <tr key={msg.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-bold text-gofarm-black">{msg.name}</div>
-                      <div className="text-[11px] text-gray-500 truncate max-w-[120px] sm:max-w-none">{msg.email}</div>
-                      <div className="text-[10px] text-gray-400 mt-1">{new Date(msg.createdAt).toLocaleString()}</div>
+                      <div className="font-bold text-gofarm-black text-[16px]">{msg.name}</div>
+                      <div className="text-[13px] text-gray-500 truncate max-w-[120px] sm:max-w-none">{msg.email}</div>
+                      <div className="text-[12px] text-gray-400 mt-1">{new Date(msg.createdAt).toLocaleString()}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <div className="font-semibold text-gofarm-green truncate max-w-[150px] sm:max-w-none">{msg.subject}</div>
-                      <div className="text-sm text-gray-600 line-clamp-1">{msg.message}</div>
+                      <div className="font-semibold text-gofarm-green truncate max-w-[150px] sm:max-w-none text-[16px]">{msg.subject}</div>
+                      <div className="text-[15px] text-gray-600 line-clamp-1">{msg.message}</div>
                     </td>
                     <td className="px-4 sm:px-6 py-4">
-                      <span className={`inline-block rounded-full px-2 sm:px-3 py-1 text-[9px] sm:text-[10px] font-bold whitespace-nowrap ${
+                      <span className={`inline-block rounded-full px-2 sm:px-3 py-1 text-[11px] sm:text-[12px] font-bold whitespace-nowrap ${
                         msg.status === "unread"
                           ? "bg-amber-100 text-amber-700"
                           : msg.status === "replied"
@@ -149,7 +149,7 @@ export default function AdminMessagesPage() {
                           setSelectedMessage(msg);
                           setReplyText(msg.replyMessage || "");
                         }}
-                        className="rounded-full bg-gofarm-green px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-white shadow-lg shadow-gofarm-green/50 transition hover:scale-105 active:scale-95 whitespace-nowrap"
+                        className="rounded-full bg-gofarm-green px-3 sm:px-4 py-1.5 text-[13px] sm:text-[14px] font-bold text-white shadow-lg shadow-gofarm-green/50 transition hover:scale-105 active:scale-95 whitespace-nowrap"
                       >
                         {msg.status === 'replied' ? 'View' : 'Reply'}
                       </button>

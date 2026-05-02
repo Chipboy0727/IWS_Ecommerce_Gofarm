@@ -470,7 +470,7 @@ export default function SiteHeader() {
         {/* Main header */}
         <div className="border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
-            <div className="flex items-center justify-between py-2 sm:py-3 lg:py-4 gap-2 sm:gap-3 md:gap-4">
+            <div className="flex items-center justify-between py-3 sm:py-4 lg:py-5 gap-3 sm:gap-4 md:gap-5">
               
               {/* Logo */}
               <Link href="/" className="shrink-0">
@@ -497,7 +497,7 @@ export default function SiteHeader() {
               </div>
 
               {/* Right icons */}
-              <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 lg:gap-3">
+              <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4">
                 {/* Search - Mobile */}
                 <button
                   onClick={() => setIsSearchOpen(true)}
@@ -608,7 +608,7 @@ export default function SiteHeader() {
         {/* Navigation bar */}
         <div className="hidden md:block bg-white">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
-            <nav className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 py-2 sm:py-2.5 lg:py-3">
+            <nav className="flex items-center justify-center gap-5 sm:gap-7 md:gap-9 lg:gap-12 py-3 sm:py-3.5 lg:py-4">
               {navItems.map((item) => (
                 <NavLink
                   key={item.href}

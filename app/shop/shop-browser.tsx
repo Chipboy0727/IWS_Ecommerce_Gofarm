@@ -136,11 +136,11 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
         <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
           <div className="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
             <div className="absolute left-2 sm:left-3 top-2 sm:top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
-              <span className="inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
+              <span className="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
                 {status}
               </span>
               {product.discount ? (
-                <span className="inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
+                <span className="w-fit inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
                   -{product.discount}%
                 </span>
               ) : null}
@@ -195,12 +195,7 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
         <div className="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
           <span className="text-base sm:text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
           {product.discount ? (
-            <>
-              <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
-              <span className="inline-flex items-center rounded-md bg-red-50 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-medium text-red-500">
-                -{product.discount}%
-              </span>
-            </>
+            <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
           ) : null}
         </div>
 

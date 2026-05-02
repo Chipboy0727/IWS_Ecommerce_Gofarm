@@ -88,8 +88,8 @@ export function buildInteractiveProductCardHtml(product: LocalProduct) {
           <a href="/shop/${product.slug}" class="block w-full text-left">
             <div class="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
               <div class="absolute left-2 sm:left-3 top-2 sm:top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
-                <span class="inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">${status}</span>
-                ${product.discount ? `<span class="inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">-${product.discount}%</span>` : ''}
+                <span class="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">${status}</span>
+                ${product.discount ? `<span class="w-fit inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">-${product.discount}%</span>` : ''}
               </div>
               <img src="${product.imageSrc}" class="max-w-[70%] max-h-[70%] w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105" alt="${product.imageAlt || product.name}" loading="lazy" />
             </div>
@@ -113,7 +113,7 @@ export function buildInteractiveProductCardHtml(product: LocalProduct) {
           </div>
           <div class="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
             <span class="text-base sm:text-lg font-bold text-gofarm-green">${formattedSalePrice}</span>
-            ${product.discount ? `<span class="text-xs sm:text-sm text-gray-400 line-through">${formattedPrice}</span><span class="inline-flex items-center rounded-md bg-red-50 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-xs font-medium text-red-500">-${product.discount}%</span>` : ''}
+            ${product.discount ? `<span class="text-xs sm:text-sm text-gray-400 line-through">${formattedPrice}</span>` : ''}
           </div>
           <button class="add-to-cart-btn mt-3 w-full rounded-lg border border-transparent bg-gofarm-green text-white px-2 py-1.5 text-[11px] sm:text-xs font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50" data-product-id="${product.id}" data-product-name="${escapedName}" data-product-price="${salePrice}" data-product-image="${product.imageSrc}" data-product-slug="${product.slug}">Add to Cart</button>
         </div>

@@ -85,7 +85,7 @@ export default async function OrdersPage() {
       border-radius: 8px;
       border: 0;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
       cursor: pointer;
@@ -144,12 +144,12 @@ export default async function OrdersPage() {
     .orders-stat-chip.pink { background: #ffd7e8; color: #b64b87; }
     .orders-stat-label {
       margin-top: 14px;
-      font-size: 14px;
+      font-size: 16px;
       color: #4f5f4c;
     }
     .orders-stat-value {
       margin-top: 6px;
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 800;
       color: #233021;
       letter-spacing: -0.04em;
@@ -192,7 +192,7 @@ export default async function OrdersPage() {
     }
     .orders-filter-button {
       border: 0;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       min-width: 150px;
@@ -226,7 +226,7 @@ export default async function OrdersPage() {
       padding: 10px 12px;
       text-align: left;
       color: #486143;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -243,14 +243,14 @@ export default async function OrdersPage() {
       outline: 0;
       background: transparent;
       color: #475a43;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
     }
     .orders-clear-button {
       border: 0;
       background: transparent;
       color: #00a844;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
       transition: color 0.18s ease, transform 0.18s ease;
@@ -260,7 +260,7 @@ export default async function OrdersPage() {
       transform: translateY(-1px);
     }
     .orders-filter-count {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.12em;
@@ -281,8 +281,8 @@ export default async function OrdersPage() {
     .orders-table th {
       padding: 14px 22px;
       text-align: left;
-      font-size: 11px;
-      letter-spacing: 0.18em;
+      font-size: 13px;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: #748171;
     }
@@ -294,6 +294,7 @@ export default async function OrdersPage() {
       padding: 18px 22px;
       border-bottom: 1px solid #edf1e5;
       vertical-align: middle;
+      font-size: 16px;
     }
     .orders-table td:last-child {
       width: 230px;
@@ -305,7 +306,7 @@ export default async function OrdersPage() {
     .orders-id-cell span {
       color: #00a844;
       font-weight: 700;
-      font-size: 10px;
+      font-size: 12px;
       line-height: 1.4;
       display: inline-block;
       min-width: 0;
@@ -331,13 +332,13 @@ export default async function OrdersPage() {
       flex: 0 0 auto;
     }
     .orders-customer-name {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 700;
       color: #223021;
     }
     .orders-customer-email {
       margin-top: 2px;
-      font-size: 11px;
+      font-size: 13px;
       color: #72806f;
     }
     .orders-date-cell {
@@ -345,11 +346,11 @@ export default async function OrdersPage() {
       flex-direction: column;
       gap: 2px;
       color: #4d5d4b;
-      font-size: 14px;
+      font-size: 16px;
       min-width: 90px;
     }
     .orders-amount-cell {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 800;
       color: #233021;
       white-space: nowrap;
@@ -360,7 +361,7 @@ export default async function OrdersPage() {
       min-height: 22px;
       padding: 0 10px;
       border-radius: 999px;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.02em;
     }
@@ -391,7 +392,7 @@ export default async function OrdersPage() {
       min-height: 26px;
       padding: 0 10px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 0.01em;
       line-height: 1;
@@ -498,7 +499,7 @@ export default async function OrdersPage() {
       padding: 10px 12px;
       text-align: left;
       color: #465f41;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -519,7 +520,7 @@ export default async function OrdersPage() {
       gap: 16px;
       padding: 16px 22px 18px;
       color: #677565;
-      font-size: 13px;
+      font-size: 15px;
     }
     .orders-pagination {
       display: flex;

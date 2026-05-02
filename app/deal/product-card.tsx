@@ -190,11 +190,11 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
             </button>
 
             <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-              <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
+              <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">
                 {status}
               </div>
               {product.discount ? (
-                <div className="inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-bold">
+                <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[8px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 shadow-md font-bold">
                   -{product.discount}%
                 </div>
               ) : null}
@@ -242,12 +242,7 @@ export default function ProductCard({ product, onShare, onQuickView }: ProductCa
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                 <span className="text-gofarm-green text-xs sm:text-base font-bold">{formatPrice(salePrice)}</span>
                 {product.discount ? (
-                  <div className="flex flex-wrap items-center gap-1">
-                    <span className="line-through text-zinc-500 text-[10px] sm:text-base font-bold">{formatPrice(product.price)}</span>
-                    <span className="text-[8px] sm:text-xs bg-red-100 text-red-600 px-1 sm:px-1.5 py-0.5 rounded font-medium">
-                      -{product.discount}%
-                    </span>
-                  </div>
+                  <span className="line-through text-zinc-500 text-[10px] sm:text-base font-bold">{formatPrice(product.price)}</span>
                 ) : null}
               </div>
             </div>
