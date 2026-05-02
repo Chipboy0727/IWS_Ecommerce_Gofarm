@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
@@ -11,6 +11,14 @@ import ProductShareHandler from "@/components/home/product-share-handler";
 import { ProductModal } from "@/components/product-modal";
 
 type SortMode = "name" | "featured" | "price-asc" | "price-desc" | "rating";
+
+const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
+  { value: "featured", label: "Featured" },
+  { value: "name", label: "Name (A-Z)" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+  { value: "rating", label: "Rating" },
+];
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("en-US", {
@@ -276,6 +284,8 @@ export default function ShopBrowser({
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const sortMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Sync activeCategory when URL param changes
   useEffect(() => {
@@ -308,6 +318,23 @@ export default function ShopBrowser({
     });
     setWishlistStatus(status);
   }, [products, isInWishlist]);
+
+  useEffect(() => {
+    const onPointerDown = (event: MouseEvent) => {
+      if (!sortMenuRef.current?.contains(event.target as Node)) {
+        setSortMenuOpen(false);
+      }
+    };
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSortMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onEscape);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onEscape);
+    };
+  }, []);
 
   const filtered = [...products]
     .filter((product) => {
@@ -496,20 +523,71 @@ export default function ShopBrowser({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <label className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2">
-                  <span className="text-xs text-gray-500">Sort</span>
-                  <select
-                    value={sortBy}
-                    onChange={(event) => setSortBy(event.target.value as SortMode)}
-                    className="bg-transparent text-xs font-medium outline-none"
+                <div className="relative" ref={sortMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setSortMenuOpen((prev) => !prev)}
+                    className={[
+                      "group inline-flex items-center gap-2 rounded-xl border px-3 py-2 transition-all duration-300",
+                      "bg-linear-to-r from-white to-gofarm-light-green/5 hover:from-white hover:to-gofarm-light-green/10",
+                      "focus-visible:outline-none focus-visible:border-gofarm-green focus-visible:shadow-[0_0_0_3px_rgba(37,168,67,0.15)]",
+                      sortBy === "featured" ? "border-gofarm-green/40 shadow-sm" : "border-gray-200",
+                    ].join(" ")}
+                    aria-haspopup="listbox"
+                    aria-expanded={sortMenuOpen}
                   >
-                    <option value="featured">Featured</option>
-                    <option value="name">Name (A-Z)</option>
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="rating">Rating</option>
-                  </select>
-                </label>
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gofarm-green/10 text-gofarm-green transition-transform duration-300 group-hover:scale-105">
+                      <SparklesIcon className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="text-xs font-medium text-gray-500">Sort</span>
+                    <span className="text-xs font-semibold text-gofarm-black">
+                      {SORT_OPTIONS.find((option) => option.value === sortBy)?.label ?? "Featured"}
+                    </span>
+                    <svg
+                      className={`h-3.5 w-3.5 text-gray-400 transition-transform duration-300 ${sortMenuOpen ? "rotate-180 text-gofarm-green" : ""}`}
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      aria-hidden="true"
+                    >
+                      <path d="m6 8 4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+
+                  {sortMenuOpen && (
+                    <div
+                      className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-gofarm-green/20 bg-white shadow-xl"
+                      role="listbox"
+                      aria-label="Sort products"
+                    >
+                      {SORT_OPTIONS.map((option) => {
+                        const active = sortBy === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              setSortBy(option.value);
+                              setSortMenuOpen(false);
+                            }}
+                            className={[
+                              "flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors",
+                              active
+                                ? "bg-gofarm-green/10 text-gofarm-green font-semibold"
+                                : "text-gray-700 hover:bg-gray-50",
+                            ].join(" ")}
+                            role="option"
+                            aria-selected={active}
+                          >
+                            <span>{option.label}</span>
+                            {active ? <span className="text-gofarm-green">✓</span> : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
                 <div className="text-xs text-gray-500">
                   Showing {Math.min(filtered.length, currentPage * itemsPerPage)} of {filtered.length}
