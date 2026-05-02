@@ -10,6 +10,8 @@ export default function WishlistPage() {
   const { addToCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<{ id: string; name: string } | null>(null);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const [notification, setNotification] = useState<{ show: boolean; message: string; type: string }>({
@@ -97,17 +99,30 @@ export default function WishlistPage() {
     showNotification(`${item.name} moved to cart!`, "success");
   };
 
-  // Remove single item
-  const handleRemoveItem = (id: string, name: string) => {
-    if (confirm(`Remove "${name}" from wishlist?`)) {
-      removeFromWishlist(id);
+  // Show remove confirmation for single item
+  const handleRemoveItemClick = (id: string, name: string) => {
+    setItemToRemove({ id, name });
+    setShowRemoveConfirm(true);
+  };
+
+  // Confirm remove single item
+  const confirmRemoveItem = () => {
+    if (itemToRemove) {
+      removeFromWishlist(itemToRemove.id);
       setSelectedItems(prev => {
         const newSet = new Set(prev);
-        newSet.delete(id);
+        newSet.delete(itemToRemove.id);
         return newSet;
       });
-      showNotification(`${name} removed from wishlist`, "success");
+      showNotification(`${itemToRemove.name} removed from wishlist`, "success");
+      setShowRemoveConfirm(false);
+      setItemToRemove(null);
     }
+  };
+
+  const cancelRemoveItem = () => {
+    setShowRemoveConfirm(false);
+    setItemToRemove(null);
   };
 
   // Clear all wishlist
@@ -138,6 +153,39 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-white to-gofarm-light-orange/10">
+      {/* Confirm Remove Single Item Modal */}
+      {showRemoveConfirm && itemToRemove && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-sm w-full mx-3 sm:mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5 sm:mb-2">Remove Item?</h3>
+              <p className="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6">
+                Are you sure you want to remove "{itemToRemove.name}" from your wishlist?
+              </p>
+              <div className="flex gap-2 sm:gap-3">
+                <button 
+                  onClick={confirmRemoveItem} 
+                  className="flex-1 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                >
+                  Yes, Remove
+                </button>
+                <button 
+                  onClick={cancelRemoveItem} 
+                  className="flex-1 px-3 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Confirm Clear Wishlist Modal */}
       {showClearConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
@@ -293,7 +341,7 @@ export default function WishlistPage() {
                               Move to Cart
                             </button>
                             <button 
-                              onClick={() => handleRemoveItem(item.id, item.name)} 
+                              onClick={() => handleRemoveItemClick(item.id, item.name)} 
                               className="p-1.5 sm:p-2 border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-200 transition-colors group" 
                               title="Remove from wishlist"
                             >

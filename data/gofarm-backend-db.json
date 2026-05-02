@@ -1719,6 +1719,62 @@
   ],
   "orders": [
     {
+      "id": "ORD-1777688101222",
+      "date": "2026-05-02",
+      "total": 30.959999999999997,
+      "status": "cancelled",
+      "items": 5,
+      "products": [
+        {
+          "id": "VG-BR-01",
+          "name": "Broccoli",
+          "price": 2.5,
+          "quantity": 2,
+          "imageSrc": "/images/v.suploxanh.jpg",
+          "slug": "broccoli"
+        },
+        {
+          "id": "VG-CB-01",
+          "name": "White Cabbage",
+          "price": 1,
+          "quantity": 1,
+          "imageSrc": "/images/v.bapcaixanh.jpg",
+          "slug": "white-cabbage"
+        },
+        {
+          "id": "FR-AP-01",
+          "name": "Fuji Apple",
+          "price": 5.5,
+          "quantity": 2,
+          "imageSrc": "/images/f.taofuji.jpg",
+          "slug": "fuji-apple"
+        },
+        {
+          "id": "JU-OR-01",
+          "name": "Orange Juice",
+          "price": 3.5,
+          "quantity": 1,
+          "imageSrc": "/images/j.nuoccam.jpg",
+          "slug": "orange-juice"
+        },
+        {
+          "id": "FR-DR-01",
+          "name": "Red Flesh Dragon Fruits",
+          "price": 2.2,
+          "quantity": 1,
+          "imageSrc": "/images/f.thanhlong.jpg",
+          "slug": "red-dragon-fruit"
+        }
+      ],
+      "shippingAddress": "Nguyễn Xiển, Hà Nội , Hoàng Mai 12345",
+      "customerName": "thủy",
+      "customerEmail": "thuthuy205.hanu@gmail.com",
+      "customerPhone": "",
+      "paymentMethod": "Cash on Delivery",
+      "createdAt": "2026-05-02T02:15:01.251Z",
+      "updatedAt": "2026-05-02T02:48:07.466Z"
+    },
+    {
       "id": "ORD-1777570615539",
       "date": "2026-04-30",
       "total": 19.959999999999997,
@@ -2042,6 +2098,6 @@
   ],
   "meta": {
     "version": 1,
-    "updatedAt": "2026-05-01T09:26:49.556Z"
+    "updatedAt": "2026-05-02T02:48:07.466Z"
   }
 }
