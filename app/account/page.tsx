@@ -166,7 +166,7 @@ function SettingsModal({ isOpen, onClose, userData, onUpdate }: {
       <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-[95%] sm:max-w-lg md:max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-2 sm:mx-3 md:mx-4">
         
         {/* Modal Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-gofarm-green to-gofarm-light-green p-4 sm:p-5 text-white rounded-t-xl sm:rounded-t-2xl">
+        <div className="sticky top-0 bg-linear-to-r from-gofarm-green to-gofarm-light-green p-4 sm:p-5 text-white rounded-t-xl sm:rounded-t-2xl shadow-inner">
           <div className="flex flex-wrap justify-between items-center gap-3">
             <div className="min-w-0 flex-1">
               <h2 className="text-base sm:text-lg md:text-xl font-bold break-words">Edit Profile</h2>
@@ -411,12 +411,12 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-4 sm:py-6 md:py-8 lg:py-10">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white py-2 sm:py-4 md:py-6 lg:py-8">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-5 lg:px-6">
         
         {/* User Profile Header */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden mb-4 sm:mb-5 md:mb-6">
-          <div className="bg-gradient-to-r from-gofarm-green to-gofarm-light-green p-4 sm:p-5 md:p-6 text-white">
+          <div className="bg-linear-to-r from-gofarm-green to-gofarm-light-green p-4 sm:p-5 md:p-6 text-white shadow-inner">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 md:gap-6">
               <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center text-xl sm:text-2xl md:text-3xl font-bold shrink-0 mx-auto sm:mx-0">
                 {user.name?.charAt(0) || user.email?.charAt(0) || "U"}
@@ -432,12 +432,6 @@ export default function AccountPage() {
                   className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                 >
                   Edit Profile
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
-                >
-                  Logout
                 </button>
               </div>
             </div>

@@ -206,7 +206,6 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
         <div className="flex gap-3 p-3 border border-gray-200 rounded-xl hover:shadow-lg transition-all bg-white">
           <div className="relative w-20 h-20 shrink-0">
             <img src={product.imageSrc} alt={product.imageAlt} className="w-full h-full object-cover rounded-lg" />
-            {(product.discount ?? 0) > 0 && <span className="w-fit absolute top-0 left-0 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded">-{product.discount}%</span>}
           </div>
           <div className="flex-1 min-w-0">
             <Link href={`/shop/${product.slug}`} onClick={(e) => { e.preventDefault(); setIsModalOpen(true); }}>
@@ -215,15 +214,20 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             <div className="flex items-center gap-1 mt-1">
               <div className="flex">
                 {Array.from({ length: 5 }, (_, i) => (
-                  <StarIcon key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
+                  <StarIcon key={i} className={`w-5 h-5 sm:w-6 sm:h-6 ${i < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
               <span className="text-xs text-gofarm-gray">({product.reviews})</span>
             </div>
             <p className="text-sm text-gofarm-gray mt-1 line-clamp-1 hidden sm:block">{product.description}</p>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-              {(product.discount ?? 0) > 0 && <span className="text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>}
+            <div className="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
+              <span className="text-sm sm:text-base font-bold text-gofarm-green">${salePrice.toFixed(2)}</span>
+              {product.discount > 0 && (
+                <>
+                  <span className="text-[10px] sm:text-xs text-gray-400 line-through">${product.price.toFixed(2)}</span>
+                  <span className="bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>
+                </>
+              )}
               <button onClick={handleAddToCart} disabled={isAdding} className="ml-auto px-3 py-1 bg-gofarm-green text-white rounded-lg text-sm disabled:opacity-50">
                 {isAdding ? "Adding..." : "Add to Cart"}
               </button>
@@ -248,8 +252,7 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             </Link>
 
             <div className="absolute top-2 left-2 flex flex-col gap-1">
-              <div className="w-fit inline-flex items-center rounded-md bg-gofarm-green text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-semibold">{status}</div>
-              {(product.discount ?? 0) > 0 && <div className="w-fit inline-flex items-center rounded-md bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 shadow-md font-bold">-{product.discount}%</div>}
+              <span className="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">{status}</span>
             </div>
 
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 translate-x-full group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
@@ -272,15 +275,20 @@ function ProductCardComponent({ product, viewMode = "grid", onShare }: {
             <div className="flex items-center gap-1 mt-1">
               <div className="flex">
                 {Array.from({ length: 5 }, (_, index) => (
-                  <StarIcon key={index} className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${index < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
+                  <StarIcon key={index} className={`w-5 h-5 sm:w-6 sm:h-6 ${index < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} />
                 ))}
               </div>
               <span className="text-[10px] sm:text-xs text-gofarm-gray">({product.reviews})</span>
             </div>
 
-            <div className="flex items-center gap-1 mt-1 flex-wrap">
+            <div className="flex items-center gap-1 mt-1 flex-wrap w-full">
               <span className="text-gofarm-green text-sm sm:text-base font-bold">{formatPrice(salePrice)}</span>
-              {(product.discount ?? 0) > 0 && <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>}
+              {(product.discount ?? 0) > 0 && (
+                <>
+                  <span className="text-[10px] sm:text-xs text-gray-400 line-through">{formatPrice(product.price)}</span>
+                  <span className="ml-auto bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>
+                </>
+              )}
             </div>
 
             <button onClick={handleAddToCart} disabled={isAdding} className="w-full rounded-lg bg-gofarm-green text-white px-2 py-1.5 mt-2 text-xs sm:text-sm font-semibold hover:bg-gofarm-light-green transition-colors disabled:opacity-50">

@@ -136,15 +136,10 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
         <button type="button" onClick={() => onQuickView(product)} className="block w-full text-left">
           <div className="relative aspect-square overflow-hidden rounded-t-xl sm:rounded-t-2xl bg-white flex items-center justify-center p-2 sm:p-3 md:p-4">
             <div className="absolute left-2 sm:left-3 top-2 sm:top-3 z-10 flex flex-col gap-1.5 sm:gap-2">
-              <span className="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
-                {status}
-              </span>
-              {product.discount ? (
-                <span className="w-fit inline-flex items-center rounded-full bg-red-500 px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
-                  -{product.discount}%
-                </span>
-              ) : null}
-            </div>
+                  <span className="w-fit inline-flex items-center rounded-full bg-gofarm-green px-1.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold text-white shadow">
+                    {status}
+                  </span>
+                </div>
 
             <img
               src={product.imageSrc}
@@ -187,17 +182,20 @@ function ProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted, onQ
 
         <div className="mt-1 flex flex-wrap items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
           {[...Array(5)].map((_, i) => (
-            <StarIcon key={i} className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
+            <StarIcon key={i} className={`w-5 h-5 sm:w-6 sm:h-6 ${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} filled={i < Math.round(product.rating)} />
           ))}
           <span className="text-gray-500 ml-0.5 sm:ml-1">({product.reviews})</span>
         </div>
 
-        <div className="mt-2 flex flex-wrap items-baseline gap-1 sm:gap-2">
-          <span className="text-base sm:text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
-          {product.discount ? (
-            <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
-          ) : null}
-        </div>
+            <div className="mt-2 flex flex-wrap items-center gap-1 sm:gap-2">
+              <span className="text-base sm:text-lg font-bold text-gofarm-green">{formatPrice(salePrice)}</span>
+              {(product.discount ?? 0) > 0 && (
+                <>
+                  <span className="text-xs sm:text-sm text-gray-400 line-through">{formatPrice(product.price)}</span>
+                  <span className="ml-auto bg-red-500 text-white text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg shadow-md animate-pulse">-{product.discount}%</span>
+                </>
+              )}
+            </div>
 
         <button
           onClick={handleAddToCart}
