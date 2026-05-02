@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import type { LocalProduct } from "@/lib/local-catalog";
-import { ProductCard } from "@/components/home/product-card";
 import ProductShareHandler from "@/components/home/product-share-handler";
 import { ProductModal } from "@/components/product-modal";
 
@@ -676,7 +675,7 @@ export default function CollectionPage() {
             {/* Products Grid */}
             <div className={`grid ${getGridColsClass()} gap-3 sm:gap-4`}>
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} viewMode={viewMode as "grid" | "list"} onShare={handleShare} />
+                <ProductCardComponent key={product.id} product={product} viewMode={viewMode as "grid" | "list"} onShare={handleShare} />
               ))}
             </div>
 

@@ -72,6 +72,7 @@ function rowToProduct(row: Record<string, unknown>): LocalProduct {
     brand: row.brand === null || row.brand === undefined ? null : String(row.brand),
     categoryId: row.categoryId === null || row.categoryId === undefined ? null : String(row.categoryId),
     categoryTitle: row.categoryTitle === null || row.categoryTitle === undefined ? null : String(row.categoryTitle),
+    origin: row.origin === null || row.origin === undefined ? null : String(row.origin),
     description: String(row.description ?? ""),
     rating: Number(row.rating ?? 0),
     reviews: Number(row.reviews ?? 0),

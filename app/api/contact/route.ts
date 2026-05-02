@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       email,
       subject,
       message,
-      status: "unread",
+      status: "unread" as const,
       createdAt: now,
       updatedAt: now,
     };
