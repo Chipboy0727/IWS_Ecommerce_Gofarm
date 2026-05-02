@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
+import { ProductModal } from "@/components/product-modal";
+import type { LocalProduct } from "@/lib/local-catalog";
 
 export default function WishlistPage() {
   const { items: wishlist, removeFromWishlist, totalItems, clearWishlist } = useWishlist();
@@ -17,6 +19,7 @@ export default function WishlistPage() {
     message: "",
     type: "",
   });
+  const [selectedProduct, setSelectedProduct] = useState<LocalProduct | null>(null);
 
   useEffect(() => {
     setLoading(false);
@@ -127,6 +130,25 @@ export default function WishlistPage() {
   const cancelClearWishlist = () => {
     setShowClearConfirm(false);
   };
+
+  const toLocalProduct = (item: (typeof wishlist)[number]): LocalProduct => ({
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    imageSrc: item.imageSrc,
+    imageAlt: item.name,
+    price: item.price,
+    discount: null,
+    brand: null,
+    origin: null,
+    categoryId: null,
+    categoryTitle: null,
+    description: "",
+    rating: 5,
+    reviews: 0,
+    stock: null,
+    status: "available",
+  });
 
   if (loading) {
     return (
@@ -264,16 +286,24 @@ export default function WishlistPage() {
                               className="w-4 h-4 sm:w-5 sm:h-5 rounded border-white bg-white/80 text-gofarm-green focus:ring-gofarm-green shadow-sm cursor-pointer"
                             />
                           </div>
-                          <Link href={`/shop/${item.slug}`} className="block overflow-hidden">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProduct(toLocalProduct(item))}
+                            className="block w-full overflow-hidden text-left"
+                          >
                             <img src={item.imageSrc} alt={item.name} className="w-full h-36 sm:h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
-                          </Link>
+                          </button>
                         </div>
                         <div className="p-3 sm:p-4">
-                          <Link href={`/shop/${item.slug}`}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProduct(toLocalProduct(item))}
+                            className="block w-full text-left"
+                          >
                             <h3 className="font-semibold text-gofarm-black hover:text-gofarm-green transition-colors line-clamp-2 min-h-[40px] sm:min-h-[48px] text-sm sm:text-base break-words">
                               {item.name}
                             </h3>
-                          </Link>
+                          </button>
                           <p className="text-gofarm-green font-bold text-base sm:text-lg mt-1.5 sm:mt-2">${item.price.toFixed(2)}</p>
                           
                           <div className="flex flex-wrap items-center gap-0.5 sm:gap-1 mt-1.5 sm:mt-2">
@@ -323,6 +353,11 @@ export default function WishlistPage() {
       </div>
 
       {/* Footer is rendered by root layout */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 }

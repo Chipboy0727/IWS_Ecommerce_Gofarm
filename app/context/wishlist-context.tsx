@@ -21,6 +21,25 @@ interface WishlistContextType {
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
+function fallbackSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeWishlistItem(item: Partial<WishlistItem> & { id?: string; name?: string }) {
+  const base = item.slug?.trim() || item.name || item.id || "product";
+  return {
+    id: item.id || "",
+    name: item.name || "Product",
+    price: typeof item.price === "number" ? item.price : 0,
+    imageSrc: item.imageSrc || "/images/logo.svg",
+    slug: fallbackSlug(base) || "product",
+  } satisfies WishlistItem;
+}
+
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
 
@@ -28,7 +47,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     const saved = localStorage.getItem("wishlist");
     if (saved) {
       try {
-        setItems(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        const normalized = Array.isArray(parsed) ? parsed.map(normalizeWishlistItem) : [];
+        setItems(normalized);
       } catch (e) {
         console.error("Failed to parse wishlist:", e);
       }
@@ -40,9 +61,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const addToWishlist = (item: WishlistItem) => {
+    const normalizedItem = normalizeWishlistItem(item);
     setItems(prev => {
-      if (prev.some(i => i.id === item.id)) return prev;
-      return [...prev, item];
+      if (prev.some(i => i.id === normalizedItem.id)) return prev;
+      return [...prev, normalizedItem];
     });
   };
 
