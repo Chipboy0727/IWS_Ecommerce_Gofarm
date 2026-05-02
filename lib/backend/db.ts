@@ -1,3 +1,24 @@
+/**
+ * Database Access Layer — MySQL-backed persistent storage.
+ *
+ * OWASP Top 10 Mitigations implemented in this module:
+ *
+ *  • A03:2021 – Injection
+ *    → ALL SQL queries use parameterized statements (prepared queries via
+ *      mysql2 `connection.execute(sql, [params])`). User input is NEVER
+ *      concatenated into SQL strings, eliminating SQL injection vectors.
+ *
+ *  • A04:2021 – Insecure Design
+ *    → Write operations use database transactions (`beginTransaction` /
+ *      `commit` / `rollback`) to ensure atomicity and data consistency.
+ *    → A serialized write queue prevents race conditions on concurrent writes.
+ *
+ *  • A08:2021 – Software and Data Integrity Failures
+ *    → Schema-level constraints (UNIQUE, NOT NULL, PRIMARY KEY) enforce
+ *      data integrity at the database engine level.
+ *    → Slug de-duplication logic prevents unique constraint violations.
+ */
+
 import mysql from "mysql2/promise";
 import fs from "node:fs/promises";
 import path from "node:path";

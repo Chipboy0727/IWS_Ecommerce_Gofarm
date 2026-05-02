@@ -1,10 +1,15 @@
 /**
  * Server-side HTML sanitizer for dangerouslySetInnerHTML usage.
  *
+ * OWASP A03:2021 – Injection (XSS Prevention)
  * Since this is a server-rendered application where all HTML is generated
  * from trusted server-side code (not user input), we apply a lightweight
  * sanitization pass to strip potentially dangerous patterns as an extra
- * defense-in-depth measure against XSS.
+ * defense-in-depth measure against Cross-Site Scripting (XSS).
+ *
+ * Strips: <script>, inline event handlers (onclick, onerror, etc.),
+ * javascript: URIs, data: URIs, expression-based CSS, and
+ * iframe/object/embed/base tags.
  */
 
 // Patterns that should never appear in our server-generated HTML

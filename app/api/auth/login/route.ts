@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   }
 
   if ((user as any).status === "Banned") {
-    return jsonError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.", 403);
+    return jsonError("Your account has been suspended. Please contact an administrator.", 403);
   }
 
   const token = createSessionToken({ id: user.id, email: user.email, role: user.role });
