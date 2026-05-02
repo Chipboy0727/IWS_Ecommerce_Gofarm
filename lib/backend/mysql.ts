@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise";
 
-export type MysqlConfig = {
+type MysqlConfig = {
   host: string;
   port: number;
   user: string;
@@ -30,7 +30,7 @@ function parseMysqlUrl(value: string): MysqlConfig | null {
   }
 }
 
-export function resolveMysqlConfig(): MysqlConfig | null {
+function resolveMysqlConfig(): MysqlConfig | null {
   const url = process.env.MYSQL_URL ?? process.env.DATABASE_URL;
   if (url) return parseMysqlUrl(url);
 
@@ -49,9 +49,6 @@ export function resolveMysqlConfig(): MysqlConfig | null {
   };
 }
 
-export function hasMysqlConfig() {
-  return resolveMysqlConfig() !== null;
-}
 
 export function getMysqlPool() {
   if (pool) return pool;

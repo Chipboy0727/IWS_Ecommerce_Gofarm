@@ -268,6 +268,3 @@ export function updateProductPayload(existing: LocalProduct, input: ProductInput
   return { product: updated } as const;
 }
 
-export function publicProduct(product: LocalProduct) {
-  return product;
-}

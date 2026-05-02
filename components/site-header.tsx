@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/app/context/cart-context";
 import { useWishlist } from "@/app/context/wishlist-context";
 import { SearchModal as ProductSearchModal } from "@/components/search-modal";
+import { toast } from "sonner";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -320,7 +321,7 @@ export default function SiteHeader() {
             setOrderCount(activeOrders.length);
           }
         } catch (error) {
-          console.error("Failed to fetch orders:", error);
+          toast.error("Failed to fetch orders. Please try again later.");
         }
       };
       fetchInitialOrders();
@@ -348,7 +349,7 @@ export default function SiteHeader() {
         setOrderCount(activeOrders.length);
       }
     } catch (error) {
-      console.error("Failed to fetch orders:", error);
+      toast.error("Failed to fetch orders. Please try again later.");
     } finally {
       refreshTimerRef.current = setTimeout(() => {
         isRefreshingRef.current = false;
@@ -438,7 +439,7 @@ export default function SiteHeader() {
       // Clear the server session cookie
       await fetch("/api/auth/logout", { method: "POST" });
     } catch (e) {
-      console.error("Logout API failed:", e);
+      toast.error("Logout failed. Please try again.");
     }
     
     // Clear local storage

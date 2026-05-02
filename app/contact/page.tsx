@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 function IconMapPin({ className = "" }: { className?: string }) {
   return (
@@ -185,11 +186,10 @@ export default function ContactPage() {
         setShowSuccess(true);
         (e.target as HTMLFormElement).reset();
       } else {
-        alert("Failed to send message. Please try again later.");
+        toast.error("Failed to send message. Please try again later.");
       }
     } catch (error) {
-      console.error("Error sending message:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
