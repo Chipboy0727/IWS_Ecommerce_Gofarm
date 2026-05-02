@@ -82,7 +82,7 @@ export function buildInteractiveProductCardHtml(product: LocalProduct) {
   }
 
   return `
-    <div class="transform hover:scale-105 transition-transform duration-300 h-full">
+    <div class="h-full">
       <article class="group relative rounded-xl sm:rounded-2xl border border-gray-200 bg-white shadow-sm transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl h-full flex flex-col" data-product-id="${product.id}">
         <div class="relative">
           <a href="/shop/${product.slug}" class="block w-full text-left">

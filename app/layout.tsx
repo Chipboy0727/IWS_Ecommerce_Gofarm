@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Jost } from "next/font/google";
 import "./globals.css";
+
+const jost = Jost({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-jost",
+});
 import { CartProvider } from "@/app/context/cart-context";
 import { WishlistProvider } from "@/app/context/wishlist-context";
 import { OrderProvider } from "@/app/context/order-context";
@@ -22,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className={`${jost.variable} antialiased`} suppressHydrationWarning>
         <CartProvider>
           <WishlistProvider>
             <OrderProvider>
