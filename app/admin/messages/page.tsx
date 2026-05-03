@@ -84,12 +84,12 @@ export default function AdminMessagesPage() {
       title="Messages"
       subtitle="View and manage customer inquiries"
     >
-      <div className="rounded-[30px] border border-gofarm-light-green/40 bg-white p-6 shadow-[0_20px_60px_rgba(0,168,68,0.12)]">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-black text-gofarm-black">Inquiry Inbox</h2>
+      <div className="rounded-[24px] sm:rounded-[30px] border border-gofarm-light-green/40 bg-white p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,168,68,0.12)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <h2 className="text-xl sm:text-2xl font-black text-gofarm-black">Inquiry Inbox</h2>
           <button
             onClick={fetchMessages}
-            className="rounded-full border border-gofarm-green px-4 py-2 text-sm font-semibold text-gofarm-green transition hover:bg-gofarm-green hover:text-white"
+            className="w-full sm:w-auto rounded-full border border-gofarm-green px-6 py-2.5 text-sm font-semibold text-gofarm-green transition hover:bg-gofarm-green hover:text-white active:scale-95"
           >
             Refresh
           </button>
@@ -101,7 +101,56 @@ export default function AdminMessagesPage() {
           </div>
         )}
 
-        <div className="overflow-hidden rounded-3xl border border-gray-200">
+        {/* Mobile View: Cards (Hidden on MD and up) */}
+        <div className="grid grid-cols-1 gap-4 md:hidden">
+          {loading ? (
+            <div className="py-10 text-center text-gray-500 italic bg-gray-50 rounded-2xl">Loading messages...</div>
+          ) : messages.length === 0 ? (
+            <div className="py-10 text-center text-gray-500 bg-gray-50 rounded-2xl">No messages found.</div>
+          ) : (
+            messages.map((msg) => (
+              <div key={msg.id} className="rounded-2xl border border-gray-100 bg-gray-50 p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="min-w-0">
+                    <div className="font-bold text-gofarm-black text-[16px] truncate">{msg.name}</div>
+                    <div className="text-[13px] text-gray-500 truncate">{msg.email}</div>
+                  </div>
+                  <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-bold whitespace-nowrap ${msg.status === "unread"
+                    ? "bg-amber-100 text-amber-700"
+                    : msg.status === "replied"
+                      ? "bg-gofarm-green/10 text-gofarm-green"
+                      : "bg-gray-100 text-gofarm-gray"
+                    }`}>
+                    {msg.status.toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="font-semibold text-gofarm-green text-[15px] truncate">{msg.subject}</div>
+                  <div className="text-[14px] text-gray-600 line-clamp-2 mt-1">{msg.message}</div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="text-[12px] text-gray-400">
+                    {new Date(msg.createdAt).toLocaleDateString()}
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedMessage(msg);
+                      setReplyText(msg.replyMessage || "");
+                    }}
+                    className="rounded-full bg-gofarm-green px-5 py-2 text-[13px] font-bold text-white shadow-md shadow-gofarm-green/30 transition active:scale-95"
+                  >
+                    {msg.status === 'replied' ? 'View' : 'Reply'}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Table (Hidden on small screens) */}
+        <div className="hidden md:block overflow-hidden rounded-3xl border border-gray-200">
           <table className="min-w-full divide-y divide-gray-200 text-left text-[15px] sm:text-[16px]">
             <thead className="bg-gofarm-light-orange/20">
               <tr className="text-[12px] sm:text-[13px] uppercase tracking-[0.2em] text-gofarm-gray">
