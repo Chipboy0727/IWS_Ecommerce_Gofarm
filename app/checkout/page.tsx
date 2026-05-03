@@ -154,10 +154,7 @@ export default function CheckoutPage() {
   };
 
   const generateQRCodeUrl = () => {
-    const amount = finalTotal.toFixed(0);
-    const description = `GOFARM${Date.now()}`;
-    const template = "compact2";
-    return `https://img.vietqr.io/image/${bankInfo.bankCode}-${bankInfo.accountNumber}-${template}.png?amount=${amount}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(bankInfo.accountName)}`;
+    return "/images/qr-payment.png";
   };
 
   const isAddressSelected = () => {
