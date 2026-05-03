@@ -53,7 +53,7 @@ export function ProductGridClient({ products }: { products: any[] }) {
       const itemWidth = firstItem?.getBoundingClientRect().width ?? carousel.clientWidth;
       const computedStyle = window.getComputedStyle(carousel.firstElementChild as Element);
       const gap = Number.parseFloat(computedStyle.columnGap || computedStyle.gap || "16") || 16;
-      const visibleCards = window.innerWidth < 640 ? 2 : window.innerWidth < 768 ? 3 : window.innerWidth < 1024 ? 4 : 5;
+      const visibleCards = window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : window.innerWidth < 1280 ? 4 : 5;
       return Math.max(itemWidth + gap, visibleCards * (itemWidth + gap));
     };
 
