@@ -11,7 +11,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
   const isAdminRoute = pathname?.startsWith("/admin");
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden w-full max-w-[100vw]">
+    <div className="flex min-h-screen w-full min-w-0 flex-col overflow-x-hidden">
       {!isAdminRoute ? <SiteHeader /> : null}
       <main className="flex-1 w-full">
         {children}

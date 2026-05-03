@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { verifySessionToken } from "@/lib/backend/auth";
+import { HomeProductBrowser } from "@/components/home/home-product-browser";
 import { ProductGridClient } from "@/components/home/product-grid-client";
 import ProductShareHandler from "@/components/home/product-share-handler";
 import { sanitizeServerHtml } from "@/lib/backend/sanitize-html";
 import {
-  buildProductGridMarkup,
   buildSectionCarouselHtml,
   readOriginalHomeBody,
   transformHomeBody,
@@ -13,8 +13,6 @@ import {
 import { loadLocalCatalog } from "@/lib/local-catalog";
 
 export default async function HomePage() {
-
-
   const bodyHtml = await readOriginalHomeBody();
   const { products: allProducts } = await loadLocalCatalog();
   const storefrontProducts = allProducts.filter(
@@ -26,7 +24,7 @@ export default async function HomePage() {
   const isJuiceProduct = (product: (typeof storefrontProducts)[number]) => {
     const category = normalize(product.categoryTitle);
     const name = normalize(product.name);
-    return category === "juices" || /juice|juices|smoothie|nước ép|sinh tố|nước|sữa/i.test(name);
+    return category === "juices" || /juice|juices|smoothie|water|milk|drink/i.test(name);
   };
 
   const isVegetableProduct = (product: (typeof storefrontProducts)[number]) => {
@@ -34,7 +32,7 @@ export default async function HomePage() {
     const name = normalize(product.name);
     return (
       (category === "vegetables" ||
-        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce|cà chua|cải|khoai|hành|tỏi|bí|rau|ớt chuông|măng tây|súp lơ|dưa leo/i.test(name)) &&
+        /vegetable|tomato|potato|onion|cabbage|carrot|broccoli|lettuce|pepper|asparagus|cucumber|spinach|pumpkin/i.test(name)) &&
       !isJuiceProduct(product)
     );
   };
@@ -44,8 +42,18 @@ export default async function HomePage() {
     const name = normalize(product.name);
     return (
       (category === "fruits" ||
-        /fruit|apple|pear|mango|banana|watermelon|orange|berry|táo|lê|xoài|chuối|dưa|cam|nho|bơ|dâu|thanh long|bưởi|kiwi|măng cụt|sầu riêng|chôm chôm|việt quất|ổi|lựu|nhãn|vải/i.test(name)) &&
+        /fruit|apple|pear|mango|banana|watermelon|orange|berry|kiwi|pomelo|grape|avocado|durian|mangosteen|lychee|longan|pineapple/i.test(name)) &&
       !isJuiceProduct(product)
+    );
+  };
+
+  const isSpiceProduct = (product: (typeof storefrontProducts)[number]) => {
+    const category = normalize(product.categoryTitle);
+    const name = normalize(product.name);
+    return (
+      category === "spices & herbs" ||
+      category === "spices" ||
+      /chili|pepper|garlic|salt|sugar|herb|spice|ginger|lemongrass|shallot|turmeric|onion|coriander|mint|dill|perilla|lime leaf/i.test(name)
     );
   };
 
@@ -82,15 +90,10 @@ export default async function HomePage() {
   );
 
   const spicesProducts = takeSectionProducts(
-    storefrontProducts.filter(
-      (product) =>
-        product.categoryTitle?.toLowerCase() === "spices & herbs" ||
-        /chili|pepper|garlic|salt|sugar|herb|spice|ớt|tiêu|tỏi|muối|đường|thảo mộc|gia vị|gừng|sả|hành|nghệ|riềng|rau thơm|quế|hồi/i.test(product.name)
-    )
+    storefrontProducts.filter((product) => isSpiceProduct(product))
   );
 
   const products = storefrontProducts.filter((product) => !usedSlugs.has(product.slug)).slice(0, 15);
-  const productGridMarkup = buildProductGridMarkup(products);
   const sectionMarkups = [
     buildSectionCarouselHtml({
       title: "Vegetables",
@@ -117,7 +120,7 @@ export default async function HomePage() {
   const transformedBody = transformHomeBody({
     bodyHtml,
     productCount: products.length,
-    productGridMarkup,
+    productGridMarkup: "",
     sectionMarkups,
   });
 
@@ -126,6 +129,31 @@ export default async function HomePage() {
       <div
         dangerouslySetInnerHTML={{ __html: sanitizeServerHtml(transformedBody) }}
         suppressHydrationWarning
+      />
+      <HomeProductBrowser
+        products={storefrontProducts}
+        categories={[
+          {
+            id: "vegetables",
+            label: "Vegetables",
+            products: storefrontProducts.filter((product) => isVegetableProduct(product)),
+          },
+          {
+            id: "fruits",
+            label: "Fruits",
+            products: storefrontProducts.filter((product) => isFruitProduct(product)),
+          },
+          {
+            id: "juices",
+            label: "Juices",
+            products: storefrontProducts.filter((product) => isJuiceProduct(product)),
+          },
+          {
+            id: "spices",
+            label: "Spices & Herbs",
+            products: storefrontProducts.filter((product) => isSpiceProduct(product)),
+          },
+        ]}
       />
       <ProductGridClient products={storefrontProducts} />
       <ProductShareHandler products={storefrontProducts} />

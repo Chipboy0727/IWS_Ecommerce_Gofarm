@@ -132,30 +132,86 @@ export function buildProductGridMarkup(products: LocalProduct[]) {
   `;
 }
 
+export function buildProductGridIntroMarkup(productCount: number) {
+  const categories = [
+    "Vegetables",
+    "Prepared cakes and dishes",
+    "Fruits",
+    "Juices and drinks",
+    "Delicacies and nuts",
+  ];
+
+  return `
+    <div class="mb-6 rounded-2xl border border-gofarm-light-green/20 bg-white p-4 shadow-lg sm:mb-8 sm:p-5 lg:p-6">
+      <div class="flex flex-col gap-4 border-b border-gofarm-light-gray pb-5 sm:pb-6">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-gofarm-green/80">Fresh Picks</p>
+            <h3 class="mt-2 text-xl font-bold text-gofarm-black sm:text-2xl">More products you may like</h3>
+          </div>
+          <a href="/shop" class="inline-flex items-center justify-center rounded-full border border-gofarm-green px-5 py-2.5 text-sm font-semibold text-gofarm-green transition-colors hover:bg-gofarm-green hover:text-white self-start lg:self-auto">
+            See all
+          </a>
+        </div>
+        <div class="flex flex-wrap gap-2 sm:gap-3">
+          ${categories.map((category, index) => `
+            <a
+              href="/shop"
+              class="${index === 0
+                ? "inline-flex items-center rounded-full bg-gofarm-green px-4 py-2 text-sm font-semibold text-white shadow-sm sm:px-5"
+                : "inline-flex items-center rounded-full border border-gofarm-light-green/60 px-4 py-2 text-sm font-semibold text-gofarm-gray transition-colors hover:border-gofarm-green hover:text-gofarm-green sm:px-5"}"
+            >
+              ${category}
+            </a>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 pt-5 sm:pt-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap items-center gap-2 text-sm text-gofarm-black">
+          <span class="font-semibold">View:</span>
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gofarm-green shadow-sm">▦</span>
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 shadow-sm">☷</span>
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 shadow-sm">☰</span>
+          <span class="inline-flex items-center rounded-xl border border-gofarm-light-green/60 px-4 py-2.5 font-semibold text-gofarm-gray">Filters</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 text-sm">
+          <span class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-medium text-gofarm-black shadow-sm">
+            Name (A-Z)
+          </span>
+          <span class="inline-flex items-center rounded-full bg-gofarm-light-orange/40 px-4 py-2 font-semibold text-gofarm-green">
+            ${productCount} products
+          </span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function buildSectionCarouselHtml({ title, products, productCount }: SectionCarouselOptions) {
   const items = products.slice(0, 10);
   const carouselId = `carousel-${title.replace(/\s/g, "")}`;
-  const dotCount = Math.max(1, Math.ceil(items.length / 5));
+  const dotCount = Math.max(1, Math.ceil(items.length / 3));
 
   return `
-    <div class="bg-gofarm-white rounded-2xl shadow-lg border border-gofarm-light-green/20 p-6 mb-8">
-      <div class="flex items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-4">
-          <h3 class="text-2xl font-bold text-gofarm-black">${title}</h3>
-          <span class="inline-flex items-center rounded-full bg-gofarm-light-orange/40 px-4 py-2 text-sm font-semibold text-gofarm-green">
+    <div class="mb-8 rounded-2xl border border-gofarm-light-green/20 bg-gofarm-white p-4 shadow-lg sm:p-5 lg:p-6">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+          <h3 class="text-xl font-bold text-gofarm-black sm:text-2xl">${title}</h3>
+          <span class="inline-flex items-center rounded-full bg-gofarm-light-orange/40 px-3 py-1.5 text-xs font-semibold text-gofarm-green sm:px-4 sm:py-2 sm:text-sm">
             ${productCount} Products
           </span>
         </div>
-        <a class="inline-flex items-center gap-2 text-gofarm-green font-semibold hover:text-gofarm-light-green transition-colors duration-200" href="/shop">
+        <a class="inline-flex items-center gap-2 self-start text-sm font-semibold text-gofarm-green transition-colors duration-200 hover:text-gofarm-light-green sm:self-auto sm:text-base" href="/shop">
           <span>View More</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
 
-      <div class="border-t border-gofarm-light-gray pt-8 relative">
+      <div class="relative border-t border-gofarm-light-gray pt-6 sm:pt-8">
         <button
           type="button"
-          class="absolute left-[-16px] top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
+          class="absolute left-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green md:inline-flex lg:left-[-16px]"
           aria-label="Previous products"
           data-carousel-target="${carouselId}"
           data-carousel-direction="prev"
@@ -167,7 +223,7 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
 
         <button
           type="button"
-          class="absolute right-2 top-1/2 z-20 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green"
+          class="absolute right-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white/95 text-gray-400 shadow-sm transition-colors hover:border-gofarm-green hover:text-gofarm-green md:inline-flex lg:right-[-16px]"
           aria-label="Next products"
           data-carousel-target="${carouselId}"
           data-carousel-direction="next"
@@ -177,8 +233,8 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
           </svg>
         </button>
 
-        <div id="${carouselId}" class="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide px-20 pr-16">
-          <div class="pb-2 carousel-grid" style="display:grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 32px) / 2); gap: 12px;">
+        <div id="${carouselId}" class="overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide md:px-14 lg:px-10">
+          <div class="carousel-grid pb-2" style="display:grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 12px) / 2); gap: 12px;">
             ${items.map((product, index) => `
               <div id="${carouselId}-item-${index}" class="snap-start">
                 ${buildInteractiveProductCardHtml(product)}
@@ -188,7 +244,7 @@ export function buildSectionCarouselHtml({ title, products, productCount }: Sect
         </div>
       </div>
 
-      <div class="flex items-center justify-center gap-2 pt-8" data-carousel-dots="${carouselId}">
+      <div class="flex items-center justify-center gap-2 pt-6 sm:pt-8" data-carousel-dots="${carouselId}">
         ${Array.from({ length: dotCount }, (_, index) => `
           <button
             type="button"
@@ -258,7 +314,7 @@ export function transformHomeBody({
       transformedBody.slice(0, featuredSectionStart) +
       titleBlock +
       sectionMarkups.join("") +
-      `<div class="pt-8">${productGridMarkup}</div>` +
+      `<div id="home-product-browser-root" class="pt-8"></div>` +
       transformedBody.slice(nextSectionStart);
   }
 
@@ -284,16 +340,21 @@ export function transformHomeBody({
     /* Responsive cho carousel grid */
     @media (min-width: 640px) {
       .carousel-grid {
-        grid-auto-columns: calc((100% - 48px) / 3) !important;
+        grid-auto-columns: calc((100% - 24px) / 2) !important;
         gap: 16px !important;
       }
     }
     @media (min-width: 768px) {
       .carousel-grid {
-        grid-auto-columns: calc((100% - 64px) / 4) !important;
+        grid-auto-columns: calc((100% - 32px) / 3) !important;
       }
     }
     @media (min-width: 1024px) {
+      .carousel-grid {
+        grid-auto-columns: calc((100% - 48px) / 4) !important;
+      }
+    }
+    @media (min-width: 1280px) {
       .carousel-grid {
         grid-auto-columns: calc((100% - 64px) / 5) !important;
       }
