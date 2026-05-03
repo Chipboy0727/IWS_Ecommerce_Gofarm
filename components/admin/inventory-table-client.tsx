@@ -309,27 +309,72 @@ export default function InventoryTableClient({
             className="inventory-page-btn"
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             disabled={currentPage === 1}
+            title="Previous Page"
           >
             <IconChevronLeft />
           </button>
-          {Array.from({ length: pageCount }, (_, index) => index + 1).slice(0, 3).map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={`inventory-page-btn${item === currentPage ? " active" : ""}`}
-              onClick={() => setPage(item)}
-            >
-              {item}
-            </button>
-          ))}
+
+          {/* Dynamic Pagination Buttons */}
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map((item) => {
+            const isFirst = item === 1;
+            const isLast = item === pageCount;
+            const isAroundCurrent = Math.abs(item - currentPage) <= 1;
+
+            if (isFirst || isLast || isAroundCurrent) {
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  className={`inventory-page-btn${item === currentPage ? " active" : ""}`}
+                  onClick={() => setPage(item)}
+                >
+                  {item}
+                </button>
+              );
+            }
+
+            if (item === 2 && currentPage > 3) {
+              return <span key="dots-1" className="px-1 text-gofarm-gray/40 select-none">...</span>;
+            }
+            if (item === pageCount - 1 && currentPage < pageCount - 2) {
+              return <span key="dots-2" className="px-1 text-gofarm-gray/40 select-none">...</span>;
+            }
+
+            return null;
+          })}
+
           <button
             type="button"
             className="inventory-page-btn"
             onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
             disabled={currentPage === pageCount}
+            title="Next Page"
           >
             <IconChevronRight />
           </button>
+
+          {/* Jump to Page "Thanh chuyển đi" */}
+          {pageCount > 5 && (
+            <div className="flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
+              <span className="text-[12px] font-medium text-gofarm-gray">Go to</span>
+              <input
+                type="number"
+                min={1}
+                max={pageCount}
+                className="w-12 h-8 rounded-md border border-gray-200 text-center text-[12px] focus:ring-1 focus:ring-gofarm-green focus:border-gofarm-green outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const val = parseInt(e.currentTarget.value);
+                    if (!isNaN(val) && val >= 1 && val <= pageCount) {
+                      setPage(val);
+                      e.currentTarget.value = "";
+                    }
+                  }
+                }}
+                placeholder="..."
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

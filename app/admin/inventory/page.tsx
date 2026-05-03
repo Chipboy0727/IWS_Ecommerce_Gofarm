@@ -15,11 +15,6 @@ function formatUnits(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
-function buildSku(slug: string, index: number) {
-  const compact = slug.replace(/[^a-z0-9]/gi, "").toUpperCase().slice(0, 6) || "ITEM";
-  return `GF-${compact}-${String(index + 1).padStart(3, "0")}`;
-}
-
 function buildCapacity(stock: number) {
   if (stock <= 25) return Math.max(120, Math.ceil(stock * 4));
   if (stock <= 100) return Math.max(200, Math.ceil(stock * 2.5));
@@ -56,7 +51,7 @@ export default async function InventoryPage() {
     return a.name.localeCompare(b.name);
   });
 
-  const rows: InventoryRow[] = products.map((product, index) => {
+  const rows: InventoryRow[] = products.map((product) => {
     const stock = typeof product.stock === "number" ? product.stock : 0;
     const capacity = buildCapacity(stock);
     const status = getInventoryStatus(product.stock);
@@ -64,7 +59,7 @@ export default async function InventoryPage() {
       id: product.id,
       slug: product.slug,
       name: product.name,
-      sku: buildSku(product.slug, index),
+      sku: product.id,
       category: categoryLabel(product.categoryTitle),
       stock,
       capacity,

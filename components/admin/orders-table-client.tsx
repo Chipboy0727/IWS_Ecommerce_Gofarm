@@ -492,28 +492,77 @@ export default function OrdersTableClient({
           {filteredRows.length.toLocaleString("en-US")}
         </div>
         <div className="orders-pagination">
-          <button type="button" className="orders-page-btn" disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+          <button 
+            type="button" 
+            className="orders-page-btn" 
+            disabled={currentPage === 1} 
+            onClick={() => setPage((value) => Math.max(1, value - 1))}
+            title="Previous Page"
+          >
             <IconChevronLeft />
           </button>
-          {Array.from({ length: pageCount }, (_, index) => index + 1).slice(0, 3).map((item) => (
-            <button
-              key={item}
-              type="button"
-              className={`orders-page-btn${item === currentPage ? " active" : ""}`}
-              onClick={() => setPage(item)}
-            >
-              {item}
-            </button>
-          ))}
-          {pageCount > 3 ? <span className="orders-page-dots">...</span> : null}
+
+          {/* Dynamic Pagination Buttons */}
+          {Array.from({ length: pageCount }, (_, index) => index + 1).map((item) => {
+            const isFirst = item === 1;
+            const isLast = item === pageCount;
+            const isAroundCurrent = Math.abs(item - currentPage) <= 1;
+
+            if (isFirst || isLast || isAroundCurrent) {
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  className={`orders-page-btn${item === currentPage ? " active" : ""}`}
+                  onClick={() => setPage(item)}
+                >
+                  {item}
+                </button>
+              );
+            }
+
+            if (item === 2 && currentPage > 3) {
+              return <span key="dots-1" className="text-gray-400 select-none px-1">...</span>;
+            }
+            if (item === pageCount - 1 && currentPage < pageCount - 2) {
+              return <span key="dots-2" className="text-gray-400 select-none px-1">...</span>;
+            }
+
+            return null;
+          })}
+
           <button
             type="button"
             className="orders-page-btn"
             disabled={currentPage === pageCount}
             onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
+            title="Next Page"
           >
             <IconChevronRight />
           </button>
+
+          {/* Jump to Page */}
+          {pageCount > 5 && (
+            <div className="flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
+              <span className="text-[12px] font-medium text-gray-500">Go to</span>
+              <input
+                type="number"
+                min={1}
+                max={pageCount}
+                className="w-12 h-8 rounded-md border border-gray-200 text-center text-[12px] focus:ring-1 focus:ring-gofarm-green focus:border-gofarm-green outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const val = parseInt(e.currentTarget.value);
+                    if (!isNaN(val) && val >= 1 && val <= pageCount) {
+                      setPage(val);
+                      e.currentTarget.value = "";
+                    }
+                  }
+                }}
+                placeholder="..."
+              />
+            </div>
+          )}
         </div>
       </div>
 

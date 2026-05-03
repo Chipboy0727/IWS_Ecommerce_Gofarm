@@ -6,6 +6,7 @@ import { Pill, SectionCard } from "@/components/admin/admin-shell";
 import { InvIconEdit, InvIconTrash } from "@/components/admin/inventory-style-actions";
 
 type ProductFormState = {
+  id: string;
   name: string;
   slug: string;
   imageSrc: string;
@@ -24,6 +25,7 @@ type ProductFormState = {
 
 function emptyForm(): ProductFormState {
   return {
+    id: "",
     name: "",
     slug: "",
     imageSrc: "/images/logo.svg",
@@ -43,6 +45,7 @@ function emptyForm(): ProductFormState {
 
 function toForm(product: LocalProduct): ProductFormState {
   return {
+    id: product.id,
     name: product.name,
     slug: product.slug,
     imageSrc: product.imageSrc,
@@ -313,7 +316,7 @@ export default function ProductManager() {
   const handleExport = () => {
     const headers = ["SKU", "Name", "Category", "Stock", "Status", "Price"];
     const rows = filteredProducts.map(p => [
-      p.slug.toUpperCase(),
+      p.id,
       `"${p.name.replace(/"/g, '""')}"`,
       `"${p.categoryTitle || 'Uncategorized'}"`,
       p.stock || 0,
@@ -333,6 +336,7 @@ export default function ProductManager() {
   const filteredProducts = products.filter((p) => {
     const term = search.toLowerCase();
     const matchesSearch = !search || (
+      p.id.toLowerCase().includes(term) ||
       p.name.toLowerCase().includes(term) ||
       p.slug.toLowerCase().includes(term) ||
       (p.categoryTitle && p.categoryTitle.toLowerCase().includes(term))
@@ -494,7 +498,7 @@ export default function ProductManager() {
                       return (
                         <tr key={product.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
                           <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-gofarm-gray">
-                            {product.slug.toUpperCase()}
+                            {product.id}
                           </td>
                           <td className="px-3 sm:px-4 py-2.5 sm:py-3">
                             <div className="flex items-center gap-2 sm:gap-3">
@@ -562,39 +566,78 @@ export default function ProductManager() {
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                     className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                    title="Previous Page"
                   >
                     ‹
                   </button>
-                  {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
-                    let pageNum = i + 1;
-                    if (pageCount > 5) {
-                      if (page > 3 && page < pageCount - 2) pageNum = page - 2 + i;
-                      else if (page >= pageCount - 2) pageNum = pageCount - 4 + i;
-                    }
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setPage(pageNum)}
-                        style={{
-                          backgroundColor: page === pageNum ? "#00a844" : "",
-                          color: page === pageNum ? '#ffffff' : ''
-                        }}
-                        className={`flex h-8 w-8 items-center justify-center rounded-md ${page !== pageNum
-                          ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black"
-                          : "font-bold"
+
+                  {/* Dynamic Pagination Buttons */}
+                  {Array.from({ length: pageCount }, (_, index) => index + 1).map((item) => {
+                    const isFirst = item === 1;
+                    const isLast = item === pageCount;
+                    const isAroundCurrent = Math.abs(item - page) <= 1;
+
+                    if (isFirst || isLast || isAroundCurrent) {
+                      return (
+                        <button
+                          key={item}
+                          onClick={() => setPage(item)}
+                          style={{
+                            backgroundColor: page === item ? "#00a844" : "",
+                            color: page === item ? "#ffffff" : "",
+                          }}
+                          className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                            page !== item
+                              ? "bg-white ring-1 ring-gofarm-light-green/35 hover:bg-gray-50 text-gofarm-black"
+                              : "font-bold"
                           }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
+                        >
+                          {item}
+                        </button>
+                      );
+                    }
+
+                    if (item === 2 && page > 3) {
+                      return <span key="dots-1" className="px-1 text-gofarm-gray/40 select-none">...</span>;
+                    }
+                    if (item === pageCount - 1 && page < pageCount - 2) {
+                      return <span key="dots-2" className="px-1 text-gofarm-gray/40 select-none">...</span>;
+                    }
+
+                    return null;
                   })}
+
                   <button
                     onClick={() => setPage(Math.min(pageCount, page + 1))}
                     disabled={page === pageCount}
                     className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                    title="Next Page"
                   >
                     ›
                   </button>
+
+                  {/* Jump to Page */}
+                  {pageCount > 5 && (
+                    <div className="flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
+                      <span className="text-[12px] font-medium text-gofarm-gray">Go to</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={pageCount}
+                        className="w-12 h-8 rounded-md border border-gray-200 text-center text-[12px] focus:ring-1 focus:ring-gofarm-green focus:border-gofarm-green outline-none"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            const val = parseInt(e.currentTarget.value);
+                            if (!isNaN(val) && val >= 1 && val <= pageCount) {
+                              setPage(val);
+                              e.currentTarget.value = "";
+                            }
+                          }
+                        }}
+                        placeholder="..."
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -639,6 +682,15 @@ export default function ProductManager() {
                     <h4 className="text-[14px] font-bold uppercase tracking-widest text-gofarm-black">Basic Information</h4>
                   </div>
                   <div className="grid gap-6 md:grid-cols-2">
+                    <Field label="Product SKU (ID)">
+                      <input 
+                        value={form.id} 
+                        onChange={(e) => updateField("id", e.target.value)} 
+                        className="input" 
+                        placeholder="e.g. FR-AP-01" 
+                        disabled={!!editingSlug}
+                      />
+                    </Field>
                     <Field label="Product Name">
                       <input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="input" placeholder="e.g. Fresh Organic Apples" required />
                     </Field>

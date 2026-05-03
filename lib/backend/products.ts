@@ -21,6 +21,7 @@ export type ProductListQuery = {
 };
 
 export type ProductInput = {
+  id?: unknown;
   name?: unknown;
   slug?: unknown;
   imageSrc?: unknown;
@@ -111,7 +112,14 @@ export function listProducts(products: LocalProduct[], query: ProductListQuery) 
 
   const filtered = products.filter((product) => {
     if (search) {
-      const haystack = [product.name, product.description, product.brand ?? "", product.origin ?? "", product.categoryTitle ?? ""].join(" ").toLowerCase();
+      const haystack = [
+        product.id,
+        product.name,
+        product.description,
+        product.brand ?? "",
+        product.origin ?? "",
+        product.categoryTitle ?? ""
+      ].join(" ").toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     if (category && product.categoryId?.toLowerCase() !== category && product.categoryTitle?.toLowerCase() !== category) return false;
@@ -187,6 +195,11 @@ export function createProductPayload(input: ProductInput, categories: LocalCateg
   const name = sanitizeString(input.name);
   if (!name) return { error: "Product name is required" } as const;
 
+  const sku = sanitizeOptionalString(input.id);
+  if (sku && products.some((p) => p.id === sku)) {
+    return { error: `Product with SKU "${sku}" already exists` } as const;
+  }
+
   const slugBase = ensureSlug(input);
   let slug = slugBase;
   let suffix = 2;
@@ -201,7 +214,7 @@ export function createProductPayload(input: ProductInput, categories: LocalCateg
 
   const now = new Date().toISOString();
   const product: LocalProduct = {
-    id: randomUUID(),
+    id: sku || randomUUID(),
     name,
     slug,
     createdAt: now,
