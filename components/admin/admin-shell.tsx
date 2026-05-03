@@ -595,11 +595,11 @@ export function AdminShell({
       color: #fff;
     }
     .stat-meta {
-      margin-top: 12px;
+      margin-top: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 500;
       color: var(--gf-text-muted);
     }
@@ -1123,7 +1123,11 @@ export function AdminShell({
         grid-template-columns: 1fr;
       }
       .page-title {
-        font-size: 28px;
+        font-size: 22px;
+      }
+      .page-subtitle {
+        font-size: 13px;
+        margin-top: 6px;
       }
       .topbar-row {
         flex-wrap: wrap;
@@ -1177,11 +1181,19 @@ export function AdminShell({
         padding: 14px 16px;
       }
       .stat-value {
-        font-size: 26px;
+        font-size: 20px;
+      }
+      .stat-label {
+        font-size: 11px;
+      }
+      .stat-meta {
+        font-size: 12px;
+        margin-top: 8px;
+        gap: 6px;
       }
       .stat-icon {
-        width: 34px;
-        height: 34px;
+        width: 32px;
+        height: 32px;
         border-radius: 8px;
       }
     }
