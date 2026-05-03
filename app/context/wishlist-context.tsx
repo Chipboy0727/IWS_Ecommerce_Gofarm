@@ -42,6 +42,7 @@ function normalizeWishlistItem(item: Partial<WishlistItem> & { id?: string; name
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("wishlist");
@@ -54,11 +55,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         console.error("Failed to parse wishlist:", e);
       }
     }
+    setStorageReady(true);
   }, []);
 
   useEffect(() => {
+    if (!storageReady) return;
     localStorage.setItem("wishlist", JSON.stringify(items));
-  }, [items]);
+  }, [items, storageReady]);
 
   const addToWishlist = (item: WishlistItem) => {
     const normalizedItem = normalizeWishlistItem(item);

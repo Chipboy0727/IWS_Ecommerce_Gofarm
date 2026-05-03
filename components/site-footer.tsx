@@ -188,7 +188,7 @@ export default function SiteFooter() {
                 className="w-full px-3 sm:px-4 py-2 text-xs sm:text-sm border border-gofarm-light-gray rounded-lg focus:outline-none focus:ring-2 focus:ring-gofarm-light-green focus:border-gofarm-light-green disabled:bg-gofarm-light-gray/50 disabled:cursor-not-allowed transition-all text-gofarm-black placeholder:text-gofarm-gray"
               />
               <div className="relative">
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="wait" initial={false}>
                   {status !== "idle" && (
                     <motion.div
                       initial={{ opacity: 0, y: -10, height: 0 }}

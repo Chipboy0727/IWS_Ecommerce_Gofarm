@@ -24,6 +24,7 @@ const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("orders");
@@ -34,13 +35,15 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         console.error("Failed to parse orders:", e);
       }
     }
+    setStorageReady(true);
   }, []);
 
   useEffect(() => {
+    if (!storageReady) return;
     localStorage.setItem("orders", JSON.stringify(orders));
     // Notify the header whenever the order list changes.
     window.dispatchEvent(new Event("orders-updated"));
-  }, [orders]);
+  }, [orders, storageReady]);
 
   const addOrder = (order: Order) => {
     setOrders(prev => [order, ...prev]);

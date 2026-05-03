@@ -53,6 +53,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [lastOrder, setLastOrder] = useState<Order | null>(null);
 
@@ -66,12 +67,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         console.error("Failed to parse cart:", e);
       }
     }
+    setStorageReady(true);
   }, []);
 
   // Persist cart changes after each update.
   useEffect(() => {
+    if (!storageReady) return;
     localStorage.setItem("gofarm_cart", JSON.stringify(items));
-  }, [items]);
+  }, [items, storageReady]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     setItems(prev => {
