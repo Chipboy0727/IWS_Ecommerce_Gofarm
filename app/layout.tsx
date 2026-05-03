@@ -13,9 +13,10 @@ import { CartProvider } from "@/app/context/cart-context";
 import { WishlistProvider } from "@/app/context/wishlist-context";
 import { OrderProvider } from "@/app/context/order-context";
 import SiteShell from "@/components/site-shell";
-import { Toaster } from "sonner";
+import { AppToaster } from "@/components/app-toaster";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: "gofarm - Your Trusted Online Shopping Destination",
   description: "gofarm storefront migrated to Next.js without changing the original UI.",
   icons: {
@@ -35,7 +36,7 @@ export default function RootLayout({
           <WishlistProvider>
             <OrderProvider>
               <SiteShell>{children}</SiteShell>
-              <Toaster position="top-right" />
+              <AppToaster />
             </OrderProvider>
           </WishlistProvider>
         </CartProvider>
