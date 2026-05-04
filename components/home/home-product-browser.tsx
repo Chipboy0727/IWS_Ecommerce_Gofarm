@@ -31,10 +31,15 @@ function ViewIcon({ mode }: { mode: ViewMode }) {
   if (mode === "compact") {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-        <rect x="3" y="4" width="7" height="7" rx="1.5" />
-        <rect x="14" y="4" width="7" height="7" rx="1.5" />
-        <rect x="3" y="13" width="7" height="7" rx="1.5" />
-        <rect x="14" y="13" width="7" height="7" rx="1.5" />
+        <rect x="3" y="4" width="5" height="5" rx="1" />
+        <rect x="10" y="4" width="5" height="5" rx="1" />
+        <rect x="17" y="4" width="4" height="5" rx="1" />
+        <rect x="3" y="11" width="5" height="5" rx="1" />
+        <rect x="10" y="11" width="5" height="5" rx="1" />
+        <rect x="17" y="11" width="4" height="5" rx="1" />
+        <rect x="3" y="18" width="5" height="3" rx="1" />
+        <rect x="10" y="18" width="5" height="3" rx="1" />
+        <rect x="17" y="18" width="4" height="3" rx="1" />
       </svg>
     );
   }
@@ -42,18 +47,22 @@ function ViewIcon({ mode }: { mode: ViewMode }) {
   if (mode === "comfortable") {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-        <rect x="4" y="4" width="16" height="4" rx="1.5" />
-        <rect x="4" y="10" width="16" height="4" rx="1.5" />
-        <rect x="4" y="16" width="16" height="4" rx="1.5" />
+        <rect x="4" y="5" width="7" height="6" rx="1.25" />
+        <rect x="13" y="5" width="7" height="6" rx="1.25" />
+        <rect x="4" y="13" width="7" height="6" rx="1.25" />
+        <rect x="13" y="13" width="7" height="6" rx="1.25" />
       </svg>
     );
   }
 
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-      <rect x="4" y="5" width="16" height="3" rx="1.5" />
-      <rect x="4" y="10.5" width="16" height="3" rx="1.5" />
-      <rect x="4" y="16" width="16" height="3" rx="1.5" />
+      <circle cx="6" cy="7" r="1" fill="currentColor" stroke="none" />
+      <circle cx="6" cy="12" r="1" fill="currentColor" stroke="none" />
+      <circle cx="6" cy="17" r="1" fill="currentColor" stroke="none" />
+      <line x1="10" y1="7" x2="19" y2="7" strokeLinecap="round" />
+      <line x1="10" y1="12" x2="19" y2="12" strokeLinecap="round" />
+      <line x1="10" y1="17" x2="19" y2="17" strokeLinecap="round" />
     </svg>
   );
 }
@@ -101,10 +110,10 @@ export function HomeProductBrowser({
 
   const gridClassName =
     viewMode === "expanded"
-      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+      ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5"
       : viewMode === "comfortable"
-        ? "grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
-        : "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4";
+        ? "grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+        : "grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4";
 
   if (!mounted || !portalTarget) return null;
 
