@@ -480,7 +480,7 @@ export default function ProductManager() {
                 <table className="page-table min-w-[640px] sm:min-w-full w-full font-medium text-left">
                   <thead>
                     <tr className="border-b border-gofarm-light-gray bg-gradient-to-r from-gray-50 to-gofarm-light-orange/50">
-                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">SKU</th>
+                      <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray whitespace-nowrap" style={{ minWidth: "90px" }}>SKU</th>
                       <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Product</th>
                       <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Category</th>
                       <th className="px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.14em] text-gofarm-gray">Stock Level</th>
@@ -497,7 +497,7 @@ export default function ProductManager() {
                       const tone = stockTone(stock);
                       return (
                         <tr key={product.id} className="border-b border-gray-100 last:border-0 hover:bg-gradient-to-r hover:from-white hover:to-gofarm-light-orange/40 transition-all duration-200">
-                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[12px] sm:text-[13px] font-medium text-gofarm-gray">
+                          <td className="px-3 sm:px-4 py-2.5 sm:py-3 text-[11px] sm:text-[13px] font-medium text-gofarm-gray whitespace-nowrap">
                             {product.id}
                           </td>
                           <td className="px-3 sm:px-4 py-2.5 sm:py-3">

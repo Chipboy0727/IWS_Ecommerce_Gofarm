@@ -57,7 +57,6 @@ export default async function AdminStoresPage() {
         </div>
 
         <SectionCard
-          className="overflow-hidden p-4 sm:p-6"
           title="All Stores"
           subtitle="Manage store information and locations"
         >

@@ -77,7 +77,7 @@ export default async function AdminDashboardPage() {
       actions={null}
     >
       <div className="space-y-6">
-        <div className="grid gap-3 sm:gap-4 grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((item) => (
             <StatCard
               key={item.label}
@@ -108,7 +108,7 @@ export default async function AdminDashboardPage() {
             <table className="page-table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th className="w-[100px]">ID</th>
                   <th>Product</th>
                   <th className="hidden sm:table-cell">Customer</th>
                   <th className="hidden md:table-cell">Date</th>
@@ -119,7 +119,9 @@ export default async function AdminDashboardPage() {
               <tbody>
                 {transactions.map((item) => (
                   <tr key={item.id}>
-                    <td className="text-[10px] sm:text-[13px] font-semibold text-gofarm-green" style={{ maxWidth: 120, wordBreak: "break-all" }}>{item.id}</td>
+                    <td className="text-[10px] sm:text-[13px] font-semibold text-gofarm-green whitespace-nowrap overflow-hidden text-ellipsis" style={{ maxWidth: "85px" }} title={item.id}>
+                      #{item.id.slice(0, 8)}
+                    </td>
                     <td>
                       <div className="product-row">
                         <Image src={item.image} alt={item.product} width={40} height={40} className="product-thumb" />

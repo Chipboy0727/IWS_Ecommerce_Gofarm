@@ -816,11 +816,14 @@ export function AdminShell({
       -webkit-overflow-scrolling: touch;
     }
     .admin-data-table-shell {
+      display: block;
+      width: 100%;
       overflow-x: auto;
-      overflow: hidden;
+      -webkit-overflow-scrolling: touch;
       border-radius: 14px;
       background: var(--gf-surface);
       border: 1px solid var(--admin-border);
+      margin-bottom: 4px;
       box-shadow: 0 10px 40px -24px rgba(17, 24, 39, 0.18);
       outline: none;
     }
