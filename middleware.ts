@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/backend/rate-limit";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/backend/auth-edge";
 
 /**
  * Next.js Edge Middleware — Security & Access Control
@@ -20,12 +21,18 @@ import { checkRateLimit, getClientIp } from "@/lib/backend/rate-limit";
  *      /api/auth/* to mitigate brute-force and credential-stuffing attacks).
  */
 
-const RATE_LIMIT_CONFIG = { windowMs: 60_000, maxRequests: 100 };
+const RATE_LIMIT_CONFIG = {
+  windowMs: Math.max(1, Number.parseInt(process.env.RATE_LIMIT_WINDOW_MS ?? "60000", 10) || 60000),
+  maxRequests: Math.max(1, Number.parseInt(process.env.RATE_LIMIT_MAX_REQUESTS ?? "100", 10) || 100),
+};
 
 // Stricter limit for auth endpoints to mitigate brute-force attacks
-const AUTH_RATE_LIMIT_CONFIG = { windowMs: 60_000, maxRequests: 20 };
+const AUTH_RATE_LIMIT_CONFIG = {
+  windowMs: Math.max(1, Number.parseInt(process.env.AUTH_RATE_LIMIT_WINDOW_MS ?? "60000", 10) || 60000),
+  maxRequests: Math.max(1, Number.parseInt(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS ?? "20", 10) || 20),
+};
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ─── CORS Preflight (OPTIONS) for API routes ───
@@ -85,8 +92,9 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/admin")) {
-    const sessionCookie = request.cookies.get("gofarm_session")?.value;
-    if (!sessionCookie) {
+    const token = request.cookies.get(SESSION_COOKIE)?.value;
+    const payload = token ? await verifySessionToken(token) : null;
+    if (!payload || payload.role !== "admin") {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/sign-in";
       loginUrl.searchParams.set("redirect", pathname);

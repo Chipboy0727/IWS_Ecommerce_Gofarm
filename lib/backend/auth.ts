@@ -13,25 +13,19 @@
  *  • A07:2021 – Identification and Authentication Failures
  *    → Session cookies are `HttpOnly`, `SameSite=Lax`, and `Secure` in
  *      production, preventing XSS-based session theft and CSRF attacks.
- *    → Token expiry (7 days) limits the window of compromise.
+ *    → Token expiry (24 hours) limits the window of compromise.
  *    → Reset tokens are hashed before storage and expire after 1 hour.
  */
 
 import { createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { SESSION_COOKIE, TOKEN_SECRET, type SessionRole, type SessionUser } from "@/lib/backend/auth-common";
 
-export type SessionRole = "admin" | "user";
-
-type SessionUser = {
-  sub: string;
-  email: string;
-  role: SessionRole;
-  exp: number;
-  iat: number;
-};
-
-export const SESSION_COOKIE = "gofarm_session";
-const TOKEN_SECRET = process.env.GOFARM_AUTH_SECRET ?? "gofarm-dev-secret";
+if (!process.env.GOFARM_AUTH_SECRET && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "Missing required environment variable GOFARM_AUTH_SECRET in production. Set a strong secret to secure session tokens."
+  );
+}
 
 function base64UrlEncode(value: string) {
   return Buffer.from(value).toString("base64url");
@@ -41,11 +35,16 @@ function base64UrlDecode(value: string) {
   return Buffer.from(value, "base64url").toString("utf8");
 }
 
+const SESSION_TOKEN_LIFETIME_SECONDS = 60 * 60 * 24; // 24 hours
+
 function sign(value: string) {
   return createHmac("sha256", TOKEN_SECRET).update(value).digest("base64url");
 }
 
 /** Hash a password using PBKDF2 with a random salt. Returns "salt:derived" format. */
+export { SESSION_COOKIE };
+export type { SessionRole, SessionUser };
+
 export function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
   const derived = pbkdf2Sync(password, salt, 120_000, 32, "sha256").toString("hex");
   return `${salt}:${derived}`;
@@ -62,10 +61,10 @@ export function verifyPassword(password: string, storedHash: string) {
   return timingSafeEqual(expectedBuffer, candidateBuffer);
 }
 
-/** Create a signed JWT session token valid for 7 days. */
+/** Create a signed JWT session token valid for 24 hours. */
 export function createSessionToken(user: { id: string; email: string; role: SessionRole }) {
   const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 60 * 60 * 24 * 7;
+  const exp = iat + SESSION_TOKEN_LIFETIME_SECONDS;
   const payload: SessionUser = { sub: user.id, email: user.email, role: user.role, iat, exp };
   const encodedHeader = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const encodedPayload = base64UrlEncode(JSON.stringify(payload));

@@ -1,8 +1,7 @@
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { readDb, updateDb } from "@/lib/backend/db";
-import { jsonError, parsePositiveInt, readJsonBody, sanitizeOptionalString, sanitizeString, slugify } from "@/lib/backend/http";
+import { jsonError, jsonResponse, parsePositiveInt, readJsonBody, sanitizeOptionalString, sanitizeString, slugify } from "@/lib/backend/http";
 import { normalizeProductCategories } from "@/lib/backend/products";
 import { requireAdmin } from "@/lib/backend/session";
 
@@ -46,19 +45,23 @@ export async function GET(request: NextRequest) {
   const start = paginated ? (safePage - 1) * limit : 0;
   const items = paginated ? sorted.slice(start, start + limit) : sorted;
 
-  return NextResponse.json({
-    categories: items,
-    meta: {
-      page: safePage,
-      limit: paginated ? limit : total,
-      total,
-      totalPages,
-      hasNextPage: paginated ? safePage < totalPages : false,
-      hasPrevPage: paginated ? safePage > 1 : false,
-      sortBy,
-      sortOrder,
+  return jsonResponse(
+    {
+      categories: items,
+      meta: {
+        page: safePage,
+        limit: paginated ? limit : total,
+        total,
+        totalPages,
+        hasNextPage: paginated ? safePage < totalPages : false,
+        hasPrevPage: paginated ? safePage > 1 : false,
+        sortBy,
+        sortOrder,
+      },
     },
-  });
+    200,
+    20
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -96,11 +99,12 @@ export async function POST(request: NextRequest) {
   }));
 
   const nextDb = await readDb();
-  return NextResponse.json(
+  return jsonResponse(
     {
       category,
       categories: normalizeProductCategories(nextDb.products, nextDb.categories),
     },
-    { status: 201 }
+    201,
+    0
   );
 }

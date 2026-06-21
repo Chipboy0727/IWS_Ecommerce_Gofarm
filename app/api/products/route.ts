@@ -1,8 +1,7 @@
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readDb, updateDb } from "@/lib/backend/db";
-import { jsonError, parsePositiveInt, readJsonBody, sanitizeOptionalString } from "@/lib/backend/http";
+import { jsonError, jsonResponse, parsePositiveInt, readJsonBody, sanitizeOptionalString } from "@/lib/backend/http";
 import { createProductPayload, listProducts, normalizeProductCategories, parseProductSortBy } from "@/lib/backend/products";
 import { requireAdmin } from "@/lib/backend/session";
 
@@ -30,11 +29,15 @@ export async function GET(request: NextRequest) {
     paginated,
   });
 
-  return NextResponse.json({
-    products: items,
-    categories: normalizeProductCategories(db.products, db.categories),
-    meta,
-  });
+  return jsonResponse(
+    {
+      products: items,
+      categories: normalizeProductCategories(db.products, db.categories),
+      meta,
+    },
+    200,
+    15
+  );
 }
 
 export async function POST(request: NextRequest) {
@@ -57,11 +60,12 @@ export async function POST(request: NextRequest) {
   revalidatePath("/", "layout");
 
   const nextDb = await readDb();
-  return NextResponse.json(
+  return jsonResponse(
     {
       product: result.product,
       categories: normalizeProductCategories(nextDb.products, nextDb.categories),
     },
-    { status: 201 }
+    201,
+    0
   );
 }

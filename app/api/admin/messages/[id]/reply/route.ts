@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { readDb, writeDb } from "@/lib/backend/db";
 import { getAuthenticatedUser } from "@/lib/backend/session";
 import { getMysqlPool } from "@/lib/backend/mysql";
+import { sanitizeString } from "@/lib/backend/http";
 
 export async function POST(
   request: NextRequest,
@@ -20,14 +21,14 @@ export async function POST(
 
     // 2. Parse body
     const body = await request.json();
-    const { replyMessage } = body;
+    const replyMessage = sanitizeString((body as any).replyMessage);
 
-    if (!replyMessage || !replyMessage.trim()) {
+    if (!replyMessage) {
       return NextResponse.json({ error: "Please enter a response message." }, { status: 400 });
     }
 
     // 3. Update database
-    const targetId = decodeURIComponent(id).trim();
+    const targetId = sanitizeString(decodeURIComponent(id));
     let success = false;
 
     // Try direct SQL update first for better reliability

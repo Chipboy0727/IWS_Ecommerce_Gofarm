@@ -1,8 +1,25 @@
 import { NextResponse } from "next/server";
 
+const DEFAULT_CACHE_SECONDS = 10;
+
+function buildCacheControlHeader(seconds: number) {
+  const sMaxAge = Math.max(0, Math.floor(seconds));
+  const staleWhileRevalidate = Math.max(1, Math.floor(sMaxAge / 2));
+  return `public, s-maxage=${sMaxAge}, stale-while-revalidate=${staleWhileRevalidate}`;
+}
+
+/** Return a JSON response with optional HTTP cache headers. */
+export function jsonResponse(body: unknown, status = 200, cacheSeconds = DEFAULT_CACHE_SECONDS) {
+  const response = NextResponse.json(body, { status });
+  if (cacheSeconds > 0) {
+    response.headers.set("Cache-Control", buildCacheControlHeader(cacheSeconds));
+  }
+  return response;
+}
+
 /** Return a JSON error response with the given message and HTTP status code. */
 export function jsonError(message: string, status = 400, details?: Record<string, unknown>) {
-  return NextResponse.json({ error: message, ...(details ?? {}) }, { status });
+  return jsonResponse({ error: message, ...(details ?? {}) }, status, 0);
 }
 
 /** Safely parse the JSON body of a request. Returns null on failure. */

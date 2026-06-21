@@ -1,8 +1,7 @@
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { readDb, updateDb } from "@/lib/backend/db";
-import { jsonError, readJsonBody } from "@/lib/backend/http";
+import { jsonError, jsonResponse, readJsonBody } from "@/lib/backend/http";
 import { updateProductPayload } from "@/lib/backend/products";
 import { requireAdmin } from "@/lib/backend/session";
 
@@ -15,7 +14,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
   const db = await readDb();
   const product = db.products.find((item) => item.slug === slug);
   if (!product) return jsonError("Product not found", 404);
-  return NextResponse.json({ product });
+  return jsonResponse({ product }, 200, 20);
 }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
@@ -40,7 +39,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
   revalidatePath("/", "layout");
 
-  return NextResponse.json({ product: result.product });
+  return jsonResponse({ product: result.product }, 200, 0);
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
@@ -59,5 +58,5 @@ export async function DELETE(request: NextRequest, { params }: Params) {
 
   revalidatePath("/", "layout");
 
-  return NextResponse.json({ ok: true });
+  return jsonResponse({ ok: true }, 200, 0);
 }
