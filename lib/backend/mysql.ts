@@ -55,6 +55,9 @@ export function getMysqlPool() {
   const config = resolveMysqlConfig();
   if (!config) return null;
 
+  const connectionLimit = Math.max(1, Number.parseInt(process.env.MYSQL_CONNECTION_LIMIT ?? "10", 10) || 10);
+  const queueLimit = Number.parseInt(process.env.MYSQL_QUEUE_LIMIT ?? "1000", 10);
+
   pool = mysql.createPool({
     host: config.host,
     port: config.port,
@@ -62,7 +65,8 @@ export function getMysqlPool() {
     password: config.password,
     database: config.database,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit,
+    queueLimit: Number.isFinite(queueLimit) && queueLimit >= 0 ? queueLimit : 1000,
     namedPlaceholders: true,
     ssl: config.ssl ? { rejectUnauthorized: false } : undefined,
   });

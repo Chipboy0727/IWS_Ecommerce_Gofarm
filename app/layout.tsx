@@ -17,8 +17,58 @@ import { AppToaster } from "@/components/app-toaster";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "gofarm - Your Trusted Online Shopping Destination",
-  description: "gofarm storefront migrated to Next.js without changing the original UI.",
+  title: {
+    default: "GoFarm | Fresh Farm Products Delivered Fast",
+    template: "%s | GoFarm",
+  },
+  description:
+    "GoFarm brings fresh farm products, organic groceries, and local delivery to your doorstep with reliable service and eco-friendly sourcing.",
+  keywords: [
+    "fresh farm products",
+    "organic groceries",
+    "local delivery",
+    "GoFarm",
+    "healthy food",
+    "fresh produce",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "GoFarm | Fresh Farm Products Delivered Fast",
+    description:
+      "GoFarm brings fresh farm products, organic groceries, and local delivery to your doorstep with reliable service and eco-friendly sourcing.",
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    siteName: "GoFarm",
+    type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/images/gfsmallerlogo.png",
+        width: 1200,
+        height: 630,
+        alt: "GoFarm fresh farm products",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GoFarm | Fresh Farm Products Delivered Fast",
+    description:
+      "GoFarm brings fresh farm products, organic groceries, and local delivery to your doorstep with reliable service and eco-friendly sourcing.",
+    images: ["/images/gofarm-og.png"],
+  },
   icons: {
     icon: "/images/gfsmallerlogo.png",
   },

@@ -37,8 +37,28 @@ let mysqlReady: boolean | null = null;
 let mysqlInitPromise: Promise<boolean> | null = null;
 let writeQueue: Promise<void> = Promise.resolve();
 
+const DB_CACHE_TTL_MS = Math.max(0, Number.parseInt(process.env.DB_CACHE_TTL_MS ?? "10000", 10) || 10000);
+let dbCache: { timestamp: number; data: BackendDb } | null = null;
+
 function nowIso() {
   return new Date().toISOString();
+}
+
+function getCachedDb() {
+  if (!dbCache) return null;
+  if (Date.now() - dbCache.timestamp > DB_CACHE_TTL_MS) {
+    dbCache = null;
+    return null;
+  }
+  return dbCache.data;
+}
+
+function setCachedDb(data: BackendDb) {
+  dbCache = { timestamp: Date.now(), data };
+}
+
+function invalidateDbCache() {
+  dbCache = null;
 }
 
 function normalizeProduct(product: LocalProduct): LocalProduct {
@@ -634,16 +654,25 @@ async function persistFallbackState(state: BackendDb) {
 }
 
 export async function readDb(): Promise<BackendDb> {
+  const cached = getCachedDb();
+  if (cached) return cached;
+
   const mysqlState = await readMysqlState();
-  if (mysqlState) return mysqlState;
+  if (mysqlState) {
+    setCachedDb(mysqlState);
+    return mysqlState;
+  }
 
   console.warn("[DB] Falling back to local catalog seed");
-  return loadSeedCatalog();
+  const seedCatalog = await loadSeedCatalog();
+  setCachedDb(seedCatalog);
+  return seedCatalog;
 }
 
 export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<BackendDb>) {
+  invalidateDbCache();
   writeQueue = writeQueue.then(async () => {
-    const current = await readDb();
+    const current = cloneDb(await readDb());
     const next = await mutator(current);
     next.meta = {
       version: next.meta?.version ?? 1,
@@ -655,6 +684,8 @@ export async function writeDb(mutator: (db: BackendDb) => BackendDb | Promise<Ba
       await persistFallbackState(next);
       mysqlReady = false;
     }
+
+    setCachedDb(next);
   });
 
   await writeQueue;
